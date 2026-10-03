@@ -1,0 +1,16 @@
+.git
+.env
+.env.*
+!.env.example
+.venv
+.uv-cache
+.ruff_cache
+outputs
+dist
+**/__pycache__
+**/*.pyc
+**/node_modules
+frontend/dist
+src/cozmo_web/static
+capture_annotations
+*.egg-info

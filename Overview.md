@@ -1,6 +1,14 @@
-# Prototype 2: ingestion first
+# Prototype 2: Holo ingestion milestone
 
-Created: 2026-10-03 (Asia/Calcutta). State: context reviewed; ingestion definition is next. No new ingestion implementation or reconstruction trial has run.
+Updated: 2026-10-03 (Asia/Calcutta). User authorized updating context and making a local milestone commit. Initial Git commit: `36233d0`; this milestone records the completed source, configuration, tests and documentation that followed it. Raw recordings, generated bundles/evidence, environments, dependencies and caches remain excluded. No push requested.
+
+Holo validates complete Sensor Recorder Pro 1.5/build 5 ARKit exports through a modular Python core and CLI, an optional FastAPI service and React/TypeScript/Vite capture-guide/input tabs. Own uv environment/lockfile, Docker packaging, native development, bounded isolated jobs, persisted history and verified portable downloads are implemented. [Main/folder README navigation](README.md), [architecture](ARCHITECTURE.md), [Docker/native setup](WEB_SETUP.md), [verification](WEB_RESULTS.md), [capture guide](capture.md).
+
+Latest accepted capture guidance: iPhone 15 and above is recommended; record one known-size object only in the first 3–5 seconds at the first entrance, then leave it there and continue through the rooms. Optional JPEG/PNG object photo input is independent of dimension declarations. Its original bytes, video binding and metadata hashes are retained, displayed after verification and included under `reference/` in downloads. Uploading a photo does not detect corners or estimate scale. Existing internal `cozmo_*` package/CLI names remain compatible.
+
+Validation: 34 tests passed on Windows/Python 3.12.14 and Linux Docker; Python lint/format and frontend build/format passed. Both supplied captures preserve all source observations (1,756/3,949 RGB/K/pose records) and have identical native/container manifests and all sixteen canonical artifact hashes. Browser real-capture JPEG upload/download, source-value reverification and final-container persistence passed; native FFmpeg decoded a synthetic PNG. Historical bundles remain verifiable after documented LF/root-hint portability changes. [Current evidence](WEB_RESULTS.md) separates these observations from physical accuracy and historical packaging checks.
+
+Next: preprocessing when requested, including native orientation, tracking/view quality and manual reference-corner validation before automatic scale estimation, then reconstruction. Android/other adapters, independent measurement accuracy, physical sensor registration/synchronization and final all-tier submission remain unfinished. No new reconstruction model selected or executed. Historical context below preserves provenance rather than a current unexecuted ingestion plan.
 
 The user requested a separate `proto-2` and relevant-context review before defining its data ingestion pipeline. Current focus: RGB + calibration + supplied poses + IMU, excluding measured depth/confidence from reconstruction input. The final assignment still requires photos, ordinary video and LiDAR; assisted video retains its own label.
 
@@ -24,4 +32,4 @@ The user requested a separate `proto-2` and relevant-context review before defin
 
 Per-frame intrinsics supersede the final-frame `camera_matrix.csv`. Reference exporter quaternions already use optical camera axes; do not apply a second ARKit flip for that convention. Existing IMU acceleration norms near one support raw g despite a conflicting format claim; current use is qualified gravity/gyro diagnostics, not position integration. Physical synchronization, RGB/depth registration, installed exporter identity and independent metric accuracy remain unverified. Two suspicious pose steps near frames 005199–005200 make the floor-only capture a useful future ingestion stress case.
 
-These are context-derived requirements/questions, not a frozen schema or executed pipeline. Preserve raw captures and prototype-1 evidence. Define ingestion before selecting the next reconstruction candidate.
+These historical context-derived questions motivated the now-implemented ingestion contract. Preserve raw captures and prototype-1 evidence; use the current architecture/results for executed behavior before selecting the next reconstruction candidate.

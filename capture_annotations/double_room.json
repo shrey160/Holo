@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "source_video_sha256": "fa1ec4ffd457d7645ead33f4ecc005c256e31916d058b025c8698fdec354248b",
+  "reference_objects": [
+    {
+      "id": "opening-a4-reference",
+      "label": "user-provided A4-size book or paper",
+      "width_m": 0.21,
+      "height_m": 0.297,
+      "dimensions_source": "USER_REPORTED",
+      "dimension_uncertainty_m": null,
+      "candidate_window_seconds": [
+        0,
+        5
+      ],
+      "visibility_verified": false,
+      "placement": "on the ground at start; user-reported",
+      "usage": "human scale prior for future preprocessing; no geometry correction during ingestion"
+    }
+  ]
+}

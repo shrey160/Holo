@@ -1,0 +1,46 @@
+# Holo web service
+
+Optional FastAPI service around the [ingestion core](../cozmo_ingestion/README.md). HTTP handlers receive files and query jobs; an isolated Python worker performs ingestion and source-value verification. Install with the `web` extra. Native and Docker commands are in [WEB_SETUP.md](../../WEB_SETUP.md).
+
+## Module ownership
+
+| Module | Responsibility |
+|---|---|
+| `app.py` | App factory, lifecycle, HTTP routes, request limits and static frontend serving |
+| `config.py`, `schemas.py`, `errors.py` | Validated settings/reference form and stable user-facing errors |
+| `uploads.py` | Bound copying/extraction; reject unsafe paths, links, collisions and ambiguous sessions |
+| `repository.py` | Atomic persisted job records, queue admission and single-instance data lock |
+| `jobs.py` | One active processing slot, queued jobs and restart reconciliation |
+| `runner.py` | Start isolated workers, poll phases, enforce deadlines and stop process trees |
+| `worker.py` | Prepare raw input, bind annotations, run core ingestion and verify source values |
+| `reference_images.py` | Bound JPEG/PNG uploads, probe/decode checks, video/hash binding and integrity-checked image access |
+| `exports.py` | Verify stored integrity and assemble portable downloads |
+| `cli.py` | `cozmo-web` startup, optional reload, temporary storage and native static-root discovery |
+
+## HTTP contract
+
+| Method and route | Result |
+|---|---|
+| `GET /api/health` | Tool/storage readiness and admission limits |
+| `POST /api/jobs` | Multipart `files`, optional `label` and JSON-string `reference`; accepted job ID/state with HTTP 202 |
+| `GET /api/jobs` | Most recent 50 jobs |
+| `GET /api/jobs/{id}` | Persisted job state, findings/summary or failure |
+| `GET /api/jobs/{id}/report` | Verified result JSON attachment |
+| `GET /api/jobs/{id}/download` | Verified raw/annotation/reference/bundle ZIP attachment |
+| `GET /api/jobs/{id}/reference-image` | Integrity-checked photo for a completed job; 404 when absent |
+
+`POST /api/jobs` also accepts a separate optional `reference_image` multipart file. It is not mixed into the original export or supplied as a geometry observation. JPEG/PNG uploads are limited to 10 MiB and 40 million pixels; [FFprobe](https://ffmpeg.org/ffprobe-all.html) inspects the grid/codec, then FFmpeg checks decoding in the isolated worker. `reference/metadata.json` binds the retained image bytes to the source video; job records retain its metadata hash. Old jobs without photos remain supported.
+
+Reference form fields are `width_cm`, `height_cm`, `start_seconds`, `end_seconds` and `placement`. The worker converts dimensions to metres and binds the declaration to the video hash; it does not detect corners or apply scale. [Reference annotations](../../capture_annotations/README.md).
+
+Normal state progression: `RECEIVING` → `QUEUED` → `VALIDATING_INPUT` → `INGESTING` → `VERIFYING` → `SUCCEEDED`. Failures become `FAILED`. Success requires the worker to exit with a verified result. Downloading an unfinished or failed job returns 409.
+
+## Storage and operations
+
+Native storage defaults to `outputs/web-data`; Docker uses `/data` in the named capture volume. Each `jobs/<id>/` directory holds its atomic `job.json`, original input/raw files, optional annotations, published `bundle/`, worker phase/log records and result/verification JSON. Temporary download archives are removed after the response completes.
+
+Run one server/one Uvicorn worker per `DATA_ROOT`. Startup fails if another process owns the data lock; interrupted receiving/processing jobs become failed, untouched queued jobs resume, and completed records persist. Resubmission creates a fresh job. Shutdown and deadlines stop the worker/media process tree. Completed and failed storage has no automatic retention policy.
+
+The default limits are 1 GiB per HTTP request, 2 GiB expanded input, 200 file/archive members, four waiting jobs plus one active slot, and 600 seconds per worker. See [configuration](../../WEB_SETUP.md#configuration-and-boundaries) before changing them. Limits are not long-capture capacity benchmarks.
+
+The app is a local prototype with loopback host ports and no multi-user authentication. Keep processing rules in the core, queue/storage rules here and presentation rules in the [frontend](../../frontend/README.md). [Tests](../../tests/README.md) cover these boundaries.

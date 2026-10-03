@@ -1,0 +1,120 @@
+# Ingestion architecture
+
+The ingestion domain processes one complete capture folder into a canonical bundle. It remains usable as a local batch package independently of the optional web interface. The observed Sensor Recorder export is the only production adapter; no reconstruction dependency is introduced.
+
+## Optional web application
+
+The sibling `cozmo_web` package wraps the existing domain. `app.py` owns HTTP/lifecycle composition; `config.py`/`schemas.py` validate settings and reference metadata. `uploads.py` copies/extracts bounded, byte-preserving captures and validates cross-platform paths. `repository.py` owns atomic JSON records and an OS-released single-instance lock. `jobs.py` manages one queue slot, `runner.py` starts/terminates isolated process trees, and `worker.py` imports the existing pipeline and verifier. `exports.py` checks source/artifact integrity before producing a portable raw/annotations/bundle archive. `reference_images.py` validates optional JPEG/PNG attachments in the web worker, stores original bytes separately from raw capture observations, binds image/metadata hashes to the video and guards result/download access. Presentation code is excluded from the core source fingerprint.
+
+The React/TypeScript frontend has guide and ingestion features, a typed API client and a shared Markdown renderer. `capture.md` supplies protocol/settings; raw HTML is disabled. Tabs retain component state while switching. Docker/native compiled mode serves static assets through FastAPI; Vite proxies the same relative API paths during development. [Setup](WEB_SETUP.md), [results](WEB_RESULTS.md).
+
+This is single-instance local storage. One Uvicorn worker runs one isolated processing job plus a bounded queue. Startup marks interrupted receiving/processing jobs failed and resumes untouched queued jobs; shutdown terminates and awaits worker/media process trees. Retry is a new run. CLI transactional publication remains separate from HTTP job status.
+
+New canonical text explicitly uses UTF-8/LF; CSV explicitly retains CRLF. Root hints use POSIX separators; readers also accept historical Windows hints. Some historical byte hashes differ because of intentional serialization/path changes; parsed observation values remain preserved.
+
+## Layout and ownership
+
+```text
+proto-2/
+  pyproject.toml           Package, CLI, build and lint configuration
+  uv.lock                 Runtime/development dependency resolution
+  .python-version         Default interpreter: Python 3.12
+  src/cozmo_ingestion/
+    pipeline.py           IngestionPipeline application service
+    models.py             Typed request, source, observation and result objects
+    contracts.py          Canonical schema and immutable validated policy
+    ports.py              CaptureAdapter and VideoInspector protocols
+    adapters/
+      sensor_recorder.py          Export parsing, validation and asset inventory
+      sensor_recorder_schema.py   Supported headers, version identity and roles
+    media.py              FFmpegVideoInspector and external process boundary
+    clocks.py             Exact frame association and native coverage statistics
+    numeric.py            Finite decimal parsing and quaternion pose conversion
+    annotations.py        Hash-bound user declarations and candidate intervals
+    normalization.py      Camera/sensor records and quality findings
+    bundle.py             BundleWriter and BundleTransaction
+    storage.py            Deterministic encoders, path checks and BundleIntegrity
+    reader.py             CaptureReader input profiles and access log
+    verification.py       Source-to-bundle audit and replay comparison
+    errors.py             Stable validation error codes
+    cli.py                Argument parsing and exit-code presentation
+  tests/                  Behavioral tests and reusable synthetic fixtures
+  capture_annotations/    Explicit declarations for the supplied recordings
+  outputs/                Ignored generated captures and local validation evidence
+```
+
+## Object and dependency design
+
+`IngestionPipeline` coordinates work; it owns neither CSV syntax nor file serialization. Its constructor accepts a source adapter, video inspector, bundle writer and immutable policy. Defaults configure the supported iOS path, while tests inject a fake media inspector or a failing writer.
+
+The protocols in `ports.py` define the source and external-media boundaries structurally. Implementations do not need a shared inheritance tree. Classes own behavior with state/lifecycle; stateless numerical and record transformations remain functions. No global run state or service locator is used.
+
+The main typed objects are:
+
+- `IngestionRequest`: source/output paths and optional annotation input.
+- `SourceCapture`: validated metadata, camera records and native sensor tables/comments.
+- `VideoInspection`: actual decoded-frame timing/grid and inspection commands.
+- `CameraObservations` / `SensorObservations`: independent normalization outputs.
+- `CanonicalObservations`: combined records, coverage and findings.
+- `BundleContent`: validated content handed to storage.
+- `RunMetadata`: execution-specific timing/tool data, separated from capture content.
+- `IngestionResult`: manifest, validation report and published output path.
+
+Dictionary records preserve the existing JSON/CSV schema and exact source strings; dataclasses establish component boundaries. Future geometric domain objects belong to preprocessing/reconstruction rather than this ingestion contract.
+
+## Lifecycle
+
+```mermaid
+flowchart TD
+    CLI[CLI or Python caller] --> P[IngestionPipeline]
+    P --> T[BundleTransaction: fresh staging folder]
+    P --> A[CaptureAdapter: hash, parse, validate]
+    P --> V[VideoInspector: timestamps and full decode]
+    A --> C[Exact camera/media association]
+    V --> C
+    C --> N[Camera and sensor normalization]
+    D[Optional hash-bound declaration] --> N
+    N --> B[BundleContent]
+    B --> W[BundleWriter: artifacts, report, manifest]
+    W --> T
+    T --> O[Publish final folder]
+    O --> R[CaptureReader or verification audit]
+```
+
+1. Resolve the request; reject existing outputs and source/output overlap. Create a unique staging folder.
+2. Inventory original assets and hash them. The adapter validates the export's version, finished ARKit state, stream schemas, units and coordinate declarations.
+3. Inspect actual media presentation timestamps and fully decode video through FFmpeg. Resolve tools through explicit paths or `PATH` only.
+4. Require exact frame counts/sequential source IDs and relative camera/media clock agreement. Use rational PTS ticks and decimal source times; no frame trimming or clock-rate fitting.
+5. Bind optional reference declarations to the exact video. Mark candidate frames while preserving `NOT_RUN` localization/scale status.
+6. Independently normalize camera records and sensor tables. Retain native pixels, source world, tracking states, sensor values and timestamps; collect findings without repairing geometry.
+7. Recheck source/annotation hashes. Write canonical records, metadata, validation and artifact hashes; record a fingerprint of all package Python modules with normalized source line endings.
+8. Publish by renaming the staging folder on the same filesystem. Return the completed result. Failures retain `FAILED` diagnostics and do not publish a final bundle.
+
+## Contracts and failure handling
+
+Structural failures raise `IngestionError(code, message)`. Examples include unsupported export versions, malformed/empty tables, duplicate/nonmonotonic timestamps, count mismatch, invalid calibration and modified sources. The CLI returns a nonzero exit code and writes errors to stderr. `BundleTransaction` converts unexpected processing/storage failures into failed diagnostics.
+
+Quality limitations are report findings: non-normal tracking, slot-number discontinuities, apparent high-speed pose changes, requested exposure-cap overshoots and incomplete boundary IMU coverage. Every observation is retained. Findings do not diagnose drift or certify physical accuracy.
+
+`IngestionPolicy` is immutable and validates positive finite tolerances. Requests for image transformation, pose refinement or scale correction are rejected because this stage does not implement them. The default policy matches the original verified behavior.
+
+`CaptureReader` validates bundle status/schema/adapter and verifies hashes on access. RGB and assisted profiles expose different inputs and record admitted usage. `BundleIntegrity` owns hash/path validation and also supports the audit's combined-IMU reads. These are application APIs, not an operating-system sandbox.
+
+The verifier compares all canonical frame/K/pose and sensor records against source values, then checks content identities for replay. New modules retain the original canonical schema, so original verified bundles remain readable. The manifest's source fingerprint now covers the package rather than one monolithic file; historical fingerprints retain their original meaning.
+
+## Where to make changes
+
+| Change | Primary location |
+|---|---|
+| Support an inspected Sensor Recorder export variant | Adapter/schema, with source-format evidence and boundary tests |
+| Add a different capture source | New adapter producing the `SourceCapture` record contract; inject/configure it explicitly |
+| Change media tooling | `media.py`, implementing `VideoInspector` |
+| Change camera or sensor normalization | Relevant functions in `normalization.py`; preserve traceability |
+| Change declared reference metadata | `annotations.py`; localization algorithms belong to preprocessing |
+| Change canonical file schema | Models/contracts and `BundleWriter`, plus reader/verifier compatibility checks |
+| Change downstream admitted inputs | Reader profiles and leakage tests |
+| Add Python dependencies | `uv add`; regenerate and review `uv.lock` |
+
+Adding another adapter alone does not establish support: this first canonical record contract still reflects the observed single-wide-camera iOS session. Multi-camera, alternate pose conventions and additional tiers require explicit normalization and reader/schema work. No automatic plugin discovery or format guessing is implemented.
+
+The current implementation materializes short-session records and FFprobe metadata in memory. Long captures would require streaming/chunked records and resource limits; that scaling work has not been implemented or benchmarked.

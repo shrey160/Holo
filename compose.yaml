@@ -1,0 +1,19 @@
+services:
+  app:
+    build: .
+    image: cozmo-ingestion:0.2.0
+    init: true
+    ports:
+      - "127.0.0.1:${APP_PORT:-8000}:8000"
+    environment:
+      DATA_ROOT: /data
+      MAX_UPLOAD_BYTES: ${MAX_UPLOAD_BYTES:-1073741824}
+      MAX_EXPANDED_BYTES: ${MAX_EXPANDED_BYTES:-2147483648}
+      MAX_ARCHIVE_MEMBERS: ${MAX_ARCHIVE_MEMBERS:-200}
+      MAX_QUEUED_JOBS: ${MAX_QUEUED_JOBS:-4}
+      JOB_TIMEOUT_SECONDS: ${JOB_TIMEOUT_SECONDS:-600}
+    volumes:
+      - captures:/data
+    stop_grace_period: 20s
+volumes:
+  captures:
