@@ -2,6 +2,8 @@
 
 React/TypeScript/Vite UI with two tabs: **Capture guide** and **Input & validation**. It uses relative `/api` requests so the same build works with the native API and the single Docker application. Product branding is Holo; the existing private npm package identifier remains `cozmo-capture-ui`.
 
+Verified Sensor Recorder results expose **Prepare reconstruction views**. This creates a separate queued history run and renders the [preprocessing review](src/features/preprocessing/README.md): selected thumbnails, pagination, weak-link/motion findings and a downloadable report. LiDAR and grounding measurements are excluded from processing; the original capture and optional reference attachments remain archived. [Processing contract](../PREPROCESSING.md).
+
 ## Native development
 
 Use Node 24 LTS/npm. From `proto-2`, start Python in one terminal:

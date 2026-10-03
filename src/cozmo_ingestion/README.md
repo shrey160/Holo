@@ -1,6 +1,8 @@
 # Ingestion core
 
-This package converts one supported Sensor Recorder Pro 1.5/build 5 ARKit export into a canonical capture bundle. It preserves native observations, calibration, source poses and timestamps; it does not reconstruct a floor plan or estimate reference-object scale.
+This package converts one supported Sensor Recorder Pro 1.5/build 5 ARKit or supplied Stray-style export into a canonical capture bundle. It preserves native observations, calibration, source poses and timestamps; it does not reconstruct a floor plan or estimate reference-object scale.
+
+The sibling [preprocessing package](../cozmo_preprocessing/README.md) consumes verified Sensor Recorder outputs using the restricted `ios_preprocessing` reader profile. That profile exposes RGB, frames/K/poses and native sensor artifacts while denying annotations, depth, confidence and evaluation assets. `source_path()` performs role/hash checks without buffering an entire video. The preprocessing application's usage log narrows actual sensor consumption to independent accelerometer and gyroscope streams.
 
 ## Module ownership
 
@@ -16,7 +18,7 @@ This package converts one supported Sensor Recorder Pro 1.5/build 5 ARKit export
 | `normalization.py` | Build camera/sensor records and explicit quality findings |
 | `bundle.py`, `storage.py` | Transactional publication, deterministic serialization and integrity checks |
 | `reader.py` | Profile-controlled downstream access and admitted-input audit |
-| `verification.py` | Compare canonical records with raw source values and optional replay |
+| `verification.py`, `stray_verification.py` | Dispatch source-specific audits; compare canonical records with raw values and optional replay |
 | `errors.py`, `cli.py` | Stable validation errors and CLI presentation |
 
 ## Processing contract
@@ -37,4 +39,4 @@ uv run --locked cozmo-verify --help
 uv run --locked python -m unittest discover -s tests -p "test_pipeline.py" -v
 ```
 
-Inject implementations through the protocols instead of adding format detection or web state to the pipeline. Schema changes require corresponding writer, reader and verifier changes. The manifest fingerprints package Python source; presentation code and these README files are outside that fingerprint. Geometry algorithms belong to a later stage.
+Inject implementations through the protocols; `adapters/selection.py` owns explicit layout selection without web state in the core. Stray combined IMU is readable through `native_imu`; depth/confidence remain excluded from assisted RGB. Schema changes require corresponding writer, reader and verifier changes. The manifest fingerprints package Python source; presentation code and these README files are outside that fingerprint. Geometry algorithms belong to a later stage.

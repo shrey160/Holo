@@ -37,9 +37,10 @@ export function Input() {
     files.length === 1 && files[0].name.toLowerCase().endsWith(".zip");
   const missing = isZip
     ? []
-    : ["wide.mp4", "meta.json", "arkit_pose.csv"].filter(
-        (name) => !files.some((file) => file.name === name),
-      );
+    : (files.some((file) => file.name === "rgb.mp4")
+        ? ["rgb.mp4", "odometry.csv", "imu.csv", "camera_matrix.csv"]
+        : ["wide.mp4", "meta.json", "arkit_pose.csv"]
+      ).filter((name) => !files.some((file) => file.name === name));
   const conflicts =
     new Set(files.map((file) => file.name.toLowerCase())).size !==
       files.length ||
@@ -143,8 +144,8 @@ export function Input() {
             to verified input.
           </h1>
           <p>
-            Upload a complete Sensor Recorder session. Keep the original video
-            and sidecars together.
+            Upload a complete Sensor Recorder or Stray-style session. Keep the
+            original video and sidecars together.
           </p>
         </div>
         <button
@@ -166,6 +167,12 @@ export function Input() {
               placeholder="e.g. Living room + hallway"
             />
           </label>
+          <p className="caption">
+            For the supplied test data, choose a ZIP from
+            test_data/drive_download/zips: single_room, single_scan_floor_only
+            or single_scan_with_ceiling. Depth and confidence files stay in the
+            export and are excluded from assisted RGB processing.
+          </p>
           <label className="upload-area">
             <span className="upload-icon">↑</span>
             <strong>Choose an export ZIP or its files</strong>
@@ -204,8 +211,8 @@ export function Input() {
                 </p>
               )}
               <p className="caption">
-                The server also checks every stream enabled in your export
-                metadata.
+                The server checks the export format and its required streams.
+                Use ZIP for captures with depth/confidence folders.
               </p>
             </>
           )}
@@ -353,12 +360,21 @@ export function Input() {
             ))
           )}
           <div className="notice">
-            Supported now: Sensor Recorder Pro 1.5 / build 5, ARKit exports.
-            Android and other capture formats will be added separately.
+            Supported now: Sensor Recorder Pro 1.5 / build 5 ARKit exports and
+            the supplied Stray-style captures. Android will be added separately.
           </div>
         </aside>
       </div>
-      {current && <Result key={current.id} job={current} />}
+      {current && (
+        <Result
+          key={current.id}
+          job={current}
+          onPrepared={async (id) => {
+            setJobs(await request<Job[]>("/jobs"));
+            setSelected(id);
+          }}
+        />
+      )}
     </>
   );
 }

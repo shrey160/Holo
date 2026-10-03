@@ -1,5 +1,6 @@
 """HTTP boundary and app lifecycle. Domain work is delegated to job services."""
 
+import json
 import shutil
 import uuid
 from contextlib import asynccontextmanager
@@ -16,12 +17,14 @@ from starlette.middleware.trustedhost import TrustedHostMiddleware
 
 from cozmo_ingestion.errors import IngestionError
 from cozmo_ingestion.media import find_ffmpeg
+from cozmo_ingestion.storage import BundleIntegrity, sha256
 from cozmo_ingestion.verification import verify
 
 from .config import Settings
 from .errors import WebError
 from .exports import ExportService
 from .jobs import JobService
+from .preprocessing import enqueue_preprocessing
 from .reference_images import read_reference_image, save_reference_image
 from .repository import DataLock, JobRepository
 from .runner import ProcessRunner
@@ -222,16 +225,65 @@ def create_app(settings: Settings | None = None, runner=None) -> FastAPI:
     def get_job(job_id: str):
         return repository.get(job_id)
 
+    @app.post("/api/jobs/{job_id}/preprocess", status_code=202)
+    def preprocess(job_id: str, request: Request):
+        origin = request.headers.get("origin")
+        if origin and urlparse(origin).hostname not in {"localhost", "127.0.0.1"}:
+            raise WebError("ORIGIN_DENIED", "Request from an unsupported origin", 403)
+        job = enqueue_preprocessing(repository, settings, job_id)
+        return {"id": job["id"], "state": job["state"]}
+
     def completed(job_id: str) -> Path:
         if repository.get(job_id)["state"] != "SUCCEEDED":
             raise WebError("RESULT_NOT_READY", "A verified result is not available yet", 409)
         return repository.folder(job_id)
+
+    def prepared(job_id: str) -> Path:
+        from cozmo_preprocessing.verification import verify_preprocessing
+
+        folder = completed(job_id)
+        if not (folder / "preprocessing/manifest.json").is_file():
+            raise WebError("RESULT_NOT_READY", "Preprocessing has not run for this capture", 409)
+        verify_preprocessing(folder / "preprocessing", folder / "bundle", folder / "raw")
+        return folder / "preprocessing"
+
+    @app.get("/api/jobs/{job_id}/preprocessing-report")
+    def preprocessing_report(job_id: str):
+        return FileResponse(
+            prepared(job_id) / "report.json",
+            media_type="application/json",
+            filename="preprocessing-report.json",
+        )
+
+    @app.get("/api/jobs/{job_id}/previews/{rank}")
+    def preview(job_id: str, rank: int):
+        from cozmo_preprocessing.verification import lines
+
+        folder = completed(job_id) / "preprocessing"
+        if not (folder / "manifest.json").is_file():
+            raise WebError("RESULT_NOT_READY", "Preprocessing has not run", 409)
+        # Verify only the preview and its source-bound manifest/index on image reads.
+        manifest = json.loads((folder / "manifest.json").read_text(encoding="utf-8"))
+        if manifest["source_manifest_sha256"] != sha256(folder.parent / "bundle/manifest.json"):
+            raise WebError("SOURCE_CHANGED", "Capture storage has changed", 409)
+        integrity = BundleIntegrity(folder, manifest["artifact_sha256"])
+        views = lines(integrity.path("views.jsonl"))
+        view = next((v for v in views if v["rank"] == rank), None)
+        if view is None:
+            raise WebError("NOT_FOUND", "Selected frame not found", 404)
+        return FileResponse(
+            integrity.path(view["thumbnail"]),
+            media_type="image/jpeg",
+            headers={"Cache-Control": "no-store"},
+        )
 
     @app.get("/api/jobs/{job_id}/report")
     def report(job_id: str):
         folder = completed(job_id)
         verify(folder / "bundle", folder / "raw")
         read_reference_image(folder)
+        if (folder / "preprocessing").is_dir():
+            prepared(job_id)
         return FileResponse(
             folder / "result.json", media_type="application/json", filename="validation-report.json"
         )

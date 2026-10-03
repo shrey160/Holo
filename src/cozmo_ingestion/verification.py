@@ -4,6 +4,7 @@ import csv
 from pathlib import Path
 
 from .adapters.sensor_recorder import POSE_HEADER, STREAM_HEADERS, load_csv
+from .adapters.stray import ADAPTER as STRAY_ADAPTER
 from .contracts import IngestionPolicy
 from .errors import require
 from .numeric import number, quaternion_pose
@@ -16,6 +17,10 @@ def verify(folder: str | Path, source: str | Path, replay: str | Path | None = N
     reader = CaptureReader(folder, source_root=source)
     policy = IngestionPolicy(**reader.manifest["policy"])
     count = reader.verify_bundle()
+    if reader.manifest["adapter"] == STRAY_ADAPTER:
+        from .stray_verification import verify_observations
+
+        return verify_observations(reader, Path(source), policy, count, replay)
     rows, _ = load_csv(Path(source) / "arkit_pose.csv", POSE_HEADER)
     origin = number(rows[0]["sensor_sec"])
     frames = reader.records("frames")

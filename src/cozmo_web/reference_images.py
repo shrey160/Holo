@@ -154,9 +154,15 @@ def read_reference_image(folder: Path) -> tuple[Path, dict] | None:
         or any(p.is_symlink() or not p.is_file() for p in (path, metadata))
         or sha256(path) != image["sha256"]
         or sha256(metadata) != image.get("metadata_sha256")
-        or sha256(folder / "raw/wide.mp4") != image["source_video_sha256"]
+        or sha256(folder / "raw" / source_video_name(folder)) != image["source_video_sha256"]
     ):
         raise WebError(
             "REFERENCE_IMAGE_CHANGED", "Stored object photo failed integrity verification", 409
         )
     return path, image
+
+
+def source_video_name(folder: Path) -> str:
+    from cozmo_ingestion.adapters.selection import video_filename
+
+    return video_filename(folder / "raw")

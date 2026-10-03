@@ -6,7 +6,7 @@
 | `App.tsx`                           | Holo header/footer, accessible tabs and feature lifecycle                 |
 | `styles.css`                        | Shared visual styles, responsive layout and focus/reduced-motion behavior |
 | `vite-env.d.ts`                     | Type declarations for Vite/raw Markdown imports                           |
-| [features/](features/README.md)     | Guide and ingestion screens                                               |
+| [features/](features/README.md)     | Capture guide, ingestion and preprocessing review                         |
 | [api/](api/README.md)               | Typed network boundary                                                    |
 | [components/](components/README.md) | Reusable presentation components                                          |
 

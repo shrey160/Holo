@@ -42,12 +42,13 @@ def normalize_camera(
         require(
             fx > 0 and fy > 0 and 0 <= cx < width and 0 <= cy < height, "INVALID_INTRINSICS", str(i)
         )
-        require(number(row["exposure_sec"]) > 0, "INVALID_EXPOSURE", str(i))
+        if row["exposure_sec"]:
+            require(number(row["exposure_sec"]) > 0, "INVALID_EXPOSURE", str(i))
         transform, norm = quaternion_pose(row, policy)
         frame_id = f"{capture_id}:{i:06d}"
         rel = number(row["sensor_sec"]) - origin
         require(bool(row["tracking_state"]), "MISSING_TRACKING_STATE", str(i))
-        if row["tracking_state"] != "normal":
+        if row["tracking_state"] not in {"normal", "unreported"}:
             limited.append(i)
         if i and integer(row["record_slot"]) > integer(rows[i - 1]["record_slot"]) + 1:
             slots.append(
@@ -79,7 +80,7 @@ def normalize_camera(
         candidates = [
             obj["id"]
             for obj in annotated["reference_objects"]
-            if i in obj["candidate_source_frame_indices"]
+            if integer(row["frame_index"]) in obj["candidate_source_frame_indices"]
         ]
         frame_rows.append(
             {
@@ -179,7 +180,9 @@ def normalize_sensors(
     stream_statistics = {"camera": timing(rows, origin)}
     for key, samples in tables.items():
         stream_statistics[key] = timing(samples, origin)
-        if key in ["accelerometer", "gyroscope"]:
+        if key in ["accelerometer", "gyroscope"] or (
+            key == "imu" and capture.metadata.get("source_format") == "stray-layout"
+        ):
             require(
                 number(samples[0]["sensor_sec"]) <= number(rows[-1]["sensor_sec"])
                 and number(samples[-1]["sensor_sec"]) >= origin,
@@ -214,8 +217,13 @@ def capture_findings(capture: SourceCapture, annotated: dict) -> list[dict]:
     def finding(code, details):
         findings.append({"code": code, "severity": "WARNING", "details": details})
 
-    setting_cap = number(meta["recording_settings"]["arkit_camera"]["max_exposure_duration_sec"])
-    overs = [i for i, r in enumerate(rows) if number(r["exposure_sec"]) > setting_cap]
+    setting = meta.get("recording_settings", {}).get("arkit_camera", {})
+    setting_cap = number(setting["max_exposure_duration_sec"]) if setting else None
+    overs = [
+        i
+        for i, r in enumerate(rows)
+        if setting_cap is not None and number(r["exposure_sec"]) > setting_cap
+    ]
     if overs:
         finding(
             "EXPOSURE_EXCEEDS_REQUESTED_CAP",
@@ -253,7 +261,7 @@ def normalize(
     """Compose independent camera/sensor normalization into a validated bundle input."""
     camera = normalize_camera(capture, video, ticks, capture_id, annotated, policy)
     sensors = normalize_sensors(capture, stream_headers)
-    return CanonicalObservations(
+    result = CanonicalObservations(
         camera.frames,
         camera.calibration,
         camera.poses,
@@ -262,3 +270,46 @@ def normalize(
         camera.limited_frames,
         camera.findings + sensors.findings + capture_findings(capture, annotated),
     )
+    if capture.metadata.get("source_format") == "stray-layout":
+        for row, frame, k, pose in zip(
+            capture.camera_rows, result.frames, result.calibration, result.poses, strict=True
+        ):
+            source_index = integer(row["frame_index"])
+            frame.update(
+                video_asset_id="rgb.mp4",
+                source_frame_index=source_index,
+                pose_tracking_normal="UNREPORTED",
+            )
+            k.update(
+                source_frame_index=source_index,
+                source="odometry.csv",
+                evidence="FORMAT_REFERENCE_ASSUMED",
+            )
+            pose.update(
+                source_frame_index=source_index,
+                source="supplied Stray-style odometry; unrefined",
+                convention_evidence="FORMAT_REFERENCE_ASSUMED",
+            )
+        result.findings.extend(
+            [
+                {
+                    "code": "INITIAL_RGB_DISCARD",
+                    "severity": "WARNING",
+                    "details": {
+                        "unassociated_source_frame_indices": [0],
+                        "source_record_retained": True,
+                    },
+                },
+                {
+                    "code": "STRAY_CONVENTIONS_UNVERIFIED",
+                    "severity": "WARNING",
+                    "details": {
+                        "exporter_identity": "UNKNOWN",
+                        "tracking_exposure_UTC": "UNREPORTED",
+                        "acceleration_units": "UNRESOLVED; raw values retained",
+                        "depth": "preserved but excluded from assisted RGB",
+                    },
+                },
+            ]
+        )
+    return result

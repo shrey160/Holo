@@ -5,11 +5,13 @@ import json
 from pathlib import Path
 
 from .adapters.sensor_recorder import ADAPTER
+from .adapters.stray import ADAPTER as STRAY_ADAPTER
 from .contracts import SCHEMA
 from .errors import require
 from .storage import BundleIntegrity, inside, sha256
 
 ROLE_ALLOWLIST = {
+    "ios_preprocessing": {"rgb", "pose_calibration", "accelerometer", "gyroscope", "device_motion"},
     "video_rgb": {"rgb"},
     "ios_assisted_rgb": {
         "rgb",
@@ -20,6 +22,7 @@ ROLE_ALLOWLIST = {
         "device_motion",
         "magnetometer",
         "user_scale_prior",
+        "imu_native",
     },
     "evaluation": {
         "rgb",
@@ -32,6 +35,7 @@ ROLE_ALLOWLIST = {
         "user_scale_prior",
         "measured_depth_excluded",
         "evaluation_reference",
+        "imu_native",
     },
 }
 ARTIFACTS = {
@@ -43,6 +47,7 @@ ARTIFACTS = {
     "device_motion": "imu/device_motion.csv",
     "magnetometer": "imu/magnetometer.csv",
     "annotations": "annotations.json",
+    "native_imu": "imu/imu.csv",
 }
 
 
@@ -62,7 +67,7 @@ class CaptureReader:
         require(
             self.manifest.get("status") == "READY_WITH_FINDINGS"
             and self.manifest.get("schema") == SCHEMA
-            and self.manifest.get("adapter") == ADAPTER,
+            and self.manifest.get("adapter") in {ADAPTER, STRAY_ADAPTER},
             "CAPTURE_NOT_READY",
             str(folder),
         )
@@ -90,17 +95,33 @@ class CaptureReader:
     def verify_bundle(self) -> int:
         return self.integrity.verify_all()
 
-    def read_source(self, asset_id: str) -> bytes:
+    def source_path(self, asset_id: str) -> Path:
+        """Return an integrity-checked admitted path without buffering a video."""
         require(asset_id in self.assets, "UNKNOWN_ASSET", asset_id)
         asset = self.assets[asset_id]
         require(asset["role"] in ROLE_ALLOWLIST[self.profile], "INPUT_ROLE_DENIED", asset["role"])
         path = inside(self.roots[asset["root"]], asset["path"])
         require(path.is_file() and sha256(path) == asset["sha256"], "SOURCE_CHANGED", asset_id)
         self.consumed.append({"asset_id": asset_id, "role": asset["role"]})
-        return path.read_bytes()
+        return path
+
+    def read_source(self, asset_id: str) -> bytes:
+        return self.source_path(asset_id).read_bytes()
 
     def records(self, kind: str) -> list[dict] | dict:
         require(kind in ARTIFACTS, "UNKNOWN_RECORD_KIND", kind)
+        require(
+            self.profile != "ios_preprocessing"
+            or kind
+            in {"frames", "calibration", "poses", "accelerometer", "gyroscope", "device_motion"},
+            "INPUT_ROLE_DENIED",
+            kind,
+        )
+        require(
+            kind != "native_imu" or self.manifest["adapter"] == STRAY_ADAPTER,
+            "INPUT_ROLE_DENIED",
+            "Native combined IMU is only exposed for the Stray adapter",
+        )
         require(self.profile != "video_rgb" or kind == "frames", "INPUT_ROLE_DENIED", kind)
         path = self.integrity.path(ARTIFACTS[kind])
         self.consumed.append({"artifact": ARTIFACTS[kind]})

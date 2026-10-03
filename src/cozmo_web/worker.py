@@ -5,6 +5,7 @@ import json
 from pathlib import Path
 
 from cozmo_ingestion import IngestionRequest
+from cozmo_ingestion.adapters.selection import video_filename
 from cozmo_ingestion.errors import IngestionError
 from cozmo_ingestion.media import FFmpegVideoInspector
 from cozmo_ingestion.pipeline import IngestionPipeline
@@ -24,15 +25,24 @@ def execute(folder: Path, settings: Settings):
         atomic_json(folder / "phase.json", {"state": name})
 
     phase("VALIDATING_INPUT")
-    raw = prepare_capture(folder, settings)
     job = json.loads((folder / "job.json").read_text(encoding="utf-8"))
-    image = bind_reference_image(folder, sha256(raw / "wide.mp4"), settings)
+    if job.get("operation") == "PREPROCESS":
+        from .preprocessing import execute_preprocessing
+
+        result = execute_preprocessing(folder, settings, phase)
+        write_json(folder / "verification.json", result["verification"])
+        write_json(folder / "result.json", result)
+        phase("SUCCEEDED")
+        return
+    raw = prepare_capture(folder, settings)
+    video_hash = sha256(raw / video_filename(raw))
+    image = bind_reference_image(folder, video_hash, settings)
     annotation = None
     if job["reference"]:
         annotation = folder / "annotations/reference.json"
         write_json(
             annotation,
-            Reference.model_validate(job["reference"]).annotation(sha256(raw / "wide.mp4")),
+            Reference.model_validate(job["reference"]).annotation(video_hash),
         )
     phase("INGESTING")
     result = IngestionPipeline(video_inspector=FFmpegVideoInspector(settings.ffmpeg)).run(

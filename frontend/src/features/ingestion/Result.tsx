@@ -1,7 +1,17 @@
 import { useState } from "react";
-import { downloadResult, stateLabel, type Job } from "../../api/client";
+import {
+  downloadResult,
+  preprocess,
+  stateLabel,
+  type Job,
+} from "../../api/client";
+import { PreprocessingResult } from "../preprocessing/PreprocessingResult";
 
 const explanations: Record<string, string> = {
+  INITIAL_RGB_DISCARD:
+    "The video omits its first source observation during decoding. Decoded frames are matched to odometry from frame 1; the unmatched pose is retained.",
+  STRAY_CONVENTIONS_UNVERIFIED:
+    "This supplied export uses a Stray-style layout. Exporter identity and acceleration units remain unverified; raw values are preserved. Depth is excluded from assisted RGB.",
   NON_NORMAL_TRACKING:
     "ARKit tracking was limited in some frames. Every original observation is retained.",
   APPARENT_POSE_SPEED:
@@ -28,10 +38,29 @@ const explanations: Record<string, string> = {
     "The supplied camera poses contain an apparent speed jump. Geometry accuracy has not been verified.",
 };
 
-export function Result({ job }: { job: Job }) {
+export function Result({
+  job,
+  onPrepared,
+}: {
+  job: Job;
+  onPrepared: (id: string) => Promise<void>;
+}) {
   const [error, setError] = useState("");
   const [downloading, setDownloading] = useState(false);
+  const [preparing, setPreparing] = useState(false);
   const result = job.summary;
+  async function prepare() {
+    setError("");
+    setPreparing(true);
+    try {
+      const run = await preprocess(job.id);
+      await onPrepared(run.id);
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setPreparing(false);
+    }
+  }
   async function save(kind: "report" | "download") {
     setError("");
     setDownloading(true);
@@ -63,8 +92,10 @@ export function Result({ job }: { job: Job }) {
       {!result && !job.error && (
         <p className="processing">
           <span className="spinner" />
-          Your original export is being checked. Processing time depends on the
-          capture.
+          {job.state === "PREPROCESSING"
+            ? "Preparing views and checking visual connections."
+            : "Your capture is being checked."}{" "}
+          Processing time depends on the capture.
         </p>
       )}
       {result && (
@@ -84,9 +115,35 @@ export function Result({ job }: { job: Job }) {
             </div>
           </div>
           <div className="notice">
-            Ingestion verified. Measurement accuracy is unverified; grounding,
-            preprocessing and reconstruction have not run.
+            Ingestion verified. Measurement accuracy is unverified; grounding
+            and reconstruction have not run.
+            {!result.preprocessing && " Preprocessing has not run."}
           </div>
+          {result.preprocessing ? (
+            <PreprocessingResult jobId={job.id} result={result.preprocessing} />
+          ) : (
+            result.capabilities.pose === "EXPORTER_DECLARED" && (
+              <div className="preprocessing-start">
+                <h3>Prepare reconstruction views</h3>
+                <p>
+                  Select useful RGB frames, preserve calibration and poses, and
+                  check image overlap and native IMU coverage. LiDAR and
+                  grounding measurements are excluded.
+                </p>
+                <button
+                  className="primary"
+                  disabled={preparing || job.state !== "SUCCEEDED"}
+                  onClick={prepare}
+                >
+                  {preparing ? "Starting…" : "Prepare reconstruction views →"}
+                </button>
+                <p className="caption">
+                  Creates a separate run. Your verified capture remains
+                  available.
+                </p>
+              </div>
+            )
+          )}
           {job.reference_image && (
             <div className="reference-photo">
               <h3>Grounding object photo</h3>

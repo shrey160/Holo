@@ -1,6 +1,12 @@
 # Ingestion architecture
 
-The ingestion domain processes one complete capture folder into a canonical bundle. It remains usable as a local batch package independently of the optional web interface. The observed Sensor Recorder export is the only production adapter; no reconstruction dependency is introduced.
+## Separate preprocessing stage
+
+`cozmo_preprocessing` consumes the verified ingestion bundle through `CaptureReader(profile="ios_preprocessing")`. Its immutable policy/request, injected FFmpeg decoder, indexed sensor statistics, quality/selection functions, cached image matcher and publication/audit service have separate ownership. Derived views retain exact source K/poses and independent IMU; native-grid image exports are not geometrically transformed. Depth/confidence, reference dimensions/photo, magnetometer and fused motion are excluded. [Detailed contract](PREPROCESSING.md), [package ownership](src/cozmo_preprocessing/README.md).
+
+Holo queues a separate preprocessing job from an existing successful Sensor Recorder capture. The isolated worker audits the parent, copies its portable raw/bundle/reference layout without altering it, prepares derived artifacts, audits them and publishes a new history result. Parent captures remain immutable. Preview routes admit selected frame ranks only; report/export routes verify the full source-bound derived bundle. No reconstruction or reference-scale correction runs.
+
+The ingestion domain processes one complete capture folder into a canonical bundle. It remains usable as a local batch package independently of the optional web interface. Source-specific adapters support the observed Sensor Recorder exports and the provided Stray-style captures. Layout selection is isolated in `adapters/selection.py`; no reconstruction dependency is introduced.
 
 ## Optional web application
 
@@ -27,6 +33,8 @@ proto-2/
     adapters/
       sensor_recorder.py          Export parsing, validation and asset inventory
       sensor_recorder_schema.py   Supported headers, version identity and roles
+      selection.py                Explicit layout selection and video filename
+      stray.py                    Provided native CSVs and initial-discard clock audit
     media.py              FFmpegVideoInspector and external process boundary
     clocks.py             Exact frame association and native coverage statistics
     numeric.py            Finite decimal parsing and quaternion pose conversion
@@ -35,7 +43,8 @@ proto-2/
     bundle.py             BundleWriter and BundleTransaction
     storage.py            Deterministic encoders, path checks and BundleIntegrity
     reader.py             CaptureReader input profiles and access log
-    verification.py       Source-to-bundle audit and replay comparison
+    verification.py       Source-specific audit dispatch and Sensor Recorder verification
+    stray_verification.py Native Stray source-to-bundle audit and replay comparison
     errors.py             Stable validation error codes
     cli.py                Argument parsing and exit-code presentation
   tests/                  Behavioral tests and reusable synthetic fixtures
@@ -84,7 +93,7 @@ flowchart TD
 1. Resolve the request; reject existing outputs and source/output overlap. Create a unique staging folder.
 2. Inventory original assets and hash them. The adapter validates the export's version, finished ARKit state, stream schemas, units and coordinate declarations.
 3. Inspect actual media presentation timestamps and fully decode video through FFmpeg. Resolve tools through explicit paths or `PATH` only.
-4. Require exact frame counts/sequential source IDs and relative camera/media clock agreement. Use rational PTS ticks and decimal source times; no frame trimming or clock-rate fitting.
+4. Require exact frame counts/sequential source IDs and relative camera/media clock agreement. Use rational PTS ticks and decimal source times; Sensor Recorder uses a constant-offset check. Stray requires exactly one initial negative-PTS discarded packet, decoded rank i → odometry ID i+1 and an affine clock fit (slope within 1%, maximum residual ≤10 ms). The unmatched first pose remains a separate artifact; no pixels/poses are edited.
 5. Bind optional reference declarations to the exact video. Mark candidate frames while preserving `NOT_RUN` localization/scale status.
 6. Independently normalize camera records and sensor tables. Retain native pixels, source world, tracking states, sensor values and timestamps; collect findings without repairing geometry.
 7. Recheck source/annotation hashes. Write canonical records, metadata, validation and artifact hashes; record a fingerprint of all package Python modules with normalized source line endings.
@@ -115,6 +124,6 @@ The verifier compares all canonical frame/K/pose and sensor records against sour
 | Change downstream admitted inputs | Reader profiles and leakage tests |
 | Add Python dependencies | `uv add`; regenerate and review `uv.lock` |
 
-Adding another adapter alone does not establish support: this first canonical record contract still reflects the observed single-wide-camera iOS session. Multi-camera, alternate pose conventions and additional tiers require explicit normalization and reader/schema work. No automatic plugin discovery or format guessing is implemented.
+Adding another adapter alone does not establish support: this first canonical record contract still reflects the observed single-wide-camera iOS session. Multi-camera, alternate pose conventions and additional tiers require explicit normalization and reader/schema work. No automatic plugin discovery is implemented. Layout selection admits only the two explicit inspected file contracts and rejects mixed formats. Stray conventions use reference-source evidence with unknown installed exporter identity; tracking/exposure/UTC stay unreported and native acceleration units unresolved. [Provided dataset](SUPPLIED_DATA.md).
 
 The current implementation materializes short-session records and FFprobe metadata in memory. Long captures would require streaming/chunked records and resource limits; that scaling work has not been implemented or benchmarked.

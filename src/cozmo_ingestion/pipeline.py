@@ -4,7 +4,7 @@ import hashlib
 import time
 from pathlib import Path
 
-from .adapters.sensor_recorder import SensorRecorderAdapter
+from .adapters.selection import select_adapter
 from .annotations import normalize_annotations
 from .bundle import BundleTransaction, BundleWriter
 from .contracts import DEFAULT_POLICY, IngestionPolicy
@@ -26,7 +26,7 @@ class IngestionPipeline:
         writer: BundleWriter | None = None,
         policy: IngestionPolicy = DEFAULT_POLICY,
     ) -> None:
-        self.adapter = adapter if adapter is not None else SensorRecorderAdapter()
+        self.adapter = adapter
         self.video_inspector = (
             video_inspector if video_inspector is not None else FFmpegVideoInspector()
         )
@@ -41,14 +41,16 @@ class IngestionPipeline:
             Path(request.annotations).resolve() if request.annotations else None,
         )
         started = time.perf_counter()
-        with BundleTransaction(request, self.adapter.name) as transaction:
-            assets = self.adapter.inventory(request.source)
+        adapter = self.adapter if self.adapter is not None else select_adapter(request.source)
+        video_name = "rgb.mp4" if adapter.name == "stray-layout-supplied-v1" else "wide.mp4"
+        with BundleTransaction(request, adapter.name) as transaction:
+            assets = adapter.inventory(request.source)
             before = {asset["id"]: asset["sha256"] for asset in assets}
-            capture = self.adapter.load(request.source, before)
-            video = self.video_inspector.inspect(request.source / "wide.mp4")
-            association, ticks = self.adapter.associate(capture, video, self.policy)
+            capture = adapter.load(request.source, before)
+            video = self.video_inspector.inspect(request.source / video_name)
+            association, ticks = adapter.associate(capture, video, self.policy)
             annotated = normalize_annotations(
-                request.annotations, before["wide.mp4"], capture.camera_rows, capture.origin
+                request.annotations, before[video_name], capture.camera_rows, capture.origin
             )
             if request.annotations:
                 assets.append(
@@ -62,19 +64,17 @@ class IngestionPipeline:
                     }
                 )
             identity = hashlib.sha256(encoded(before).encode()).hexdigest()
-            capture_id = "sr-" + identity[:16]
+            capture_id = ("stray-" if video_name == "rgb.mp4" else "sr-") + identity[:16]
             observations = normalize(
                 capture,
                 video,
                 ticks,
                 capture_id,
                 annotated,
-                self.adapter.stream_headers,
+                adapter.stream_headers,
                 self.policy,
             )
-            after = {
-                asset["id"]: asset["sha256"] for asset in self.adapter.inventory(request.source)
-            }
+            after = {asset["id"]: asset["sha256"] for asset in adapter.inventory(request.source)}
             require(before == after, "SOURCE_CHANGED", "Source assets changed during ingestion")
             if request.annotations:
                 require(
@@ -93,8 +93,8 @@ class IngestionPipeline:
                 annotations=annotated,
                 source_identity=identity,
                 capture_id=capture_id,
-                adapter_name=self.adapter.name,
-                stream_headers=self.adapter.stream_headers,
+                adapter_name=adapter.name,
+                stream_headers=adapter.stream_headers,
                 policy=self.policy,
             )
             runtime = RunMetadata(started, self.video_inspector.version())

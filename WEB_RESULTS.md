@@ -1,5 +1,7 @@
 # Docker and capture workspace verification
 
+Current extension P2PRE-001 is delivered: [RGB/pose/IMU preprocessing](PREPROCESSING.md), 53 Windows/Linux tests, two native/Docker child runs, gallery/pagination and verified portable downloads. Historical milestone statements below retain their original scope and test counts.
+
 2026-10-03 (Asia/Calcutta). P2W-002 implementation complete for the existing Sensor Recorder iOS ingestion contract. [Setup](WEB_SETUP.md), [architecture](ARCHITECTURE.md), [research plan](DOCKER_WEB_PLAN.md).
 
 ## Delivered
@@ -45,3 +47,12 @@ Validated on Windows and Linux amd64 with the supplied short captures. macOS, AR
 Warm local upload/ingestion/download checks completed in about 7 seconds for single-room and 14 seconds for double-room; these are observations, not performance guarantees. Starlette currently emits a deprecation notice for the locked httpx test adapter; the tests pass on both systems.
 
 No physical calibration/registration/synchronization, metric accuracy, grounding algorithm, preprocessing, reconstruction, Android or new capture-tier support is established by this work. Raw inputs/prototype-1 and historical bundles are preserved. Implementation/photo verification occurred before the user-authorized local milestone commit. No push, publication or third-party capture upload.
+
+## Provided dataset extension — P2DATA-001
+
+Holo now accepts the original three Stray-style capture ZIPs from `test_data/drive_download`, preserving native CSVs and depth/confidence while excluding measured depth from assisted RGB. Seven source/association/role/archive tests extend the Windows/Linux suite to 41. Source-format behavior and actual capture/browser evidence are recorded in [SUPPLIED_DATA.md](SUPPLIED_DATA.md). Older 30/34-test and Sensor Recorder capture evidence above remain historical.
+## Preprocessing extension: 2026-10-03
+
+P2PRE-001 adds independent Sensor Recorder preprocessing jobs, selected-frame previews, pagination, reports and portable derived exports. All 53 tests pass on Windows/Linux; TypeScript/Vite and Ruff checks pass. Both native/Docker runs retain 106/240 selected views, 98/209 supported links and 7/30 unresolved links, without LiDAR or grounding measurements. Browser-submitted child jobs succeeded and their parent captures remained intact. Downloaded double-room ZIP passed CRC and raw/source/derived audits; K/pose/native-IMU/interval hashes match native outputs. [Full evidence and limitations](PREPROCESSING.md), [screenshot](outputs/holo-preprocessing.png).
+
+Earlier results below retain their original verification counts and preprocessing boundaries.

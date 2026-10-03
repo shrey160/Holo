@@ -1,5 +1,13 @@
 # Prototype 2: Holo ingestion milestone
 
+## Current preprocessing extension
+
+P2PRE-001 DONE, 2026-10-03. User authorized the RGB/IMU/ARKit-pose preprocessing proposal for their Sensor Recorder iPhone recordings, excluding LiDAR and grounding measurements. Implemented a separate modular package/CLI, restricted reader profile, image quality/motion/temporal keyframes, SIFT geometry links and recovery, exact K/pose/native-IMU exports, source/artifact audits and Holo child-run/gallery/report/download workflow. [Design and evidence](PREPROCESSING.md).
+
+Fifty-three Windows/Linux tests pass. Both native and Docker runs verified 106/240 selected views from 1,756/3,949 frames, with 7/30 weak adjacent links and a 0.5002-second largest selected gap. Native/Docker selected ranks agree; downloaded double-room K/pose/IMU/interval hashes and all raw bytes match originals. Browser child submission, pagination, thumbnails and 154,656,287-byte ZIP/CRC/source/derived audits passed. Doorway transition thumbnails around 38.5–42.5 seconds were visually spot-checked; complete geometry/coverage remains unverified. Both runs require review before reconstruction. No scale correction, pose refinement, depth/model/floorplan or grounding algorithm ran. Current work remains uncommitted after `cd8d9a4`.
+
+The ingestion milestones below are historical evidence; their preprocessing-NOT_RUN statements describe those earlier stages.
+
 Updated: 2026-10-03 (Asia/Calcutta). User authorized updating context and making a local milestone commit. Initial Git commit: `36233d0`; this milestone records the completed source, configuration, tests and documentation that followed it. Raw recordings, generated bundles/evidence, environments, dependencies and caches remain excluded. No push requested.
 
 Holo validates complete Sensor Recorder Pro 1.5/build 5 ARKit exports through a modular Python core and CLI, an optional FastAPI service and React/TypeScript/Vite capture-guide/input tabs. Own uv environment/lockfile, Docker packaging, native development, bounded isolated jobs, persisted history and verified portable downloads are implemented. [Main/folder README navigation](README.md), [architecture](ARCHITECTURE.md), [Docker/native setup](WEB_SETUP.md), [verification](WEB_RESULTS.md), [capture guide](capture.md).
@@ -11,6 +19,12 @@ Validation: 34 tests passed on Windows/Python 3.12.14 and Linux Docker; Python l
 Next: preprocessing when requested, including native orientation, tracking/view quality and manual reference-corner validation before automatic scale estimation, then reconstruction. Android/other adapters, independent measurement accuracy, physical sensor registration/synchronization and final all-tier submission remain unfinished. No new reconstruction model selected or executed. Historical context below preserves provenance rather than a current unexecuted ingestion plan.
 
 The user requested a separate `proto-2` and relevant-context review before defining its data ingestion pipeline. Current focus: RGB + calibration + supplied poses + IMU, excluding measured depth/confidence from reconstruction input. The final assignment still requires photos, ordinary video and LiDAR; assisted video retains its own label.
+
+## Provided dataset extension
+
+P2DATA-001 adds support for the assignment's original captures under `test_data/drive_download`, separately from the user's Sensor Recorder recordings. Upload the three existing ZIPs through the same Docker/native UI or use their extracted session folders with the CLI. Source layout selection, native Stray CSV validation, per-frame K/pose records, retained raw IMU, an audited initial RGB discard and role-excluded depth/confidence assets are implemented. Unknown exporter identity, acceleration units, tracking/exposure/UTC and physical registration remain explicit limitations. [Contract/results](SUPPLIED_DATA.md).
+
+All three provided captures passed Windows and Docker HTTP ingestion/source audits (1,714/5,250/9,744 RGB frames; 3,689/11,397/21,339 IMU rows). Forty-one tests passed on Windows and Linux Docker; browser original single-room upload/download/CRC/source reverification passed. This extension follows local milestone commit `cd8d9a4` and is currently uncommitted. Raw captures/generated evidence remain excluded; no push or preprocessing/model run.
 
 ## Context carried forward
 

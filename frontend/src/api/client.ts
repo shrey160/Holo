@@ -1,4 +1,21 @@
 export type Finding = { code: string; details: unknown };
+export type Preprocessing = {
+  source_frame_count: number;
+  candidate_count: number;
+  selected_count: number;
+  supported_links: number;
+  weak_links: {
+    first_rank: number;
+    second_rank: number;
+    time_gap_seconds: number;
+  }[];
+  temporal_components: number;
+  low_baseline_links: number;
+  maximum_selected_gap_seconds: number;
+  readiness: string;
+  pose_speed_events: { seconds: number; speed_m_s: number }[];
+  previews: { rank: number; seconds: number; score: number; flags: string[] }[];
+};
 export type Job = {
   id: string;
   label: string;
@@ -23,6 +40,7 @@ export type Job = {
       source_values_preserved: boolean;
       artifacts_verified: number;
     };
+    preprocessing?: Preprocessing | null;
   };
 };
 export type Reference = {
@@ -41,9 +59,20 @@ export const stateLabel = (state: string) =>
     VALIDATING_INPUT: "Checking export",
     INGESTING: "Validating capture",
     VERIFYING: "Verifying source values",
+    PREPROCESSING: "Preparing reconstruction views",
     SUCCEEDED: "Verified with findings",
     FAILED: "Needs attention",
   })[state] || state;
+
+export async function preprocess(jobId: string): Promise<{ id: string }> {
+  const response = await fetch(`/api/jobs/${jobId}/preprocess`, {
+    method: "POST",
+  });
+  const result = await response.json();
+  if (!response.ok)
+    throw new Error(result.error?.message || "Preprocessing could not start.");
+  return result;
+}
 
 export async function request<T>(
   path: string,

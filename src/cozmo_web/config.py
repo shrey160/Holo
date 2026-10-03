@@ -11,7 +11,7 @@ class Settings:
     ffmpeg: str | None = None
     request_limit: int = 1024**3
     expanded_limit: int = 2 * 1024**3
-    member_limit: int = 200
+    member_limit: int = 25000
     queue_limit: int = 4
     deadline: int = 600
     static_root: Path = Path(__file__).parent / "static"

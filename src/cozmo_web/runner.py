@@ -100,5 +100,7 @@ class ProcessRunner:
                 "independent_accuracy": report["independent_accuracy"],
                 "grounding": manifest["capabilities"]["grounding_object"],
                 "verification": result["verification"],
+                "preprocessing": result.get("preprocessing"),
+                "preprocessing_verification": result.get("preprocessing_verification"),
             },
         )

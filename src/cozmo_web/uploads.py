@@ -6,6 +6,9 @@ import stat
 import zipfile
 from pathlib import Path, PurePosixPath
 
+from cozmo_ingestion.adapters.selection import select_adapter
+from cozmo_ingestion.errors import IngestionError
+
 from .config import Settings
 from .errors import WebError
 
@@ -90,10 +93,11 @@ def prepare_capture(folder: Path, settings: Settings) -> Path:
         extracted = folder / "extracted"
         extracted.mkdir()
         unpack_archive(files[0], extracted, settings)
-        roots = list(extracted.rglob("meta.json"))
+        roots = {path.parent for path in extracted.rglob("meta.json")}
+        roots.update(path.parent for path in extracted.rglob("rgb.mp4"))
         if len(roots) != 1:
             raise WebError("AMBIGUOUS_CAPTURE", "ZIP must contain exactly one exported session")
-        source = roots[0].parent
+        source = next(iter(roots))
         # Allow only one containing directory; do not silently discard unrelated payloads.
         outside = [p for p in extracted.rglob("*") if p.is_file() and not p.is_relative_to(source)]
         if outside:
@@ -101,16 +105,21 @@ def prepare_capture(folder: Path, settings: Settings) -> Path:
         source.rename(raw)
     else:
         incoming.rename(raw)
-    if not (raw / "meta.json").is_file() or not (raw / "wide.mp4").is_file():
-        raise WebError(
-            "INCOMPLETE_EXPORT", "Select the complete export including meta.json and wide.mp4"
-        )
     try:
-        metadata = json.loads((raw / "meta.json").read_text(encoding="utf-8"))
-    except (ValueError, UnicodeError) as error:
-        raise WebError("INVALID_METADATA", "meta.json is not valid UTF-8 JSON") from error
-    if not isinstance(metadata, dict):
-        raise WebError("INVALID_METADATA", "meta.json must contain an object")
+        adapter = select_adapter(raw)
+    except IngestionError as error:
+        raise WebError(
+            "INCOMPLETE_EXPORT", "Select one complete Sensor Recorder or Stray-style export"
+        ) from error
+    if adapter.name != "stray-layout-supplied-v1":
+        if not (raw / "wide.mp4").is_file():
+            raise WebError("INCOMPLETE_EXPORT", "Sensor Recorder export requires wide.mp4")
+        try:
+            metadata = json.loads((raw / "meta.json").read_text(encoding="utf-8"))
+        except (ValueError, UnicodeError) as error:
+            raise WebError("INVALID_METADATA", "meta.json is not valid UTF-8 JSON") from error
+        if not isinstance(metadata, dict):
+            raise WebError("INVALID_METADATA", "meta.json must contain an object")
     total = sum(p.stat().st_size for p in raw.rglob("*") if p.is_file())
     if total > settings.expanded_limit:
         raise WebError("CAPTURE_TOO_LARGE", "Capture exceeds the expanded limit", 413)

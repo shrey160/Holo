@@ -12,7 +12,7 @@ from .verification import verify
 
 def ingest_main() -> int:
     parser = argparse.ArgumentParser(
-        description="Validate a Sensor Recorder ARKit export and publish a canonical capture."
+        description="Validate a Sensor Recorder or Stray-style export and publish a canonical capture."
     )
     parser.add_argument(
         "--source", type=Path, required=True, help="Complete original session folder"

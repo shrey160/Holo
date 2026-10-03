@@ -1,5 +1,7 @@
 # Holo web service
 
+Preprocessing uses `preprocessing.py` to admit and execute independent child jobs from successful Sensor Recorder captures. `POST /api/jobs/{id}/preprocess` uses the existing queue/process/deadline; it never runs algorithms inside the HTTP request. Parents retain their original state/files. Child runs own portable copies plus a separate `preprocessing/` directory. Report/export endpoints run the derived audit; thumbnail routes verify source-bound selected IDs and hashes. [Contract and commands](../../PREPROCESSING.md).
+
 Optional FastAPI service around the [ingestion core](../cozmo_ingestion/README.md). HTTP handlers receive files and query jobs; an isolated Python worker performs ingestion and source-value verification. Install with the `web` extra. Native and Docker commands are in [WEB_SETUP.md](../../WEB_SETUP.md).
 
 ## Module ownership
@@ -13,6 +15,7 @@ Optional FastAPI service around the [ingestion core](../cozmo_ingestion/README.m
 | `jobs.py` | One active processing slot, queued jobs and restart reconciliation |
 | `runner.py` | Start isolated workers, poll phases, enforce deadlines and stop process trees |
 | `worker.py` | Prepare raw input, bind annotations, run core ingestion and verify source values |
+| `preprocessing.py` | Admit child jobs, audit/copy the parent capture and run/verify derived preprocessing |
 | `reference_images.py` | Bound JPEG/PNG uploads, probe/decode checks, video/hash binding and integrity-checked image access |
 | `exports.py` | Verify stored integrity and assemble portable downloads |
 | `cli.py` | `cozmo-web` startup, optional reload, temporary storage and native static-root discovery |
@@ -28,6 +31,9 @@ Optional FastAPI service around the [ingestion core](../cozmo_ingestion/README.m
 | `GET /api/jobs/{id}/report` | Verified result JSON attachment |
 | `GET /api/jobs/{id}/download` | Verified raw/annotation/reference/bundle ZIP attachment |
 | `GET /api/jobs/{id}/reference-image` | Integrity-checked photo for a completed job; 404 when absent |
+| `POST /api/jobs/{id}/preprocess` | Queue an independent child of a successful Sensor Recorder capture; HTTP 202 |
+| `GET /api/jobs/{id}/preprocessing-report` | Verified derived preprocessing report attachment |
+| `GET /api/jobs/{id}/previews/{rank}` | Integrity-checked thumbnail for an admitted selected source frame rank |
 
 `POST /api/jobs` also accepts a separate optional `reference_image` multipart file. It is not mixed into the original export or supplied as a geometry observation. JPEG/PNG uploads are limited to 10 MiB and 40 million pixels; [FFprobe](https://ffmpeg.org/ffprobe-all.html) inspects the grid/codec, then FFmpeg checks decoding in the isolated worker. `reference/metadata.json` binds the retained image bytes to the source video; job records retain its metadata hash. Old jobs without photos remain supported.
 
@@ -35,12 +41,14 @@ Reference form fields are `width_cm`, `height_cm`, `start_seconds`, `end_seconds
 
 Normal state progression: `RECEIVING` → `QUEUED` → `VALIDATING_INPUT` → `INGESTING` → `VERIFYING` → `SUCCEEDED`. Failures become `FAILED`. Success requires the worker to exit with a verified result. Downloading an unfinished or failed job returns 409.
 
+Preprocessing jobs use `QUEUED` → `VERIFYING` (parent audit) → `PREPROCESSING` → `VERIFYING` (derived audit) → `SUCCEEDED`, with failures reported as `FAILED`. Their result summary includes review readiness separately from job success: a verified run can still require review before reconstruction. Portable downloads include the child-owned source layout and `preprocessing/` artifacts.
+
 ## Storage and operations
 
 Native storage defaults to `outputs/web-data`; Docker uses `/data` in the named capture volume. Each `jobs/<id>/` directory holds its atomic `job.json`, original input/raw files, optional annotations, published `bundle/`, worker phase/log records and result/verification JSON. Temporary download archives are removed after the response completes.
 
 Run one server/one Uvicorn worker per `DATA_ROOT`. Startup fails if another process owns the data lock; interrupted receiving/processing jobs become failed, untouched queued jobs resume, and completed records persist. Resubmission creates a fresh job. Shutdown and deadlines stop the worker/media process tree. Completed and failed storage has no automatic retention policy.
 
-The default limits are 1 GiB per HTTP request, 2 GiB expanded input, 200 file/archive members, four waiting jobs plus one active slot, and 600 seconds per worker. See [configuration](../../WEB_SETUP.md#configuration-and-boundaries) before changing them. Limits are not long-capture capacity benchmarks.
+The default limits are 1 GiB per HTTP request, 2 GiB expanded input, 25,000 file/archive members (needed for supplied depth/confidence ZIPs), four waiting jobs plus one active slot, and 600 seconds per worker. See [configuration](../../WEB_SETUP.md#configuration-and-boundaries) before changing them. Limits are not long-capture capacity benchmarks.
 
 The app is a local prototype with loopback host ports and no multi-user authentication. Keep processing rules in the core, queue/storage rules here and presentation rules in the [frontend](../../frontend/README.md). [Tests](../../tests/README.md) cover these boundaries.

@@ -1,5 +1,7 @@
 # Holo capture workspace setup
 
+The web extra/image includes NumPy and headless OpenCV for Sensor Recorder preprocessing. Existing Docker/native startup commands remain valid. From a verified capture, **Prepare reconstruction views** queues an independent derived run through the same worker/deadline. Its download includes `preprocessing/`. Standalone native preprocessing needs `uv sync --locked --extra preprocess` and FFmpeg. [Contract and evidence](PREPROCESSING.md).
+
 The application has **Capture guide** and **Input & validation** tabs. Upload one complete Sensor Recorder export ZIP, or select its exported files together. Optional reference dimensions are recorded as hash-bound metadata; the form does not estimate geometry. An optional JPEG/PNG grounding-object photo (up to 10 MiB, 40 million pixels) can be attached independently of dimensions. Its encoding/full decode is checked in the worker, its original bytes are retained and its SHA-256 is bound to the video. Processing runs in an isolated child process and succeeds only after the source-value verifier passes. Download report JSON or a portable archive containing `raw/`, optional `annotations/` and `reference/`, `bundle/` and verification evidence. Verified results show the saved photo; reference-image integrity is rechecked before serving reports/images/archives.
 
 ## Docker
@@ -49,13 +51,13 @@ Stop the native server before changing Python dependencies/project metadata and 
 | `STATIC_ROOT` | Bundled static path or detected `frontend/dist` | Compiled frontend |
 | `MAX_UPLOAD_BYTES` | 1,073,741,824 | Complete HTTP request limit |
 | `MAX_EXPANDED_BYTES` | 2,147,483,648 | Expanded capture byte limit |
-| `MAX_ARCHIVE_MEMBERS` | 200 | ZIP entry/file selection limit |
+| `MAX_ARCHIVE_MEMBERS` | 25000 | ZIP entry/file selection limit |
 | `MAX_QUEUED_JOBS` | 4 | Waiting capacity plus one active slot |
 | `JOB_TIMEOUT_SECONDS` | 600 | Worker execution deadline |
 | `APP_PORT` | 8000 | Compose host port only |
 | `API_TARGET` | `http://127.0.0.1:8000` | Vite proxy target only |
 
-These are admission limits, not measured long-capture capacity. Request bytes are bounded before multipart spooling; extraction checks cross-platform paths/collisions, links, declared/actual bytes and disk space. The supported domain remains short Sensor Recorder Pro 1.5/build 5 ARKit sessions. Original observations, source poses and declared reference metadata are retained; physical accuracy and geometry remain unverified.
+These are admission limits, not measured long-capture capacity. Request bytes are bounded before multipart spooling; extraction checks cross-platform paths/collisions, links, declared/actual bytes and disk space. The supported domain includes Sensor Recorder Pro 1.5/build 5 ARKit sessions and the three provided Stray-style captures. The 25,000-member default accommodates their depth/confidence folders; ZIP requests remain bounded to 1 GiB with 2 GiB expanded data. See [provided-data support](SUPPLIED_DATA.md). Original observations, source poses and declared reference metadata are retained; physical accuracy and geometry remain unverified.
 
 Completed/failed jobs persist until the operator manages the data directory; there is no automatic retention policy or multi-user authentication. Host ports bind to loopback for this local prototype. Do not run multiple application workers against one data root.
 

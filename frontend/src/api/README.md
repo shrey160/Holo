@@ -1,11 +1,12 @@
 # Frontend API boundary
 
-`client.ts` owns the shared `Job`, `Finding` and `Reference` types plus transport helpers used by the ingestion screen.
+`client.ts` owns the shared `Job`, `Finding`, `Reference` and `Preprocessing` types plus transport helpers used by the input and review screens.
 
 | Helper                   | Behavior                                                                                                                    |
 | ------------------------ | --------------------------------------------------------------------------------------------------------------------------- |
 | `request<T>`             | GET a relative `/api` path, accept cancellation and surface server errors                                                   |
 | `upload`                 | Send multipart files/label/reference and optional separate reference image with XMLHttpRequest progress and an abort handle |
+| `preprocess`             | POST an existing capture ID and return the newly queued independent preprocessing job                                       |
 | `terminal`, `stateLabel` | Identify final job states and present readable status labels                                                                |
 | `downloadResult`         | Verify report availability, then let the browser stream a JSON/ZIP attachment                                               |
 

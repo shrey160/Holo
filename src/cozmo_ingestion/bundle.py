@@ -105,6 +105,11 @@ class BundleWriter:
         write_lines(stage / "trajectory/source_poses.jsonl", poses)
         write_json(stage / "source_metadata.json", meta)
         write_json(stage / "annotations.json", annotated)
+        if "unassociated_camera_records" in meta:
+            write_lines(
+                stage / "trajectory/unassociated_source_poses.jsonl",
+                meta["unassociated_camera_records"],
+            )
 
     def _write_metadata(self, stage: Path, content: BundleContent) -> None:
         source, output, annotations = (
@@ -169,6 +174,25 @@ class BundleWriter:
                 "source_world": "preserved; no first-camera/room recentering",
             },
         )
+        if meta.get("source_format") == "stray-layout":
+            cameras = json.loads((stage / "cameras.json").read_text(encoding="utf-8"))
+            cameras["wide"]["gravity_world"]["evidence"] = (
+                "FORMAT_REFERENCE_ASSUMED; device identity unverified"
+            )
+            write_json(stage / "cameras.json", cameras)
+            clocks = json.loads((stage / "clocks.json").read_text(encoding="utf-8"))
+            clocks["source_timestamp_precision"] = "original CSV numeric strings retained"
+            write_json(stage / "clocks.json", clocks)
+            provenance = json.loads((stage / "provenance.json").read_text(encoding="utf-8"))
+            provenance["units"] = {
+                "acceleration": "UNRESOLVED; raw a_x/a_y/a_z retained; reference code writes CoreMotion g despite documentation claiming m/s^2",
+                "gyroscope": "reference rad/s; raw alpha_x/alpha_y/alpha_z retained",
+            }
+            provenance["IMU_timestamp"] = (
+                "one combined timestamp; original accelerometer/gyro sample times not available"
+            )
+            provenance["convention_evidence"] = meta["evidence"]
+            write_json(stage / "provenance.json", provenance)
 
     def _report(self, content: BundleContent) -> dict:
         rows, limited = content.capture.camera_rows, content.observations.limited_frames
@@ -219,7 +243,7 @@ class BundleWriter:
             content.source_identity,
             content.stream_headers,
         )
-        return {
+        manifest = {
             "schema": SCHEMA,
             "adapter": adapter_name,
             "status": "READY_WITH_FINDINGS",
@@ -257,3 +281,11 @@ class BundleWriter:
             "preprocessing": "NOT_RUN",
             "reconstruction": "NOT_RUN",
         }
+        if meta.get("source_format") == "stray-layout":
+            manifest["capabilities"].update(
+                calibration="FORMAT_REFERENCE_ASSUMED", pose="FORMAT_REFERENCE_ASSUMED"
+            )
+            manifest["source_camera_record_count"] = meta["native_camera_record_count"]
+            manifest["unassociated_source_frame_indices"] = [0]
+            manifest["convention_evidence"] = meta["evidence"]
+        return manifest
