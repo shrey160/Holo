@@ -1,6 +1,6 @@
 # Isolated gsplat GPU worker
 
-This uv project intentionally uses Python 3.10 because the pinned official gsplat 1.5.3/PyTorch 2.4/CUDA 12.4 compiled Linux wheel targets CPython 3.10. It is independent of Holo's Python 3.12 project. [Full experiment contract and commands](../../GAUSSIANS.md).
+This uv project intentionally uses Python 3.10 because the pinned official gsplat 1.5.3/PyTorch 2.4/CUDA 12.4 compiled Linux wheel targets CPython 3.10. It is independent of Holo's Python 3.12 project. [Full experiment contract and commands](../../docs/appearance/GAUSSIANS.md).
 
 Build with `docker build -t holo-gsplat:0.1.0 experiments/gsplat` from prototype-2, or use `uv sync --locked` here on native Linux. Inputs must be prepared and audited by `cozmo-gaussians prepare`. Mount inputs read-only and only the new experiment output parent writable. Run `worker.py INPUTS NEW_OUTPUT --steps 10000 --deadline 900`. No global Python installation or modification of the main venv is required.
 

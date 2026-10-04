@@ -1,6 +1,6 @@
 # Preprocessing package
 
-See [contract, commands and evidence](../../PREPROCESSING.md). This package consumes verified Sensor Recorder RGB/K/pose/independent-IMU observations through the restricted ingestion reader and writes separate derived outputs. It excludes LiDAR, confidence and known-size references.
+See [contract, commands and evidence](../../docs/ingestion/PREPROCESSING.md). This package consumes verified Sensor Recorder RGB/K/pose/independent-IMU observations through the restricted ingestion reader and writes separate derived outputs. It excludes LiDAR, confidence and known-size references.
 
 | Module | Ownership |
 |---|---|

@@ -14,7 +14,7 @@ Select one complete export ZIP or the files from one session together. The front
 
 The optional photo picker previews one JPEG/PNG image, supports removal and uploads it separately from the export (10 MiB maximum). It can be used without entering dimensions. Verified results show the persisted image; portable downloads include the original photo and its video/hash-bound metadata.
 
-The optional known-size reference defaults to the supplied 21 × 29.7 cm A4 dimensions and a 0–5 second candidate window when enabled. These are declarations, not detected corners or measurement corrections. New captures bind their metadata to their own video hash.
+The optional known-size reference defaults to the supplied 21 Ã— 29.7 cm A4 dimensions and a 0â€“5 second candidate window when enabled. These are declarations, not detected corners or measurement corrections. New captures bind their metadata to their own video hash.
 
 Successful Sensor Recorder results offer **Prepare reconstruction views**. This starts an independent preprocessing job, refreshes history and selects the new run. Its [preprocessing review](../preprocessing/README.md) shows selected frames, weak image connections, pose findings and report/download access. The parent capture remains unchanged. Provided Stray-style captures currently support ingestion only. LiDAR and grounding measurements are excluded from preprocessing.
 
@@ -22,4 +22,4 @@ Upload progress describes transferred bytes. Subsequent job state describes serv
 
 Use [client.ts](../../api/README.md) for transport and shared response types. Keep quality findings readable while preserving their exact codes/details for inspection. Results must continue to distinguish ingestion verification from unverified metric accuracy and future geometry stages.
 
-After a workflow change, check successful/failed uploads, server unavailable/queue-full states, reference validation, tab-state preservation, history selection and both downloads. [Frontend setup](../../../README.md) · [Observed verification](../../../../WEB_RESULTS.md).
+After a workflow change, check successful/failed uploads, server unavailable/queue-full states, reference validation, tab-state preservation, history selection and both downloads. [Frontend setup](../../../README.md) Â· [Observed verification](../../../../docs/web/WEB_RESULTS.md).

@@ -1,6 +1,6 @@
 # Gaussian appearance modules
 
-Optional source-bound visual reconstruction. [Design, setup and limitations](../../../GAUSSIANS.md).
+Optional source-bound visual reconstruction. [Design, setup and limitations](../../../docs/appearance/GAUSSIANS.md).
 
 | Module | Responsibility |
 |---|---|

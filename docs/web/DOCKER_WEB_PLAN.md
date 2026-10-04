@@ -55,15 +55,15 @@ Exactly two initial tabs: **Capture guide** and **Input & validation**. Job hist
 Capture guide:
 
 - Show the base iPhone 17, Sensor Recorder Pro 1.5/build 5 and current ARKit settings: rear wide camera, 1080p, 60 Hz, IMU/magnetometer/device motion enabled, exposure/focus details and no LiDAR.
-- Present the requested sequence with simple diagrams and step cards: well-lit preparation outside the doorway; flat known-size reference for 3–5 seconds; doorway corners clockwise; enter near the centre; doorway wall first; subsequent walls to the right; record the connecting passage continuously; repeat at the next room.
+- Present the requested sequence with simple diagrams and step cards: well-lit preparation outside the doorway; flat known-size reference for 3â€“5 seconds; doorway corners clockwise; enter near the centre; doorway wall first; subsequent walls to the right; record the connecting passage continuously; repeat at the next room.
 - Include the complete-export checklist, the observed free-mode time limit, and a reminder to retain the opening object segment.
-- Keep [capture.md](capture.md) authoritative. Import its content at build time, render Markdown with raw HTML disabled, and add illustrative navigation around it rather than maintain a second settings/protocol copy. UI assets must be bundled locally.
+- Keep [capture.md](../../capture.md) authoritative. Import its content at build time, render Markdown with raw HTML disabled, and add illustrative navigation around it rather than maintain a second settings/protocol copy. UI assets must be bundled locally.
 
 Input and validation:
 
 1. Select **one exported ZIP** or **the complete set of exported files**. ZIP is the primary portable route; multi-file selection is the fallback without relying on browser-specific folder access.
 2. Show the selected filename list, byte total and obvious missing-file feedback. Server validation remains authoritative and checks enabled streams from metadata.
-3. Optionally enter capture label and a known-size reference. Enabling the reference reveals width/height in cm (A4 preset 21 × 29.7), candidate interval (opening preset 0–5 seconds), and placement. Leave the reference disabled by default for unknown captures. The server creates the hash-bound declaration for the uploaded video; users do not calculate SHA-256 themselves.
+3. Optionally enter capture label and a known-size reference. Enabling the reference reveals width/height in cm (A4 preset 21 Ã— 29.7), candidate interval (opening preset 0â€“5 seconds), and placement. Leave the reference disabled by default for unknown captures. The server creates the hash-bound declaration for the uploaded video; users do not calculate SHA-256 themselves.
 4. Submit, show actual upload progress, then queued/running/verification states. Use indeterminate processing feedback until measured stage progress exists; never invent a completion percentage. Poll job status roughly every second while active and stop on terminal states/unmount.
 5. Display frame count, observed settings, stream availability, tracking findings, decode/association checks, source integrity, reference declaration and verifier outcome. Explain findings in plain language with technical details expandable. Keep `independent accuracy: unverified`, grounding/preprocessing/reconstruction states explicit.
 6. Offer report JSON and a portable capture archive download. An error shows the relevant code and a corrective action; a failed/invalid job cannot present a success download. Previous results remain available after refresh.

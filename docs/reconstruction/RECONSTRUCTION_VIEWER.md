@@ -1,6 +1,6 @@
 # Holo rough plan and interactive 3D
 
-**Current automatic workflow (2026-10-04):** GPU Sensor Recorder ARKit uploads publish dense RGB/surface-derived rough plans, provisional ceiling estimates and interactive 3D under writable `DATA_ROOT/reconstructions`. CPU runtimes publish labelled sparse previews. The optional read-only historical catalog is combined with generated results; offline reviewed/furnished publication remains separate. [Automatic workflow and GPU setup](AUTOMATIC_RECONSTRUCTION.md).
+**Current automatic workflow (2026-10-04):** GPU Sensor Recorder ARKit uploads publish dense RGB/surface-derived rough plans, provisional ceiling estimates and interactive 3D under writable `DATA_ROOT/reconstructions`. CPU runtimes publish labelled sparse previews. The optional read-only historical catalog is combined with generated results; offline reviewed/furnished publication remains separate. [Automatic workflow and GPU setup](../../AUTOMATIC_RECONSTRUCTION.md).
 
 
 Holo has a **Reconstruction** tab with a capture selector, rough top-down plan and interactive RGB point cloud. Open [the local app](http://localhost:8000/#reconstruction). Automatic processing continues after verified ingestion/preprocessing when enabled; an ingestion-only capture needs the separate prepare/reconstruct action. [Upstream geometry](DENSE_RECONSTRUCTION.md), [region-reviewed structural contract](PARTIAL_BOUNDARIES.md).
@@ -16,14 +16,14 @@ The 3D view displays 120,000 deterministic source voxel samples from the 878,459
 - Plan zoom and observed-geometry/path/candidate toggles help inspect coverage.
 - Downloads provide occupancy PNG, display-subset binary PLY, reviewed partial SVG and boundary evidence JSON. The PNG is the occupancy background, not the browser's composed overlays. PLY contains the displayed subset in documented floor coordinates, not every original voxel.
 
-Physical accuracy remains **UNVERIFIED**; grounding remains **DISAGREEMENT_REVIEW_REQUIRED**. The reviewed 0.599 m wall-patch extent is source estimated and does not establish total wall length, floor–wall junction or room corners. No closed room polygon, surveyed area, doorway detector, scale correction, pose optimization or LiDAR processing is introduced.
+Physical accuracy remains **UNVERIFIED**; grounding remains **DISAGREEMENT_REVIEW_REQUIRED**. The reviewed 0.599 m wall-patch extent is source estimated and does not establish total wall length, floorâ€“wall junction or room corners. No closed room polygon, surveyed area, doorway detector, scale correction, pose optimization or LiDAR processing is introduced.
 
 ## Publish a result
 
 From the project root, install `uv sync --locked --extra web --extra reconstruct`. Publish to a **new** folder, using the same source chain and optional grounding report as the boundary result:
 
 ```shell
-cozmo-publish-reconstruction outputs/single-room-boundaries-v1 outputs/holo-reconstruction/single-room-v1 --surfaces outputs/single-room-surfaces-v2 --sparse outputs/single-room-sparse-100-v2 --prepared outputs/single-room-preprocessing-final --bundle outputs/single-room-cli-v2 --dense outputs/linux-reconstruction/single-room-dense-100-v1 --source ../test_data/iphn-17/single_room --grounding outputs/single-room-grounding-v4 --label "Single room · RGB reconstruction"
+cozmo-publish-reconstruction outputs/single-room-boundaries-v1 outputs/holo-reconstruction/single-room-v1 --surfaces outputs/single-room-surfaces-v2 --sparse outputs/single-room-sparse-100-v2 --prepared outputs/single-room-preprocessing-final --bundle outputs/single-room-cli-v2 --dense outputs/linux-reconstruction/single-room-dense-100-v1 --source ../test_data/iphn-17/single_room --grounding outputs/single-room-grounding-v4 --label "Single room Â· RGB reconstruction"
 ```
 
 The publisher performs the full ingestion/prepared/sparse/dense/surface/boundary and optional grounding audit. It restricts display sampling to existing dense voxels, archives a scene/plan description, binds all three parent manifests and hashes eight assets. It rechecks parent artifacts before atomic publication; existing results and source-overlap destinations are rejected. A failed staging folder remains diagnostic and is excluded from the catalog. No external upload is made. New captures need their own reconstruction and published viewer bundle; the selector admits multiple immutable bundles under the configured root.
@@ -42,7 +42,7 @@ $env:RECONSTRUCTION_ROOT = (Resolve-Path outputs/holo-reconstruction).Path
 uv run --locked --extra web cozmo-web --port 8006
 ```
 
-Use port 8000 if available. Pass `--ffmpeg path/to/ffmpeg.exe` when needed; FFprobe must be alongside or on PATH. Without `RECONSTRUCTION_ROOT`, viewer results are read from `DATA_ROOT/reconstructions`. Vite development remains supported: run the API, then `API_TARGET` for its port and `npm run dev`. Native preview for this trial is http://127.0.0.1:8006/#reconstruction. [General setup](WEB_SETUP.md).
+Use port 8000 if available. Pass `--ffmpeg path/to/ffmpeg.exe` when needed; FFprobe must be alongside or on PATH. Without `RECONSTRUCTION_ROOT`, viewer results are read from `DATA_ROOT/reconstructions`. Vite development remains supported: run the API, then `API_TARGET` for its port and `npm run dev`. Native preview for this trial is http://127.0.0.1:8006/#reconstruction. [General setup](../web/WEB_SETUP.md).
 
 ## Docker
 
@@ -58,7 +58,7 @@ For offline publication in Docker, build `docker build --target viewer -t holo-p
 
 ## System boundaries and evidence
 
-[Publisher ownership](src/cozmo_reconstruction/viewer/README.md) isolates auditing/derivation from read-only [HTTP catalog](src/cozmo_web/README.md) and [frontend viewers](frontend/src/features/reconstruction/README.md). The HTTP service exposes a fixed eight-asset allowlist, validates result IDs and resolves paths inside the catalog root, checks hashes on reads and returns integrity failures as errors. It does not accept arbitrary host paths or start reconstruction jobs. [Three.js OrbitControls](https://threejs.org/docs/pages/OrbitControls.html), [BufferGeometry](https://threejs.org/docs/pages/BufferGeometry.html) and [WebGLRenderer lifecycle](https://threejs.org/docs/pages/WebGLRenderer.html) inform the local viewer; renderer, controls, observers, animation and GPU resources are disposed on tab/result changes.
+[Publisher ownership](../../src/cozmo_reconstruction/viewer/README.md) isolates auditing/derivation from read-only [HTTP catalog](../../src/cozmo_web/README.md) and [frontend viewers](../../frontend/src/features/reconstruction/README.md). The HTTP service exposes a fixed eight-asset allowlist, validates result IDs and resolves paths inside the catalog root, checks hashes on reads and returns integrity failures as errors. It does not accept arbitrary host paths or start reconstruction jobs. [Three.js OrbitControls](https://threejs.org/docs/pages/OrbitControls.html), [BufferGeometry](https://threejs.org/docs/pages/BufferGeometry.html) and [WebGLRenderer lifecycle](https://threejs.org/docs/pages/WebGLRenderer.html) inform the local viewer; renderer, controls, observers, animation and GPU resources are disposed on tab/result changes.
 
 104 behavioral cases pass on Windows and Linux, including five display/publishing/HTTP cases. Native and Docker catalogs serve the same audited eight-asset trial. Browser review exercised plan candidates, Top/reset/orbit/zoom/height controls and verified loaded WebGL geometry without console errors. Existing Holo capture history is unchanged after container recreation. The prior boundary result also passes Linux read-only full-chain verification for 81 artifacts. Package assets, generated evidence and physical accuracy are separate claims; none of these tests establishes a surveyed room plan.
 

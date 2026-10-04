@@ -1,6 +1,6 @@
 # Grounding diagnostic modules
 
-Read [the contract, commands and findings](../../../GROUNDING.md). This stage is independent of Holo routes and floorplan inference. Baseline RGB geometry stays unchanged.
+Read [the contract, commands and findings](../../../docs/grounding/GROUNDING.md). This stage is independent of Holo routes and floorplan inference. Baseline RGB geometry stays unchanged.
 
 | Module | Ownership |
 |---|---|
@@ -17,4 +17,4 @@ Read [the contract, commands and findings](../../../GROUNDING.md). This stage is
 
 Keep human marks and semantic decisions out of source ingestion and raw files. Declared size is a PnP input, so use unconstrained triangulation for a separate size diagnostic. Never turn a local reference ratio into automatic rescaling. Preserve missing support, planar ambiguity and unknown book thickness. Synthetic tests verify these behaviors; physical room accuracy requires independent measurements.
 
-Reviewed v2 reports archive a separate confirmation record and add [controlled mismatch checks](../../../GROUNDING_DIAGNOSTICS.md). Recompute archived review/interval/experiment data during verification. Historical v1 reports retain their original interpretation. Refined object poses/points never change camera poses or bypass the acceptance state.
+Reviewed v2 reports archive a separate confirmation record and add [controlled mismatch checks](../../../docs/grounding/GROUNDING_DIAGNOSTICS.md). Recompute archived review/interval/experiment data during verification. Historical v1 reports retain their original interpretation. Refined object poses/points never change camera poses or bypass the acceptance state.

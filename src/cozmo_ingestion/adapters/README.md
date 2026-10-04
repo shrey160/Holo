@@ -24,4 +24,4 @@ Run the existing adapter/annotation tests from `proto-2`:
 uv run --locked python -m unittest discover -s tests -p "test_adapter_annotations.py" -v
 ```
 
-[Core package guide](../README.md) · [Architecture](../../../ARCHITECTURE.md)
+[Core package guide](../README.md) Â· [Architecture](../../../docs/architecture/ARCHITECTURE.md)

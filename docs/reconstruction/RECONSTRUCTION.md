@@ -1,6 +1,6 @@
 # Fixed-pose sparse reconstruction
 
-**Current automatic workflow (2026-10-04):** The established fixed-pose sparse pipeline now also runs inside Holo automatic jobs with up to 80 views after the opening five seconds. Audited geometry is published as a sparse 3D preview and coarse rectangular coverage envelope. [Workflow and executed evidence](AUTOMATIC_RECONSTRUCTION.md).
+**Current automatic workflow (2026-10-04):** The established fixed-pose sparse pipeline now also runs inside Holo automatic jobs with up to 80 views after the opening five seconds. Audited geometry is published as a sparse 3D preview and coarse rectangular coverage envelope. [Workflow and executed evidence](../../AUTOMATIC_RECONSTRUCTION.md).
 
 
 Implemented 2026-10-03 after [the research plan](RECONSTRUCTION_PLAN.md). This stage consumes verified Sensor Recorder preprocessing and produces inspectable sparse geometry with source-bound feature/track audits. Dense depth, floorplan extraction and Holo reconstruction jobs are subsequent stages. The existing Holo ingestion/preprocessing app remains unchanged.
@@ -15,7 +15,7 @@ uv run --locked --extra reconstruct cozmo-reconstruct --help
 uv run --locked --extra reconstruct cozmo-reconstruct outputs/single-room-preprocessing-final outputs/single-room-cli-v2 outputs/single-room-sparse --source ../test_data/iphn-17/single_room
 ```
 
-Arguments are prepared bundle, original ingestion bundle and a **new** output folder. `--source` rebases the raw capture; otherwise ingestion root hints apply. Only selected prepared views are admitted. Default selection uses all prepared views (3–300); disconnected views remain explicit. A JSON ascending list can select ranks with `--ranks-file selection.json`. An object can supply a list via `--ranks-key ranks`. If the object declares `source_manifest_sha256`, it must match the preprocessing manifest.
+Arguments are prepared bundle, original ingestion bundle and a **new** output folder. `--source` rebases the raw capture; otherwise ingestion root hints apply. Only selected prepared views are admitted. Default selection uses all prepared views (3â€“300); disconnected views remain explicit. A JSON ascending list can select ranks with `--ranks-file selection.json`. An object can supply a list via `--ranks-key ranks`. If the object declares `source_manifest_sha256`, it must match the preprocessing manifest.
 
 For the recorded research selections, the ignored local proposal has `seed_ranks` (24) and `full_trial_component_ranks` (100). Example:
 
@@ -24,7 +24,7 @@ uv run --locked --extra reconstruct cozmo-reconstruct outputs/single-room-prepro
 uv run --locked --extra reconstruct cozmo-reconstruct outputs/single-room-preprocessing-final outputs/single-room-cli-v2 outputs/single-room-sparse-100 --source ../test_data/iphn-17/single_room --verify-only
 ```
 
-The proposal and recordings are private local evidence, not shipped sample data. On another machine ingest/preprocess its own complete export, then use all prepared views or its own rank selection. See [preprocessing setup](PREPROCESSING.md).
+The proposal and recordings are private local evidence, not shipped sample data. On another machine ingest/preprocess its own complete export, then use all prepared views or its own rank selection. See [preprocessing setup](../ingestion/PREPROCESSING.md).
 
 Use `--extra web --extra reconstruct` when one environment needs both features; a later uv sync with fewer extras can remove optional dependencies. PyCOLMAP is pinned to 4.2.1 in `uv.lock`. Executed platforms use Python 3.12; broader interpreter/platform metadata is not a tested guarantee.
 
@@ -46,7 +46,7 @@ No GPU is required. The reconstruction target is a batch CLI; it does not run Ho
 
 ## System design and input contract
 
-The sibling [reconstruction package](src/cozmo_reconstruction/README.md) has no HTTP/frontend imports. A typed immutable request/policy and injected backend separate source admission, camera conversion, backend lifecycle, geometric analysis and publication.
+The sibling [reconstruction package](../../src/cozmo_reconstruction/README.md) has no HTTP/frontend imports. A typed immutable request/policy and injected backend separate source admission, camera conversion, backend lifecycle, geometric analysis and publication.
 
 1. `PreparedInput` audits all original/canonical observations and derived identities. It admits selected JPEG pixels, exact source K/optical camera-to-world records and existing flags/gyro statistics for diagnostics. It never supplies capture depth/confidence, reference dimensions/photo or evaluation geometry to the backend. IMU is not re-integrated.
 2. Camera conversion inverts the canonical optical camera-to-world matrix once. The PINHOLE approximation preserves per-frame focal lengths/principal points and source metre/world gauge, with distinct camera records. No extra ARKit axis flip, pose optimization, room recentering or scale fit runs.
@@ -82,10 +82,10 @@ Orthogonal visual review shows useful spatial structure and surface fragments, w
 
 One initial Windows attempt failed after triangulation while collecting statistics because `Database.num_keypoints` is a method in the pinned API. The adapter was corrected and rerun in a new stage; the failed evidence was retained. A sandbox temporary-directory restriction affected an initial test invocation; fixtures passed outside that restriction. No input repair or deletion was needed.
 
-Local evidence: [Windows smoke](outputs/single-room-sparse-24-v2/report.json), [Windows full](outputs/single-room-sparse-100-v2/report.json), [Linux full](outputs/linux-reconstruction/single-room-sparse-100-v2/report.json), [preview PNG](outputs/reconstruction-evidence/single-room-sparse-100.png). These ignored outputs/private inputs are not distributed in source packages.
+Local evidence: [Windows smoke](../../outputs/single-room-sparse-24-v2/report.json), [Windows full](../../outputs/single-room-sparse-100-v2/report.json), [Linux full](../../outputs/linux-reconstruction/single-room-sparse-100-v2/report.json), [preview PNG](../../outputs/reconstruction-evidence/single-room-sparse-100.png). These ignored outputs/private inputs are not distributed in source packages.
 
-Meaningful tests cover optical transforms and pixel shifts, nonrigid/invalid cameras, pure rotation/negative depth/conflicting tracks, source tampering/selection boundaries, failed atomic publication, revisit pairing, policy/camera-movement rejection, analytic recovery of 50 known points by the actual triangulator, and a zero-parallax end-to-end result plus repeated byte-preserving verification and overwrite/export-tamper rejection. [Test guide](tests/README.md).
+Meaningful tests cover optical transforms and pixel shifts, nonrigid/invalid cameras, pure rotation/negative depth/conflicting tracks, source tampering/selection boundaries, failed atomic publication, revisit pairing, policy/camera-movement rejection, analytic recovery of 50 known points by the actual triangulator, and a zero-parallax end-to-end result plus repeated byte-preserving verification and overwrite/export-tamper rejection. [Test guide](../../tests/README.md).
 
 The complete **62-test suite passes on Windows and Docker Linux** (53 earlier cases plus nine reconstruction cases). Ruff lint/format passes; wheel/source builds succeed. Packaging keeps original captures, outputs, environments and dependency caches excluded. No frontend behavior was changed or new browser reconstruction flow claimed.
 
-Final read-back found that opening published databases through PyCOLMAP changes database bytes. Verification now uses read-only SQLite and explicitly closes the handle before publication; it rechecks all artifact hashes afterward. Fresh v2 outputs passed repeated verification with every output byte unchanged. Earlier v1 outputs remain preserved as superseded diagnostic evidence and must not be used as verified deliverables. [Final audit ledger](outputs/reconstruction-evidence/validation.json).
+Final read-back found that opening published databases through PyCOLMAP changes database bytes. Verification now uses read-only SQLite and explicitly closes the handle before publication; it rechecks all artifact hashes afterward. Fresh v2 outputs passed repeated verification with every output byte unchanged. Earlier v1 outputs remain preserved as superseded diagnostic evidence and must not be used as verified deliverables. [Final audit ledger](../../outputs/reconstruction-evidence/validation.json).

@@ -1,6 +1,6 @@
 # Partial-boundary modules
 
-[Workflow and contract](../../../PARTIAL_BOUNDARIES.md). This CPU stage consumes reviewed image regions from an independently verified surface chain; it does not infer a closed room.
+[Workflow and contract](../../../docs/reconstruction/PARTIAL_BOUNDARIES.md). This CPU stage consumes reviewed image regions from an independently verified surface chain; it does not infer a closed room.
 
 | Module | Responsibility |
 |---|---|

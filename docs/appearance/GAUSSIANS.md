@@ -1,14 +1,14 @@
 # Gaussian appearance experiment
 
-**Further work deferred by user, 2026-10-04.** The bounded trial below already completed; additional downloads, optimization and splatting-specific improvements are stopped so work can return to floorplans. Existing results remain separate appearance evidence. [Final report notes](FINAL_REPORT_NOTES.md).
+**Further work deferred by user, 2026-10-04.** The bounded trial below already completed; additional downloads, optimization and splatting-specific improvements are stopped so work can return to floorplans. Existing results remain separate appearance evidence. [Final report notes](../archive/FINAL_REPORT_NOTES.md).
 
-This optional stage trains a visual room representation from verified RGB views, camera intrinsics and fixed source poses. It does not replace stereo, source-image region reviews, partial boundaries or calibration. [Current reconstruction viewer](RECONSTRUCTION_VIEWER.md).
+This optional stage trains a visual room representation from verified RGB views, camera intrinsics and fixed source poses. It does not replace stereo, source-image region reviews, partial boundaries or calibration. [Current reconstruction viewer](../reconstruction/RECONSTRUCTION_VIEWER.md).
 
 ## Design and boundaries
 
 The CPU `cozmo-gaussians prepare` command audits the complete boundary/surface/dense/sparse/prepared/ingestion/source chain before publishing bounded GPU inputs. Images are resized with their per-frame intrinsics; world coordinates and camera poses remain unchanged. Initial Gaussians sample the accepted stereo cloud deterministically. No captured LiDAR, grounding geometry, IMU integration, pose optimization or scene normalization is used.
 
-Training runs in a separate uv virtual environment: Python 3.10, PyTorch 2.4.1/CUDA 12.4 and the official precompiled gsplat 1.5.3 wheel. Holo's main Python 3.12 environment and ordinary application container do not install Torch or require a GPU. Dependencies are isolated in [the experiment project](experiments/gsplat/pyproject.toml); the [worker](experiments/gsplat/worker.py) implements a deliberately bounded first trial rather than reproducing the complete upstream trainer.
+Training runs in a separate uv virtual environment: Python 3.10, PyTorch 2.4.1/CUDA 12.4 and the official precompiled gsplat 1.5.3 wheel. Holo's main Python 3.12 environment and ordinary application container do not install Torch or require a GPU. Dependencies are isolated in [the experiment project](../../experiments/gsplat/pyproject.toml); the [worker](../../experiments/gsplat/worker.py) implements a deliberately bounded first trial rather than reproducing the complete upstream trainer.
 
 The worker optimizes Gaussian positions, anisotropic scales, rotations, opacity and view-independent RGB. Cameras and their scale remain fixed; learned Gaussian geometry is an appearance derivative, not newly certified structural geometry. The trial uses a fixed Gaussian count, no densification, SH degree zero, L1 plus local SSIM loss, bounded scales, a step limit and wall-clock deadline. Seed 42 controls initialization/view sampling; CUDA bitwise determinism is not claimed.
 
@@ -32,7 +32,7 @@ cozmo-gaussians publish outputs/gsplat-evidence/inputs-v1 outputs/gsplat-evidenc
 
 Use `uv run --locked --extra reconstruct cozmo-gaussians ...` if the main venv is not activated. Substitute existing verified inputs and absolute mount paths. All published outputs must be new folders; failed/partial trial folders are retained for diagnosis. Training requires compatible NVIDIA hardware/driver. For native Linux GPU training, `uv sync --locked` in `experiments/gsplat` and `uv run --locked python worker.py INPUTS NEW_OUTPUT` use the same isolated environment; ordinary native Holo development remains available without Docker or CUDA.
 
-For Holo, set `RECONSTRUCTION_ROOT` to the structural viewer catalog and `GAUSSIAN_ROOT` to the separate Gaussian catalog. Native example: `GAUSSIAN_ROOT=outputs/holo-gaussians`. Docker [the reconstruction override](compose.reconstruction.yaml) mounts both catalogs read-only and preserves the captures volume:
+For Holo, set `RECONSTRUCTION_ROOT` to the structural viewer catalog and `GAUSSIAN_ROOT` to the separate Gaussian catalog. Native example: `GAUSSIAN_ROOT=outputs/holo-gaussians`. Docker [the reconstruction override](../../compose.reconstruction.yaml) mounts both catalogs read-only and preserves the captures volume:
 
 ```shell
 docker compose -f compose.yaml -f compose.reconstruction.yaml up --build --detach --wait
@@ -48,7 +48,7 @@ Primary references: [gsplat](https://github.com/nerfstudio-project/gsplat), [COL
 
 ## Recorded single-room trial (2026-10-04)
 
-100 audited views at 640×360; 90 training views and 10 photometric holdouts. Both runs use the same 100,000 stereo-initialized Gaussians and fixed source cameras/scale. The initial mean is 10.36 dB PSNR / 0.353 local SSIM.
+100 audited views at 640Ã—360; 90 training views and 10 photometric holdouts. Both runs use the same 100,000 stereo-initialized Gaussians and fixed source cameras/scale. The initial mean is 10.36 dB PSNR / 0.353 local SSIM.
 
 | Trial | Steps | Mean holdout PSNR | Mean local SSIM | Training/evaluation elapsed |
 |---|---:|---:|---:|---:|

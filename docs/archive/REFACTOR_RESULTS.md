@@ -1,6 +1,6 @@
 # Modular ingestion and uv verification
 
-2026-10-03 (Asia/Calcutta), P2R-001. The original verified ingestion has been reorganized into the installed `cozmo_ingestion` package. [Architecture](ARCHITECTURE.md) describes component ownership and extension points; [README](README.md) contains portable setup/run instructions.
+2026-10-03 (Asia/Calcutta), P2R-001. The original verified ingestion has been reorganized into the installed `cozmo_ingestion` package. [Architecture](../architecture/ARCHITECTURE.md) describes component ownership and extension points; [README](../../README.md) contains portable setup/run instructions.
 
 ## Changes
 
@@ -26,7 +26,7 @@ Complete FFprobe/FFmpeg ingestion ran twice per recording through the modular pa
 
 Baseline and current manifests differ only in `pipeline_source_sha256`: it now fingerprints every package Python module with normalized source line endings rather than the old single script. Current package fingerprint: `72f2f3410dfe5f07a342485fc982c6684485c43dd66a9323a7a4b47e4703c7e6`. Older bundles remain readable and were reverified.
 
-Local evidence: [regression ledger](outputs/refactor-validation.json), [single manifest](outputs/single-room-modular-v1/manifest.json), [double manifest](outputs/double-room-modular-v1/manifest.json). Generated evidence is ignored and is not bundled into the submission archive; the commands in README reproduce verification when the recordings are supplied separately.
+Local evidence: [regression ledger](../../outputs/refactor-validation.json), [single manifest](../../outputs/single-room-modular-v1/manifest.json), [double manifest](../../outputs/double-room-modular-v1/manifest.json). Generated evidence is ignored and is not bundled into the submission archive; the commands in README reproduce verification when the recordings are supplied separately.
 
 ## Packaging boundary
 

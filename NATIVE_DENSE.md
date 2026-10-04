@@ -15,7 +15,7 @@ $env:RECONSTRUCTION_MODE = 'auto'
 uv run --locked --extra web --extra reconstruct cozmo-web
 ```
 
-The installer downloads the [official Windows CUDA archive](https://github.com/colmap/colmap/releases/tag/4.2.1), checks its release SHA-256, and extracts into ignored `.tools/colmap`. The archive is about 415 MB; installed binaries and GPU dependencies are local runtime prerequisites, excluded from Git, source archives and Docker contexts. No system PATH change is made. Supply FFmpeg with `--ffmpeg` or `FFMPEG_PATH` as described in [web setup](WEB_SETUP.md). Build `frontend` for port 8000, or use the Vite development server as usual.
+The installer downloads the [official Windows CUDA archive](https://github.com/colmap/colmap/releases/tag/4.2.1), checks its release SHA-256, and extracts into ignored `.tools/colmap`. The archive is about 415 MB; installed binaries and GPU dependencies are local runtime prerequisites, excluded from Git, source archives and Docker contexts. No system PATH change is made. Supply FFmpeg with `--ffmpeg` or `FFMPEG_PATH` as described in [web setup](docs/web/WEB_SETUP.md). Build `frontend` for port 8000, or use the Vite development server as usual.
 
 Discovery order: explicit `COLMAP_EXECUTABLE`, then `colmap` on PATH, then project-local `.tools/colmap/bin/colmap.exe` on Windows. An explicitly configured invalid executable is not replaced with another installation. The Python package and executable must both be version 4.2.1; the executable help must report CUDA and the NVIDIA driver must enumerate a usable device. CUDA-enabled Python installations keep the existing Python PatchMatch path.
 
@@ -31,6 +31,6 @@ Jobs remain isolated and atomically published. Dense worker timeout terminates t
 
 ## Verification record
 
-**Known floor-plan regression:** native dense execution completed, but the new inferred rectangle is 4.539 × 4.055 m versus the earlier approximately 3.327 × 3.851 m result. The 2.551 m ceiling is provisional. This state is being preserved as the user-requested error baseline; the fix is deferred. [Exact results, reproduction and next investigation](NATIVE_DENSE_REGRESSION.md).
+**Known floor-plan regression:** native dense execution completed, but the new inferred rectangle is 4.539 Ã— 4.055 m versus the earlier approximately 3.327 Ã— 3.851 m result. The 2.551 m ceiling is provisional. This state is being preserved as the user-requested error baseline; the fix is deferred. [Exact results, reproduction and next investigation](NATIVE_DENSE_REGRESSION.md).
 
 The development machine's CPU PyCOLMAP reported `has_cuda=False` despite an RTX 4060. This explains the previous sparse-only native behavior. The official archive checksum was verified as `e9c5cbd84c2ea986d2e970a2473fc2d2e6b34a2cdcf5d3df2765c319a63af881`; native discovery then reported `colmap_executable` available. End-to-end run results are recorded in [current progress](../context/progress.md).

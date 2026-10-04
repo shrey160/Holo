@@ -1,16 +1,16 @@
 # Reconstruction package
 
-This package owns fixed-pose sparse geometry and RGB stereo depth, independently of the Holo API/frontend. Read [sparse setup/results](../../RECONSTRUCTION.md), [dense setup/results](../../DENSE_RECONSTRUCTION.md), [dense module ownership](dense/README.md) and [the wider staged plan](../../RECONSTRUCTION_PLAN.md).
+This package owns fixed-pose sparse geometry and RGB stereo depth, independently of the Holo API/frontend. Read [sparse setup/results](../../docs/reconstruction/RECONSTRUCTION.md), [dense setup/results](../../docs/reconstruction/DENSE_RECONSTRUCTION.md), [dense module ownership](dense/README.md) and [the wider staged plan](../../docs/reconstruction/RECONSTRUCTION_PLAN.md).
 
 | Module | Responsibility |
 |---|---|
 | `models.py` | Immutable validated request/policy |
 | `audit_numbers.py` | Narrow portable report roundoff tolerance; counts and categorical decisions stay exact |
 | `dense/` | Separate bounded CUDA stereo worker, derived-grid cameras, independent multi-view masks/clouds and CLI |
-| `surfaces/` | CPU plane proposals, accepted-depth/source-image evidence, occupied patches and independent verification; [ownership](surfaces/README.md), [results](../../SURFACES.md) |
-| `boundaries/` | Source-bound image-region decisions, explicit exclusions, local floor cells and supported wall projections; [ownership](boundaries/README.md), [contract/results](../../PARTIAL_BOUNDARIES.md) |
-| `viewer/` | Full-chain audited, immutable display assets for rough occupancy plans and RGB point clouds; [ownership](viewer/README.md), [workflow](../../RECONSTRUCTION_VIEWER.md) |
-| `grounding/` | Offline corner editor, IPPE/independent size checks, separate human review/thickness intervals and controlled mismatch experiments; [ownership](grounding/README.md), [workflow](../../GROUNDING.md), [reviewed findings](../../GROUNDING_DIAGNOSTICS.md) |
+| `surfaces/` | CPU plane proposals, accepted-depth/source-image evidence, occupied patches and independent verification; [ownership](surfaces/README.md), [results](../../docs/reconstruction/SURFACES.md) |
+| `boundaries/` | Source-bound image-region decisions, explicit exclusions, local floor cells and supported wall projections; [ownership](boundaries/README.md), [contract/results](../../docs/reconstruction/PARTIAL_BOUNDARIES.md) |
+| `viewer/` | Full-chain audited, immutable display assets for rough occupancy plans and RGB point clouds; [ownership](viewer/README.md), [workflow](../../docs/reconstruction/RECONSTRUCTION_VIEWER.md) |
+| `grounding/` | Offline corner editor, IPPE/independent size checks, separate human review/thickness intervals and controlled mismatch experiments; [ownership](grounding/README.md), [workflow](../../docs/grounding/GROUNDING.md), [reviewed findings](../../docs/grounding/GROUNDING_DIAGNOSTICS.md) |
 | `inputs.py` | Original/prepared audits, restricted image/K/pose admission and source snapshots |
 | `cameras.py` | Pure optical pose inversion, projection and temporal/revisit pair proposal |
 | `ports.py` | Backend protocol for injection without inheritance/global state |
@@ -29,4 +29,4 @@ To change camera conventions, update conversion, analytic fixtures and the recor
 
 ## Optional Gaussian appearance
 
-See [Gaussian experiment](../../GAUSSIANS.md) for audited input preparation, isolated GPU training, a separately published hash-bound scene and Holo browser viewing. Structural boundaries and physical calibration remain unchanged.
+See [Gaussian experiment](../../docs/appearance/GAUSSIANS.md) for audited input preparation, isolated GPU training, a separately published hash-bound scene and Holo browser viewing. Structural boundaries and physical calibration remain unchanged.

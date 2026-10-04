@@ -1,10 +1,10 @@
 # iOS ingestion plan
 
-Date: 2026-10-03 (Asia/Calcutta). Original planning task P2P-001; implementation/verification task P2I-001. State: Sensor Recorder 1.5/build 5 assisted-RGB ingestion implemented and verified on both supplied captures; other adapter proposals below remain future work. [Commands](README.md), [results](INGESTION_RESULTS.md), [capture protocol](capture.md). Initial repository commit: `36233d0`; no additional commit yet.
+Date: 2026-10-03 (Asia/Calcutta). Original planning task P2P-001; implementation/verification task P2I-001. State: Sensor Recorder 1.5/build 5 assisted-RGB ingestion implemented and verified on both supplied captures; other adapter proposals below remain future work. [Commands](../../README.md), [results](INGESTION_RESULTS.md), [capture protocol](../../capture.md). Initial repository commit: `36233d0`; no additional commit yet.
 
-Current P2R-001 follow-up: source is now an installed modular package with an independent uv environment, lockfile and seventeen checks. [Architecture](ARCHITECTURE.md) and [refactor evidence](REFACTOR_RESULTS.md) supersede old script/environment instructions; original contract/records remain unchanged.
+Current P2R-001 follow-up: source is now an installed modular package with an independent uv environment, lockfile and seventeen checks. [Architecture](../architecture/ARCHITECTURE.md) and [refactor evidence](../archive/REFACTOR_RESULTS.md) supersede old script/environment instructions; original contract/records remain unchanged.
 
-User follow-up: installed Sensor Recorder Pro on the base iPhone 17 without LiDAR and supplied single/double-room captures under `test_data/iphn-17`. P2D-001 inspected their export contract. P2I-001 subsequently ingested and replay-verified both recordings: 1,756/3,949 RGB/K/pose records and all sensor rows preserved, thirteen checks passed. User declared a 0.210×0.297 m opening reference; hash-bound annotations preserve it without localization or scale correction. Preprocessing/reconstruction remain NOT_RUN.
+User follow-up: installed Sensor Recorder Pro on the base iPhone 17 without LiDAR and supplied single/double-room captures under `test_data/iphn-17`. P2D-001 inspected their export contract. P2I-001 subsequently ingested and replay-verified both recordings: 1,756/3,949 RGB/K/pose records and all sensor rows preserved, thirteen checks passed. User declared a 0.210Ã—0.297 m opening reference; hash-bound annotations preserve it without localization or scale correction. Preprocessing/reconstruction remain NOT_RUN.
 
 ## Goal and boundary
 
@@ -19,7 +19,7 @@ The attached other-chat note contributes the adapter/common-capture separation, 
 | Sensor Recorder Pro 1.5/build 5, ARKit mode | `wide.mp4`, `arkit_pose.csv`, `meta.json`, independent IMU and fused device motion | First implementation target; both fresh exports inspected | Parse verified headers/comments and metadata declarations; physically unvalidated associations remain labelled |
 | Existing Stray-like sessions | RGB, odometry/per-frame K, IMU, optional depth/confidence | Available development fixtures; first executable adapter if a fresh Sensor Recorder export is unavailable | Version-specific correspondence and conventions; retain unverified provenance |
 | Native Camera video | Original MOV/MP4 plus embedded metadata | Required ordinary-video path | Poses/IMU generally absent; calibration unavailable unless actual supported metadata exists |
-| Native Camera photos | Room folders with 2–8 real stills per room | Required photo path, after the temporal adapter | No fabricated timeline, pose, room adjacency or metric scale |
+| Native Camera photos | Room folders with 2â€“8 real stills per room | Required photo path, after the temporal adapter | No fabricated timeline, pose, room adjacency or metric scale |
 | LiDAR-capable iOS capture | RGB, calibration, trajectory and measured-depth records | Separate profile using the same contract | Validate actual device/export; base phone does not supply rear LiDAR |
 
 Recommendation: begin with one rear wide camera and one uninterrupted session; avoid multi-camera fusion until camera-specific calibration, clocks and extrinsics are verified. Keep the ordinary-video and photo paths in the interface even while the assisted path is the first implementation target. Current supplied video frames cannot establish a genuine photo capture benchmark.
@@ -31,12 +31,12 @@ Initial public-source review did not establish the ARKit export layout; the supp
 - `arkit_pose.csv` is both the RGB index and per-frame calibration/trajectory table; skip/preserve leading comment lines. No separate `wide_info.csv` is present.
 - Decoded frame counts match pose rows exactly: 1,756 single-room and 3,949 double-room. Use verified `i -> i` association and native presentation timestamps; the old Stray initial-discard rule does not apply.
 - Metadata declares camera-to-world optical poses, metre translations and w/x/y/z quaternions. No extra ARKit basis flip is required. Keep native pixels; derived orientation changes still need matched calibration/camera transforms.
-- Independent acceleration is already m/s² and gyro rad/s. Do not apply g conversion again. Prefer independent streams over gyro-keyed combined IMU rows.
+- Independent acceleration is already m/sÂ² and gyro rad/s. Do not apply g conversion again. Prefer independent streams over gyro-keyed combined IMU rows.
 - Preserve initial limited tracking (eight double-room frames), IMU start offsets, changing intrinsics and actual per-frame exposure. Do not extrapolate early IMU.
 - Each recording skips one `record_slot` number while frame/time continuity is preserved. This is not an observed dropped image.
 - Use effective streams and ARKit mode over inactive Standard-mode settings that remain in the metadata. Missing depth is expected; unknown distortion/IMU extrinsics prevent an unqualified VIO-ready claim.
 
-The [inspection report](../context/references/research/iphn-17-inspection.md) distinguishes observed file/clock integrity from physical synchronization, geometry and accuracy, which remain unvalidated.
+The [inspection report](../../../context/references/research/iphn-17-inspection.md) distinguishes observed file/clock integrity from physical synchronization, geometry and accuracy, which remain unvalidated.
 
 ## Pipeline stages
 
@@ -90,7 +90,7 @@ Every stream has an availability state such as `AVAILABLE`, `MISSING`, `DISABLED
 
 Use the first matched primary RGB observation as relative origin for temporal captures; preserve pre-roll IMU with negative relative times. Never zero each stream independently. Native sensor seconds remain seconds with preserved decimal precision; converting to integer nanoseconds must not suggest extra source precision. UTC remains provenance, not the default fusion clock. Unknown clock relationships remain unknown. Still photos can have EXIF time but do not acquire a synthetic video timeline.
 
-Sensor Recorder documentation identifies `sensor_sec` for alignment and `utc_sec` for external correlation. [Maintainer README](https://github.com/ydsf16/ios_sensor_recorder#time-model). The inspected exporter exposes camera indices/recording slots and separate IMU streams; its combined IMU rows attach the latest accelerometer observation to a gyro sample. Prefer independent streams, retaining both times when a combined export is the only source. It already converts acceleration to m/s². [Exporter source](https://github.com/ydsf16/ios_sensor_recorder/blob/main/SensorRecorder/ViewController.swift).
+Sensor Recorder documentation identifies `sensor_sec` for alignment and `utc_sec` for external correlation. [Maintainer README](https://github.com/ydsf16/ios_sensor_recorder#time-model). The inspected exporter exposes camera indices/recording slots and separate IMU streams; its combined IMU rows attach the latest accelerometer observation to a gyro sample. Prefer independent streams, retaining both times when a combined export is the only source. It already converts acceleration to m/sÂ². [Exporter source](https://github.com/ydsf16/ios_sensor_recorder/blob/main/SensorRecorder/ViewController.swift).
 
 Plan to validate frame counts and metadata indices, match source timestamps against decoded media, and preserve excluded/failed writer observations. Equal counts alone do not prove alignment. Permit an offset or affine clock relationship only under a supported adapter rule with residuals and unmatched counts. Do not optimize a clock offset against reconstruction quality.
 

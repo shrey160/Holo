@@ -17,7 +17,7 @@ uv run --locked cozmo-ingest --source ../test_data/drive_download/single_room/c0
 uv run --locked cozmo-verify --capture outputs/provided-single --source ../test_data/drive_download/single_room/c00a170fe1
 ```
 
-The other extracted sessions are `single_scan_floor_only/1a8384c3f6` and `single_scan_with_ceiling/c7d28f72c6`, relative to `../test_data/drive_download/`. Use a fresh output folder for each run. Supply `--ffmpeg` if media tools are absent from PATH. [Setup](WEB_SETUP.md).
+The other extracted sessions are `single_scan_floor_only/1a8384c3f6` and `single_scan_with_ceiling/c7d28f72c6`, relative to `../test_data/drive_download/`. Use a fresh output folder for each run. Supply `--ffmpeg` if media tools are absent from PATH. [Setup](../web/WEB_SETUP.md).
 
 The A4 object declaration belongs to the user's recordings. These provided captures have no declared opening object or independent dimensions; leave optional reference dimensions/photo empty unless you have evidence for that exact capture.
 
@@ -47,4 +47,4 @@ All three passed Windows ingestion and Docker HTTP upload/ingestion, full FFmpeg
 
 The browser accepted the original provided single-room ZIP, showed 1,714 frames and 13 verified artifacts, and downloaded a portable archive. ZIP CRC and extracted source-value verification passed, including retained depth/confidence assets. Completed earlier Sensor Recorder/photo jobs survived the Docker rebuild and remain compatible.
 
-Local evidence is kept under ignored `outputs/supplied-data-evidence/`: `native-final-ledger.json`, `docker-ledger.json`, `cross-platform-validation.json`, `browser-download-verification.json` and `packaging-validation.json`. Wheel/source archives include the new modules/tests/guide and exclude raw/generated/private data; raw captures and these generated bundles are not included in source distributions. API results also retain verification evidence in the local Docker volume. Other exporters, physical registration/metric accuracy and measured-depth reconstruction remain unvalidated. [Architecture](ARCHITECTURE.md), [main guide](README.md).
+Local evidence is kept under ignored `outputs/supplied-data-evidence/`: `native-final-ledger.json`, `docker-ledger.json`, `cross-platform-validation.json`, `browser-download-verification.json` and `packaging-validation.json`. Wheel/source archives include the new modules/tests/guide and exclude raw/generated/private data; raw captures and these generated bundles are not included in source distributions. API results also retain verification evidence in the local Docker volume. Other exporters, physical registration/metric accuracy and measured-depth reconstruction remain unvalidated. [Architecture](../architecture/ARCHITECTURE.md), [main guide](../../README.md).

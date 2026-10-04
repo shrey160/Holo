@@ -1,6 +1,6 @@
 # Surface evidence modules
 
-This CPU stage consumes independently verified dense RGB geometry. [Commands, contract and findings](../../../SURFACES.md). It is separate from Holo routes and future floorplan inference.
+This CPU stage consumes independently verified dense RGB geometry. [Commands, contract and findings](../../../docs/reconstruction/SURFACES.md). It is separate from Holo routes and future floorplan inference.
 
 | Module | Ownership |
 |---|---|

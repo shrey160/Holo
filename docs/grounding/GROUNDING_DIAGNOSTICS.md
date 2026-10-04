@@ -1,6 +1,6 @@
 # Reviewed opening-reference investigation
 
-The user confirmed the six original corner marks and reported notebook thickness below 1 cm. The separate reviewed diagnostic incorporates that confirmation without editing the original marks, camera poses, source calibration, scale, dense cloud or surface candidates. [Grounding workflow](GROUNDING.md), [review provenance](capture_annotations/single_room_grounding_review.json).
+The user confirmed the six original corner marks and reported notebook thickness below 1 cm. The separate reviewed diagnostic incorporates that confirmation without editing the original marks, camera poses, source calibration, scale, dense cloud or surface candidates. [Grounding workflow](GROUNDING.md), [review provenance](../../capture_annotations/single_room_grounding_review.json).
 
 ## Reproduce the reviewed diagnostic
 
@@ -25,9 +25,9 @@ uv run --locked --extra reconstruct cozmo-grounding outputs/single-room-preproce
 These experiments do not replace the accepted triangulation, relax its 4 px limit or alter the baseline:
 
 - Refine both general IPPE object-pose initializations with OpenCV LM, keeping source K and corners fixed. This minimizes per-view rectangle reprojection; declared dimensions remain fitted inputs. Alternatives may converge to the same pose, so convergence is not proof that ambiguity is resolved. [Official OpenCV pose-refinement documentation](https://docs.opencv.org/doc/doxygen/html/d5/d1f/calib3d_solvePnP.html).
-- Test symmetric principal-point shifts of −0.5 and +0.5 px as explicit pixel-center hypotheses, rather than silently changing the supplied K.
+- Test symmetric principal-point shifts of âˆ’0.5 and +0.5 px as explicit pixel-center hypotheses, rather than silently changing the supplied K.
 - Leave out each marked view in turn; triangulate with the remaining views and report both training and held-out residuals. These are diagnostic comparisons, not a rule for cherry-picking accepted views.
-- Minimize pixel reprojection error independently for each 3D corner using a deterministic Gauss–Newton point fit with positive-depth backtracking. All camera poses and corner observations remain fixed. This minimizes summed squared errors, not maximum error; its maximum may increase.
+- Minimize pixel reprojection error independently for each 3D corner using a deterministic Gaussâ€“Newton point fit with positive-depth backtracking. All camera poses and corner observations remain fixed. This minimizes summed squared errors, not maximum error; its maximum may increase.
 
 ## Single-room findings
 
@@ -38,8 +38,8 @@ Published reviewed result: `outputs/single-room-grounding-v4`, available locally
 | Original closest-ray triangulation | Maximum 10.1415 px; rejected |
 | Largest residual | Corner 2 at rank 165, approximately 2.751 seconds |
 | Per-corner RMS | 2.9058 / 0.5294 / 6.6984 / 2.1628 px |
-| −0.5 / +0.5 px principal-point shifts | Maximum 10.1370 / 10.1461 px; both rejected |
-| Leave one view out | All six training subsets still rejected; maxima 9.1260–11.3326 px |
+| âˆ’0.5 / +0.5 px principal-point shifts | Maximum 10.1370 / 10.1461 px; both rejected |
+| Leave one view out | All six training subsets still rejected; maxima 9.1260â€“11.3326 px |
 | Pixel-objective point fit | RMS 3.7940 px; maximum 10.6775 px; no correction adopted |
 
 Per-view LM refinement reduces the original IPPE RMS considerably:
@@ -57,7 +57,7 @@ The original planar initializer was not a fully minimized per-frame estimate. Ho
 
 ## Thickness and floor interpretation
 
-Preserve `0 ≤ t < 0.010 m`, exact thickness unknown. Do not substitute zero or use this bound to modify image residuals. A cover lying flat and stationary on a floor would provide a conditional top-to-bottom offset along world +Y. For plane `(n,d)` and cover-center signed distance `s`, propagate `s − n_y t`, reversing interval endpoints and their inclusive/exclusive flags when required. This still assumes gravity alignment, flat placement and the correct architectural floor identity.
+Preserve `0 â‰¤ t < 0.010 m`, exact thickness unknown. Do not substitute zero or use this bound to modify image residuals. A cover lying flat and stationary on a floor would provide a conditional top-to-bottom offset along world +Y. For plane `(n,d)` and cover-center signed distance `s`, propagate `s âˆ’ n_y t`, reversing interval endpoints and their inclusive/exclusive flags when required. This still assumes gravity alignment, flat placement and the correct architectural floor identity.
 
 The reviewed result retains the bound but **withholds floor comparison** because the geometry gate fails. No exact floor height, scale correction or accepted local reference is produced. Object-interior stereo support remains available as support counts; no quantitative comparison is promoted from rejected corner geometry.
 

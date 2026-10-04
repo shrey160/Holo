@@ -2,7 +2,7 @@
 
 React/TypeScript/Vite UI with three tabs: **Capture guide**, **Input & validation** and **Reconstruction**. The reconstruction tab supports the audited point-cloud/rough-plan view and an optional trained Gaussian appearance scene. It uses relative `/api` requests so the same build works with the native API and the single Docker application. Product branding is Holo; the existing private npm package identifier remains `cozmo-capture-ui`.
 
-Verified Sensor Recorder results expose **Prepare reconstruction views**. This creates a separate queued history run and renders the [preprocessing review](src/features/preprocessing/README.md): selected thumbnails, pagination, weak-link/motion findings and a downloadable report. LiDAR and grounding measurements are excluded from processing; the original capture and optional reference attachments remain archived. [Processing contract](../PREPROCESSING.md).
+Verified Sensor Recorder results expose **Prepare reconstruction views**. This creates a separate queued history run and renders the [preprocessing review](src/features/preprocessing/README.md): selected thumbnails, pagination, weak-link/motion findings and a downloadable report. LiDAR and grounding measurements are excluded from processing; the original capture and optional reference attachments remain archived. [Processing contract](../docs/ingestion/PREPROCESSING.md).
 
 ## Native development
 
@@ -22,7 +22,7 @@ npm run dev
 
 Open http://localhost:5173. Vite proxies `/api` to `http://127.0.0.1:8000`. If Docker already owns port 8000, stop it or start Python with `--port 8001` and set `API_TARGET=http://127.0.0.1:8001` before starting Vite. In PowerShell: `$env:API_TARGET='http://127.0.0.1:8001'`.
 
-The API needs FFmpeg/FFprobe. If absent from PATH, pass the actual FFmpeg path with the server's `--ffmpeg` option. [Complete setup and configuration](../WEB_SETUP.md).
+The API needs FFmpeg/FFprobe. If absent from PATH, pass the actual FFmpeg path with the server's `--ffmpeg` option. [Complete setup and configuration](../docs/web/WEB_SETUP.md).
 
 ## Build and editing
 

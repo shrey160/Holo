@@ -1,11 +1,11 @@
 # Holo capture workspace setup
 
-**Current automatic workflow (2026-10-04):** For automatic reconstruction, native installs need both `--extra web --extra reconstruct`; the app Docker image includes both. `RECONSTRUCTION_TIMEOUT_SECONDS` defaults to 1800 for automatic/reconstruction jobs; the ingestion-only deadline stays 600. [Workflow, writable publication and retry contract](AUTOMATIC_RECONSTRUCTION.md).
+**Current automatic workflow (2026-10-04):** For automatic reconstruction, native installs need both `--extra web --extra reconstruct`; the app Docker image includes both. `RECONSTRUCTION_TIMEOUT_SECONDS` defaults to 1800 for automatic/reconstruction jobs; the ingestion-only deadline stays 600. [Workflow, writable publication and retry contract](../../AUTOMATIC_RECONSTRUCTION.md).
 
 
-The web extra/image includes NumPy and headless OpenCV for Sensor Recorder preprocessing. Existing Docker/native startup commands remain valid. From a verified capture, **Prepare reconstruction views** queues an independent derived run through the same worker/deadline. Its download includes `preprocessing/`. Standalone native preprocessing needs `uv sync --locked --extra preprocess` and FFmpeg. [Contract and evidence](PREPROCESSING.md).
+The web extra/image includes NumPy and headless OpenCV for Sensor Recorder preprocessing. Existing Docker/native startup commands remain valid. From a verified capture, **Prepare reconstruction views** queues an independent derived run through the same worker/deadline. Its download includes `preprocessing/`. Standalone native preprocessing needs `uv sync --locked --extra preprocess` and FFmpeg. [Contract and evidence](../ingestion/PREPROCESSING.md).
 
-The application has **Capture guide**, **Input & validation** and **Reconstruction** tabs. The reconstruction tab displays separately published rough plan/3D assets; [publication and mounting setup](RECONSTRUCTION_VIEWER.md). Upload one complete Sensor Recorder export ZIP, or select its exported files together. Optional reference dimensions are recorded as hash-bound metadata; the form does not estimate geometry. An optional JPEG/PNG grounding-object photo (up to 10 MiB, 40 million pixels) can be attached independently of dimensions. Its encoding/full decode is checked in the worker, its original bytes are retained and its SHA-256 is bound to the video. Processing runs in an isolated child process and succeeds only after the source-value verifier passes. Download report JSON or a portable archive containing `raw/`, optional `annotations/` and `reference/`, `bundle/` and verification evidence. Verified results show the saved photo; reference-image integrity is rechecked before serving reports/images/archives.
+The application has **Capture guide**, **Input & validation** and **Reconstruction** tabs. The reconstruction tab displays separately published rough plan/3D assets; [publication and mounting setup](../reconstruction/RECONSTRUCTION_VIEWER.md). Upload one complete Sensor Recorder export ZIP, or select its exported files together. Optional reference dimensions are recorded as hash-bound metadata; the form does not estimate geometry. An optional JPEG/PNG grounding-object photo (up to 10 MiB, 40 million pixels) can be attached independently of dimensions. Its encoding/full decode is checked in the worker, its original bytes are retained and its SHA-256 is bound to the video. Processing runs in an isolated child process and succeeds only after the source-value verifier passes. Download report JSON or a portable archive containing `raw/`, optional `annotations/` and `reference/`, `bundle/` and verification evidence. Verified results show the saved photo; reference-image integrity is rechecked before serving reports/images/archives.
 
 ## Docker
 
@@ -21,7 +21,7 @@ The image also includes `cozmo-ingest` and `cozmo-verify`. For CLI runs, bind-mo
 
 ## Native development, without Docker
 
-Prerequisites: uv, Python 3.12, FFmpeg/FFprobe ([CLI setup](README.md)), and Node 24 LTS/npm for frontend tooling. Terminal 1, from `proto-2`:
+Prerequisites: uv, Python 3.12, FFmpeg/FFprobe ([CLI setup](../../README.md)), and Node 24 LTS/npm for frontend tooling. Terminal 1, from `proto-2`:
 
 ```shell
 uv sync --locked --extra web --extra reconstruct
@@ -47,7 +47,7 @@ Stop the native server before changing Python dependencies/project metadata and 
 
 ## Full automatic dense runtime
 
-On Windows with NVIDIA GPU support, use the [native dense installer and setup](NATIVE_DENSE.md) to run without Docker, or use `docker compose -f compose.yaml -f compose.reconstruction.yaml -f compose.gpu.yaml up --build --detach --wait`. Docker keeps the same capture volume and adds the isolated CUDA PyCOLMAP app environment. CPU-only installations remain labelled sparse previews. Native supported Linux can use `uv sync --locked --extra web --extra dense`; do not combine dense and reconstruct extras. See [runtime, ownership and failure handling](AUTOMATIC_RECONSTRUCTION.md).
+On Windows with NVIDIA GPU support, use the [native dense installer and setup](../../NATIVE_DENSE.md) to run without Docker, or use `docker compose -f compose.yaml -f compose.reconstruction.yaml -f compose.gpu.yaml up --build --detach --wait`. Docker keeps the same capture volume and adds the isolated CUDA PyCOLMAP app environment. CPU-only installations remain labelled sparse previews. Native supported Linux can use `uv sync --locked --extra web --extra dense`; do not combine dense and reconstruct extras. See [runtime, ownership and failure handling](../../AUTOMATIC_RECONSTRUCTION.md).
 
 ## Configuration and boundaries
 
@@ -67,7 +67,7 @@ On Windows with NVIDIA GPU support, use the [native dense installer and setup](N
 | `APP_PORT` | 8000 | Compose host port only |
 | `API_TARGET` | `http://127.0.0.1:8000` | Vite proxy target only |
 
-These are admission limits, not measured long-capture capacity. Request bytes are bounded before multipart spooling; extraction checks cross-platform paths/collisions, links, declared/actual bytes and disk space. The supported domain includes Sensor Recorder Pro 1.5/build 5 ARKit sessions and the three provided Stray-style captures. The 25,000-member default accommodates their depth/confidence folders; ZIP requests remain bounded to 1 GiB with 2 GiB expanded data. See [provided-data support](SUPPLIED_DATA.md). Original observations, source poses and declared reference metadata are retained; physical accuracy and geometry remain unverified.
+These are admission limits, not measured long-capture capacity. Request bytes are bounded before multipart spooling; extraction checks cross-platform paths/collisions, links, declared/actual bytes and disk space. The supported domain includes Sensor Recorder Pro 1.5/build 5 ARKit sessions and the three provided Stray-style captures. The 25,000-member default accommodates their depth/confidence folders; ZIP requests remain bounded to 1 GiB with 2 GiB expanded data. See [provided-data support](../ingestion/SUPPLIED_DATA.md). Original observations, source poses and declared reference metadata are retained; physical accuracy and geometry remain unverified.
 
 Completed/failed jobs persist until the operator manages the data directory; there is no automatic retention policy or multi-user authentication. Host ports bind to loopback for this local prototype. Do not run multiple application workers against one data root.
 
@@ -87,8 +87,8 @@ From `frontend`: `npm run build` and `npm run format:check`. Core-only users may
 For the full Python suite in Linux: `docker build --target checks -t cozmo-ingestion-checks:0.2.0 .`. This separate build stage installs locked test dependencies and runs tests/lint; tests and development packages are excluded from the shipped runtime image.
 # Reconstruction viewer
 
-Holo's third tab displays published rough plans and interactive 3D point clouds. [Publisher command, native environment and read-only Docker override](RECONSTRUCTION_VIEWER.md). For the supplied local trial use `docker compose -f compose.yaml -f compose.reconstruction.yaml up --build --detach --wait`; this keeps the existing captures volume. Native/Vite testing remains supported. New Sensor Recorder ARKit uploads reconstruct and publish automatically by default. Existing prepared jobs can create reconstruction children. [Workflow and limitations](AUTOMATIC_RECONSTRUCTION.md).
+Holo's third tab displays published rough plans and interactive 3D point clouds. [Publisher command, native environment and read-only Docker override](../reconstruction/RECONSTRUCTION_VIEWER.md). For the supplied local trial use `docker compose -f compose.yaml -f compose.reconstruction.yaml up --build --detach --wait`; this keeps the existing captures volume. Native/Vite testing remains supported. New Sensor Recorder ARKit uploads reconstruct and publish automatically by default. Existing prepared jobs can create reconstruction children. [Workflow and limitations](../../AUTOMATIC_RECONSTRUCTION.md).
 
 ## Optional Gaussian scenes
 
-Set `GAUSSIAN_ROOT` to a published Gaussian catalog alongside `RECONSTRUCTION_ROOT`. The reconstruction Compose override mounts both catalogs read-only; the standard captures volume is preserved. No GPU is needed for Holo viewing. Source preparation/publication and isolated GPU training are documented in [GAUSSIANS.md](GAUSSIANS.md).
+Set `GAUSSIAN_ROOT` to a published Gaussian catalog alongside `RECONSTRUCTION_ROOT`. The reconstruction Compose override mounts both catalogs read-only; the standard captures volume is preserved. No GPU is needed for Holo viewing. Source preparation/publication and isolated GPU training are documented in [GAUSSIANS.md](../appearance/GAUSSIANS.md).

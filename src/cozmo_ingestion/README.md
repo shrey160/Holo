@@ -23,7 +23,7 @@ The sibling [preprocessing package](../cozmo_preprocessing/README.md) consumes v
 
 ## Processing contract
 
-`IngestionRequest` → fresh staging folder → source adapter → media inspection → exact frame association → normalization → bundle writer → publish by rename. A failure retains staging diagnostics and never publishes a partial final bundle. Existing output folders and source/output overlap are rejected.
+`IngestionRequest` â†’ fresh staging folder â†’ source adapter â†’ media inspection â†’ exact frame association â†’ normalization â†’ bundle writer â†’ publish by rename. A failure retains staging diagnostics and never publishes a partial final bundle. Existing output folders and source/output overlap are rejected.
 
 The core references the raw video instead of copying or exporting image frames. Transport raw files with the bundle, or provide a verified `source_root` to `CaptureReader`. `video_rgb` permits RGB/media records; `ios_assisted_rgb` additionally permits calibration, supplied poses, independent sensor streams and declared reference metadata. Measured depth and evaluation references are excluded from those input profiles.
 
@@ -31,7 +31,7 @@ Canonical JSON/JSONL/Markdown use UTF-8/LF, CSV uses explicit CRLF, and raw-root
 
 ## Using and changing the package
 
-See [CLI and Python examples](../../README.md), [full architecture](../../ARCHITECTURE.md) and [tests](../../tests/README.md). Commands run from `proto-2`:
+See [CLI and Python examples](../../README.md), [full architecture](../../docs/architecture/ARCHITECTURE.md) and [tests](../../tests/README.md). Commands run from `proto-2`:
 
 ```shell
 uv run --locked cozmo-ingest --help

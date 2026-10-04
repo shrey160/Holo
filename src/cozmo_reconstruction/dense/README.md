@@ -1,6 +1,6 @@
 # Dense stereo modules
 
-This subpackage extends [fixed-pose sparse reconstruction](../README.md) with bounded RGB stereo depth and conservative point fusion. [Setup, contracts and results](../../../DENSE_RECONSTRUCTION.md).
+This subpackage extends [fixed-pose sparse reconstruction](../README.md) with bounded RGB stereo depth and conservative point fusion. [Setup, contracts and results](../../../docs/reconstruction/DENSE_RECONSTRUCTION.md).
 
 | Module | Responsibility |
 |---|---|
