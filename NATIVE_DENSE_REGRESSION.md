@@ -1,6 +1,6 @@
 # Native dense reconstruction: error baseline
 
-Status: **OPEN — documented baseline; geometry fix deferred by user**. Recorded 2026-10-04. The user requested this state be committed before work on the fix. This document separates successful native execution from the unresolved room-plan regression.
+Status: **Historical error baseline, preserved from `d9723e2`**. Recorded 2026-10-04 before the user authorized the fix. Automatic dense room fitting now uses height-persistent source-aligned spans; [the correction and same-cloud comparison](NATIVE_FLOOR_PLAN_FIX.md) document the result. The failing artifacts below remain unchanged. The rest of this document records what was known at the baseline.
 
 ## What changed
 

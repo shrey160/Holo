@@ -1,0 +1,106 @@
+{
+  "after": {
+    "area_estimated_m2": 11.662429176563336,
+    "axes_in_floor_uv": [
+      [
+        0.987846879280411,
+        -0.15543018720941235
+      ],
+      [
+        0.15543018720941235,
+        0.987846879280411
+      ]
+    ],
+    "boundary_support": {
+      "limitations": "Tall furniture can remain; occluded wall ends can underestimate extent.",
+      "method": "HEIGHT_PERSISTENT_SOURCE_ALIGNED_SPANS",
+      "policy": {
+        "cell_m": 0.1,
+        "height_band_m": 0.4,
+        "height_max_m": 2.4,
+        "height_min_m": 0.6,
+        "line_bin_m": 0.15,
+        "line_distance_m": 0.08,
+        "max_refit_angle_degrees": 15.0,
+        "min_band_points": 4,
+        "min_bands": 2,
+        "min_component_cells": 6,
+        "min_component_span_m": 0.5,
+        "min_height_span_m": 0.8,
+        "min_line_bin_points": 20,
+        "min_line_span_m": 0.45,
+        "min_neighbors": 2
+      },
+      "raw_candidate_span_count": 7,
+      "retained_voxel_points": 97212,
+      "supported_span_count": 6
+    },
+    "dimensions_estimated_m": [
+      3.1467020372177927,
+      3.7062387981528944
+    ],
+    "entry": {
+      "center_along_room_axis_m": -0.46739568801953535,
+      "method": "FIRST_CAPTURE_PATH_ENTRY_CROSSING",
+      "side_index": 3,
+      "status": "INFERRED_POSITION_AND_ASSUMED_WIDTH",
+      "swing": "ILLUSTRATIVE_ONLY",
+      "wall_id": "W4",
+      "width_assumed_m": 0.8
+    }
+  },
+  "before": {
+    "area_estimated_m2": 18.405433627350696,
+    "axes_in_floor_uv": [
+      [
+        0.988086957621335,
+        -0.15389660223219365
+      ],
+      [
+        0.15389660223219365,
+        0.988086957621335
+      ]
+    ],
+    "dimensions_estimated_m": [
+      4.538844726683946,
+      4.055092151345217
+    ],
+    "entry": {
+      "center_along_room_axis_m": -1.0079277405298284,
+      "method": "NEAREST_EDGE_TO_CAPTURE_START",
+      "side_index": 0,
+      "status": "INFERRED_POSITION_AND_ASSUMED_WIDTH",
+      "swing": "ILLUSTRATIVE_ONLY",
+      "wall_id": "W1",
+      "width_assumed_m": 0.8
+    }
+  },
+  "ceiling_after_m": 2.5728611905973975,
+  "ceiling_before_m": 2.550917529004455,
+  "corrected_artifact_sha256": {
+    "boundary-report.json": "9828976bdea4389118a11b15172c55525e318f71840dd0ed6475b21101e4ddcd",
+    "cloud.ply": "bd9ba9a531b9a7dba310baafdae8497e39d1f93644a08a85bd17f6c6c3d1f897",
+    "colors.bin": "3f072ff2496bf087370bcb315d126e44bde08e46006dcc64c550f3c3a50f07d2",
+    "plan.json": "78a2f9ccd91684d3bc92716b00aec9cbf0e2375988c35fbe4fdecca09b0b06d7",
+    "plan.png": "a03cb20e72d6d98ae859c43b251c7804a3d704d3175b5dac0d9441e601ee5bde",
+    "positions.bin": "85c34d1b0374d3c99427214ff9843e39e931c604841c1c7a45f4a712955ac82b",
+    "reviewed-plan.svg": "7301a04d76042661427e8bf2debb7cf969f2d75c1889e1b007b4e2525a9d3061",
+    "rough-room.svg": "7301a04d76042661427e8bf2debb7cf969f2d75c1889e1b007b4e2525a9d3061",
+    "scene.json": "a65b96be0623366dccea56f6f480a4ec49c22db1bd546d3bbb708bd657d23538"
+  },
+  "corrected_result_id": "native-dense-floor-plan-fixed-v1",
+  "cpu_republication_seconds": 88.17200000002049,
+  "identical_display_cloud_and_colors": true,
+  "measured_dimensions_used": false,
+  "no_new_stereo_or_surface_fit": true,
+  "physical_accuracy": "UNVERIFIED",
+  "preserved_files": 80,
+  "source_and_previous_results_unchanged": true,
+  "source_job": "ae77c443f85f449abad2c0598d4c7648",
+  "source_manifest_sha256": {
+    "dense": "124103c8569c17e3a5c34a6c8d42d262015bac94d05749b8f3ae002539615166",
+    "surfaces": "55fb2bececda92a79ef8b93dbf442b4588833bc3debdcb6d63fdbc38b6d57bcb"
+  },
+  "source_voxel_points": 848220,
+  "unchanged_floor_frame": true
+}

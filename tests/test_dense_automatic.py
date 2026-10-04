@@ -162,8 +162,14 @@ class DenseAutomaticTests(unittest.TestCase):
                 ([[0, 0], [3, 0]], [[3, 0], [3, 4]], [[3, 4], [0, 4]], [[0, 4], [0, 0]])
             )
         ]
-        with patch(
-            "cozmo_reconstruction.viewer.dense_automatic.candidate_spans", return_value=spans
+        with (
+            patch(
+                "cozmo_reconstruction.viewer.dense_automatic.candidate_spans", return_value=spans
+            ),
+            patch(
+                "cozmo_reconstruction.viewer.dense_automatic.structure_plan",
+                return_value={"suggested_spans": spans, "retained_voxel_points": 0, "policy": {}},
+            ),
         ):
             _, _, frame, room, _ = dense_room(xyz, labels, planes, [{"center_m": [1, 1.5, 1]}])
         self.assertEqual(frame["source_plane_id"], "floor")
@@ -172,6 +178,86 @@ class DenseAutomaticTests(unittest.TestCase):
         self.assertEqual(room["objects"], [])
         self.assertFalse(room["ceiling_estimate"]["external_reference_used"])
         self.assertIsNone(room["ceiling_estimate"]["height_estimated_m"])
+
+    def test_low_height_extensions_cannot_enlarge_dense_room(self):
+        # A 3.2 x 4 room with a floor-height strip extending one source plane
+        # two metres beyond its wall end. Raw plane projection admits the strip;
+        # the actual persistent-column/line pipeline must reject it for sizing.
+        from cozmo_reconstruction.viewer.rough_room import complete_rough_room
+
+        width, depth = 3.2, 4.0
+        x, z = np.meshgrid(np.linspace(0, width, 70), np.linspace(0, depth, 90))
+        pieces = [np.column_stack((x.ravel(), np.zeros(x.size), z.ravel()))]
+        planes = [
+            {
+                "id": "floor",
+                "orientation": "horizontal",
+                "evidence_status": "MULTIVIEW_CANDIDATE",
+                "median_camera_height_above_patch_m": 1.5,
+                "largest_patch_span_m": [width, depth],
+                "equation_world": [0, 1, 0, 0],
+            }
+        ]
+        for side, length, equation in (
+            (0, width, [0, 0, 1, 0]),
+            (1, depth, [1, 0, 0, -width]),
+            (2, width, [0, 0, 1, -depth]),
+            (3, depth, [1, 0, 0, 0]),
+        ):
+            along, height = np.meshgrid(np.linspace(0, length, 130), np.linspace(0.6, 2.4, 65))
+            wall = (
+                np.column_stack(
+                    (along.ravel(), height.ravel(), np.full(along.size, side // 2 * depth))
+                )
+                if side % 2 == 0
+                else np.column_stack(
+                    (np.full(along.size, width if side == 1 else 0), height.ravel(), along.ravel())
+                )
+            )
+            pieces.append(wall)
+            planes.append(
+                {
+                    "id": f"wall-{side}",
+                    "orientation": "vertical",
+                    "evidence_status": "MULTIVIEW_CANDIDATE",
+                    "equation_world": equation,
+                }
+            )
+        labels = np.concatenate([np.full(len(points), i) for i, points in enumerate(pieces)])
+        xyz = np.concatenate(pieces)
+        cameras = [{"center_m": [-0.4, 1.5, 0.4]}, {"center_m": [1.6, 1.5, 2]}]
+        *_, clean, _ = dense_room(xyz, labels, planes, cameras)
+        along, height = np.meshgrid(np.linspace(-2, 0, 90), np.linspace(0.15, 0.3, 30))
+        extension = np.column_stack((along.ravel(), height.ravel(), np.zeros(along.size)))
+        xyz = np.concatenate((xyz, extension))
+        labels = np.concatenate((labels, np.ones(len(extension), dtype=int)))
+        *_, contaminated, diagnostics = dense_room(xyz, labels, planes, cameras)
+        raw = complete_rough_room(diagnostics["candidate_spans"], [], [])
+        self.assertGreater(raw["area_estimated_m2"], clean["area_estimated_m2"] * 1.3)
+        np.testing.assert_allclose(clean["dimensions_estimated_m"], [width, depth], atol=0.01)
+        np.testing.assert_allclose(
+            contaminated["dimensions_estimated_m"], clean["dimensions_estimated_m"], atol=0.01
+        )
+        self.assertEqual(
+            contaminated["boundary_support"]["method"], "HEIGHT_PERSISTENT_SOURCE_ALIGNED_SPANS"
+        )
+        self.assertFalse(contaminated["scale_corrected"])
+
+    def test_missing_height_persistence_fails_without_raw_extent_fallback(self):
+        xyz = np.array([[0.0, 0.0, 0.0], [2.0, 0.0, 2.0], [2.0, 0.0, 0.0]])
+        planes = [
+            {
+                "id": "floor",
+                "orientation": "horizontal",
+                "evidence_status": "MULTIVIEW_CANDIDATE",
+                "median_camera_height_above_patch_m": 1.5,
+                "largest_patch_span_m": [2, 2],
+                "equation_world": [0, 1, 0, 0],
+            }
+        ]
+        with self.assertRaises(IngestionError) as caught:
+            dense_room(xyz, np.zeros(3, dtype=int), planes, [{"center_m": [1, 1.5, 1]}])
+        self.assertEqual(caught.exception.code, "DENSE_ROOM_SUPPORT_INSUFFICIENT")
 
     def test_no_supported_floor_fails_instead_of_fabricating_height(self):
         with self.assertRaises(IngestionError) as caught:

@@ -37,12 +37,31 @@ def dense_room(xyz, labels, planes, cameras):
     positions = display_points(xyz, frame)
     path = display_points(np.asarray([c["center_m"] for c in cameras]), frame)
     spans = candidate_spans(xyz, labels, planes, frame)
-    room = complete_rough_room(spans, [], path[:, [0, 2]] * [1, -1])
+    structure = structure_plan(positions, labels, planes, frame)
+    # Raw plane intervals can extend along low furniture or disconnected floor-level
+    # observations. Only height-persistent, source-aligned spans may size the room.
+    supported_spans = structure["suggested_spans"]
+    try:
+        room = complete_rough_room(supported_spans, [], path[:, [0, 2]] * [1, -1])
+    except ValueError as error:
+        require(False, "DENSE_ROOM_SUPPORT_INSUFFICIENT", str(error))
     room["status"] = "AUTOMATIC_DENSE_SURFACE_HYPOTHESIS"
+    room["boundary_support"] = {
+        "method": "HEIGHT_PERSISTENT_SOURCE_ALIGNED_SPANS",
+        "raw_candidate_span_count": len(spans),
+        "supported_span_count": len(supported_spans),
+        "retained_voxel_points": structure["retained_voxel_points"],
+        "policy": structure["policy"],
+        "limitations": "Tall furniture can remain; occluded wall ends can underestimate extent.",
+    }
     room["ceiling_estimate"] = estimate_ceiling(positions, room)
     room["objects"] = []
     room["assumptions"].append(
         "Lowest broad supported plane below cameras supplies an unconfirmed floor hypothesis."
+    )
+    room["assumptions"].append(
+        "Room fitting uses contiguous height-persistent source-aligned spans; raw projected "
+        "plane endpoints are diagnostic only. Occluded ends can underestimate room extent."
     )
     return (
         positions,
@@ -51,7 +70,7 @@ def dense_room(xyz, labels, planes, cameras):
         room,
         {
             "candidate_spans": spans,
-            "structure": structure_plan(positions, labels, planes, frame),
+            "structure": structure,
         },
     )
 
