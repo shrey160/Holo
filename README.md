@@ -1,4 +1,4 @@
-# Holo Ã¢â‚¬â€ capture ingestion prototype
+# Holo capture ingestion prototype
 
 Holo is a local application and Python package for validating complete **Sensor Recorder Pro 1.5/build 5 ARKit** exports and the **provided Stray-style dataset**. It prepares traceable inputs and automatically generates dense RGB stereo geometry with a rough floor plan and provisional ceiling estimate in the GPU runtime; the portable CPU runtime produces a labelled sparse preview for verified Sensor Recorder ARKit captures. Your recordings live in `test_data/iphn-17`; the separately provided captures live in `test_data/drive_download`. Both formats have their own parsing, association and verification rules.
 
