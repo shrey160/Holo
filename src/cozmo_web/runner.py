@@ -10,7 +10,7 @@ import time
 from pathlib import Path
 
 from .config import Settings
-from .repository import JobRepository
+from .repository import JobRepository, summarize
 
 
 def terminate_tree(process: subprocess.Popen):
@@ -35,6 +35,9 @@ class ProcessRunner:
     def run(self, folder: Path, repository: JobRepository, stop: threading.Event):
         env = dict(os.environ)
         env.update(
+            DATA_ROOT=str(self.settings.data_root.resolve()),
+            RECONSTRUCTION_TIMEOUT_SECONDS=str(self.settings.reconstruction_deadline),
+            RECONSTRUCTION_MODE=self.settings.reconstruction_mode,
             MAX_EXPANDED_BYTES=str(self.settings.expanded_limit),
             MAX_ARCHIVE_MEMBERS=str(self.settings.member_limit),
         )
@@ -47,6 +50,12 @@ class ProcessRunner:
         )
         logs = folder / "logs"
         logs.mkdir(exist_ok=True)
+        job = repository.get(folder.name)
+        deadline = (
+            self.settings.reconstruction_deadline
+            if job.get("automatic_reconstruction") or job.get("operation") == "RECONSTRUCT"
+            else self.settings.deadline
+        )
         with (logs / "worker.log").open("wb") as log:
             process = subprocess.Popen(
                 [sys.executable, "-m", "cozmo_web.worker", str(folder)],
@@ -58,7 +67,7 @@ class ProcessRunner:
             started, state = time.monotonic(), None
             try:
                 while process.poll() is None:
-                    if stop.is_set() or time.monotonic() - started > self.settings.deadline:
+                    if stop.is_set() or time.monotonic() - started > deadline:
                         terminate_tree(process)
                         code = "INTERRUPTED" if stop.is_set() else "JOB_TIMEOUT"
                         repository.fail(
@@ -69,7 +78,14 @@ class ProcessRunner:
                     if phase_file.is_file():
                         phase = json.loads(phase_file.read_text(encoding="utf-8"))["state"]
                         if phase != state and phase != "SUCCEEDED":
-                            repository.update(folder.name, state=phase)
+                            from .repository import now
+
+                            history = repository.get(folder.name).get("stage_history", [])
+                            repository.update(
+                                folder.name,
+                                state=phase,
+                                stage_history=[*history, {"stage": phase, "started_at": now()}],
+                            )
                             state = phase
                     stop.wait(0.15)
             finally:
@@ -87,20 +103,9 @@ class ProcessRunner:
             repository.fail(folder.name, **error)
             return
         result = json.loads((folder / "result.json").read_text(encoding="utf-8"))
-        manifest, report = result["manifest"], result["validation"]
         repository.update(
             folder.name,
             state="SUCCEEDED",
             reference_image=result.get("reference_image"),
-            summary={
-                "frame_count": manifest["frame_count"],
-                "capabilities": manifest["capabilities"],
-                "tracking_states": report["tracking_states"],
-                "findings": report["findings"],
-                "independent_accuracy": report["independent_accuracy"],
-                "grounding": manifest["capabilities"]["grounding_object"],
-                "verification": result["verification"],
-                "preprocessing": result.get("preprocessing"),
-                "preprocessing_verification": result.get("preprocessing_verification"),
-            },
+            summary=summarize(result),
         )

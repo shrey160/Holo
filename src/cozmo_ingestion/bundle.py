@@ -17,9 +17,10 @@ from .storage import pipeline_fingerprint, sha256, write_csv, write_json, write_
 class BundleTransaction:
     """Publish once, after all checks; preserve failed staging diagnostics."""
 
-    def __init__(self, request: IngestionRequest, adapter_name: str) -> None:
+    def __init__(self, request: IngestionRequest, adapter_name: str, schema: str = SCHEMA) -> None:
         self.request = request
         self.adapter_name = adapter_name
+        self.schema = schema
         self.stage = request.output.with_name(request.output.name + ".ingest-" + uuid.uuid4().hex)
 
     def __enter__(self) -> "BundleTransaction":
@@ -50,7 +51,7 @@ class BundleTransaction:
             write_json(
                 self.stage / "manifest.json",
                 {
-                    "schema": SCHEMA,
+                    "schema": self.schema,
                     "adapter": self.adapter_name,
                     "status": "FAILED",
                     "code": code,

@@ -1,0 +1,16 @@
+services:
+  app:
+    build:
+      context: .
+      target: gpu-app
+    image: holo-web-dense:0.2.0
+    environment:
+      RECONSTRUCTION_MODE: dense
+      RECONSTRUCTION_TIMEOUT_SECONDS: ${RECONSTRUCTION_TIMEOUT_SECONDS:-3600}
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]

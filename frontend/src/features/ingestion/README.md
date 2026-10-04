@@ -1,9 +1,14 @@
 # Input and validation feature
 
-| File         | Responsibility                                                                                                          |
-| ------------ | ----------------------------------------------------------------------------------------------------------------------- |
-| `Input.tsx`  | Health check, ZIP/multi-file selection, capture label/reference form, upload progress, job polling/history and failures |
-| `Result.tsx` | Verified frame/artifact counts, stream/tracking availability, readable findings and result downloads                    |
+**Current automatic workflow (2026-10-04):** New captures default to automatic reconstruction. A single persisted job shows verification, preprocessing, reconstruction and publication progress; successful results link to the exact plan/3D view. Existing prepared captures expose a reconstruction action, retained prepared failures expose a retry, and sparse results expose a dense upgrade when the health endpoint reports usable CUDA. The form and result distinguish dense reconstruction from CPU sparse previews. [Contract](../../../../AUTOMATIC_RECONSTRUCTION.md).
+
+| File                   | Responsibility                                                                                                          |
+| ---------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `Input.tsx`            | Health check, ZIP/multi-file selection, capture label/reference form, upload progress, job polling/history and failures |
+| `Result.tsx`           | Verified frame/artifact counts, stream/tracking availability, readable findings and result downloads                    |
+| `PipelineProgress.tsx` | Active phase and grouped processing steps, using persisted stage history when available                                 |
+
+The video form shows native/CUDA readiness and an Automatic/Dense/Preview quality selector. Dense selection is sent with the upload; unavailable explicit dense is rejected early. Capture results summarize geometry quality, room dimensions and provisional ceiling height. Sparse previews show height unavailable. [Native backend setup](../../../../NATIVE_DENSE.md).
 
 Select one complete export ZIP or the files from one session together. The frontend gives early selection feedback; the [server](../../../../src/cozmo_web/README.md) validates format, paths, stream requirements, resource limits and source integrity. Both Sensor Recorder and provided Stray-style captures are supported. Upload Stray sessions as ZIP to preserve nested depth/confidence files. Selecting only an MP4 cannot satisfy the supported assisted-iOS contract.
 

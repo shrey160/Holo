@@ -9,19 +9,37 @@ dependencies = []
 [project.optional-dependencies]
 preprocess = ["numpy>=2,<3", "opencv-python-headless>=4.10,<5"]
 web = ["fastapi>=0.115,<1", "uvicorn>=0.34,<1", "python-multipart>=0.0.20,<1", "numpy>=2,<3", "opencv-python-headless>=4.10,<5"]
+reconstruct = [
+    "numpy>=2,<3",
+    "opencv-python-headless>=4.10,<5",
+    "pycolmap==4.2.1",
+]
+dense = [
+    "numpy>=2,<3",
+    "opencv-python-headless>=4.10,<5",
+    "pycolmap-cuda12==4.2.1; sys_platform == 'linux'",
+    "pycolmap==4.2.1; sys_platform != 'linux'",
+]
 
 [project.scripts]
 cozmo-ingest = "cozmo_ingestion.cli:ingest_main"
 cozmo-verify = "cozmo_ingestion.cli:verify_main"
 cozmo-web = "cozmo_web.cli:main"
 cozmo-preprocess = "cozmo_preprocessing.cli:main"
+cozmo-reconstruct = "cozmo_reconstruction.cli:main"
+cozmo-dense = "cozmo_reconstruction.dense.cli:main"
+cozmo-surfaces = "cozmo_reconstruction.surfaces.cli:main"
+cozmo-grounding = "cozmo_reconstruction.grounding.cli:main"
+cozmo-boundaries = "cozmo_reconstruction.boundaries.cli:main"
+cozmo-publish-reconstruction = "cozmo_reconstruction.viewer.cli:main"
+cozmo-gaussians = "cozmo_reconstruction.gaussians.cli:main"
 
 [build-system]
 requires = ["hatchling>=1.27,<2"]
 build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/cozmo_ingestion", "src/cozmo_web", "src/cozmo_preprocessing"]
+packages = ["src/cozmo_ingestion", "src/cozmo_web", "src/cozmo_preprocessing", "src/cozmo_reconstruction"]
 
 [tool.hatch.build.targets.sdist]
 include = [
@@ -29,15 +47,22 @@ include = [
     "/README.md", "/ARCHITECTURE.md", "/capture.md", "/capture_annotations",
     "/ingest.py", "/verify_capture.py", "/capture_reader.py",
     "/INGESTION_RESULTS.md", "/REFACTOR_RESULTS.md", "/INGESTION_PLAN.md", "/Overview.md",
-    "/frontend", "/Dockerfile", "/compose.yaml", "/.dockerignore", "/.env.example",
-    "/DOCKER_WEB_PLAN.md", "/WEB_RESULTS.md", "/WEB_SETUP.md", "/SUPPLIED_DATA.md", "/PREPROCESSING.md",
+    "/frontend", "/Dockerfile", "/compose.yaml", "/compose.gpu.yaml", "/.dockerignore", "/.env.example",
+    "/DOCKER_WEB_PLAN.md", "/WEB_RESULTS.md", "/WEB_SETUP.md", "/SUPPLIED_DATA.md", "/PREPROCESSING.md", "/RECONSTRUCTION_VIEWER.md", "/compose.reconstruction.yaml",
+    "/PREPROCESSING_REVIEW.md", "/RECONSTRUCTION_PLAN.md", "/RECONSTRUCTION.md",
+    "/DENSE_RECONSTRUCTION.md", "/SURFACES.md", "/GROUNDING_PLAN.md", "/GROUNDING.md", "/GROUNDING_DIAGNOSTICS.md", "/PARTIAL_BOUNDARIES.md",
+    "/GAUSSIANS.md", "/experiments/gsplat",
+    "/AUTOMATIC_RECONSTRUCTION.md", "/FLOORPLAN_OPTIMIZATION.md", "/FINAL_REPORT_NOTES.md", "/evaluation_annotations",
+    "/scripts", "/NATIVE_DENSE.md", "/INPUT_MODALITIES_PLAN.md",
+    "/CONTEXT.md", "/NATIVE_DENSE_REGRESSION.md", "/docs",
 ]
-exclude = ["**/node_modules", "**/dist", "**/.vite"]
+exclude = ["**/node_modules", "**/dist", "**/.vite", "**/.venv", "**/.uv-cache", "**/__pycache__", "**/*.pyc", "**/.env"]
 
 [dependency-groups]
 dev = ["ruff>=0.11,<1", "httpx>=0.28,<1"]
 
 [tool.uv]
+conflicts = [[{ extra = "reconstruct" }, { extra = "dense" }]]
 required-version = ">=0.12.1"
 cache-dir = ".uv-cache"
 

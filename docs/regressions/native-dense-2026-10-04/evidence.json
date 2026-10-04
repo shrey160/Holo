@@ -1,0 +1,187 @@
+{
+  "artifact_sha256": {
+    "bundle/manifest.json": "78fbb32040ce93f76b0bcbd5d2a07f4522df3fcae6acc04be568087d625b9756",
+    "dense/manifest.json": "124103c8569c17e3a5c34a6c8d42d262015bac94d05749b8f3ae002539615166",
+    "job.json": "9b36c3b0e22b898a78e760ace7f76e9d4a5eba7d6152618fee18892cf30933c5",
+    "preprocessing/manifest.json": "56f7af6fa789976a9fe5755cdc4c119e063dc9f489e89fd7a6a09c2d93ef3b6b",
+    "reconstruction/manifest.json": "298fddc2b59e65850d12c4ec8f3d1efeb26f57c7e2e9c0e627d09e6cdaa75e9b",
+    "result.json": "593fc7d3b5afb017e508342307c43f55d3c9a1627e835972135adc1296f7b5ae",
+    "surfaces/manifest.json": "55fb2bececda92a79ef8b93dbf442b4588833bc3debdcb6d63fdbc38b6d57bcb",
+    "viewer/manifest.json": "786d16477417ee32554c2afaac27fe48d46ec2f394363c5c9970d90152ddadfd",
+    "viewer/plan.json": "ecd54b23a73d29d1276a13b657ed01e8e6d65f9f61d0ad613ef66d31028c48e6",
+    "viewer/rough-room.svg": "83c01107812dc6a3e103fd0aca428543ee8b470f69aeea9b603c98e692417f2a"
+  },
+  "backend": {
+    "depth_convention": "optical camera Z",
+    "depth_source": "RGB multi-view stereo",
+    "executable_sha256": "9418a14c93d4a5eec5eb33ebf48a917403b5faa7ab5d2232f23e50c206d9e427",
+    "has_cuda": true,
+    "invocation": "colmap_executable",
+    "name": "COLMAP CUDA PatchMatch",
+    "options": {
+      "allow_missing_files": false,
+      "cache_size": 2.0,
+      "depth_max": -1.0,
+      "depth_min": -1.0,
+      "filter": true,
+      "filter_geom_consistency_max_cost": 1.0,
+      "filter_min_ncc": 0.10000000149011612,
+      "filter_min_num_consistent": 2,
+      "filter_min_triangulation_angle": 1.0,
+      "geom_consistency": true,
+      "geom_consistency_max_cost": 3.0,
+      "geom_consistency_regularizer": 0.30000001192092896,
+      "gpu_index": "0",
+      "incident_angle_sigma": 0.8999999761581421,
+      "max_image_size": 960,
+      "min_triangulation_angle": 1.0,
+      "ncc_sigma": 0.6000000238418579,
+      "num_iterations": 3,
+      "num_samples": 15,
+      "num_threads": 4,
+      "sigma_color": 0.20000000298023224,
+      "sigma_spatial": -1.0,
+      "window_radius": 5,
+      "window_step": 1,
+      "write_consistency_graph": false
+    },
+    "seconds": 548.819333499996,
+    "undistortion": "source PINHOLE, uniform corner-origin K scaling; no crop or pose change",
+    "version": "4.2.1"
+  },
+  "ceiling_estimate": {
+    "ceiling_plane_verified": false,
+    "external_reference_used": false,
+    "height_estimated_m": 2.550917529004455,
+    "limitations": "Coverage termination, wall tops or tall objects can mimic a ceiling. Floor and scale remain provisional.",
+    "method": "spatially balanced robust upper envelope",
+    "near_estimate_area_fraction": 0.06112325429422301,
+    "near_estimate_cells": 18,
+    "point_height_p999_m": 2.770711407048684,
+    "policy": {
+      "cell_m": 0.25,
+      "cell_top_quantile": 0.98,
+      "envelope_quantile": 0.9,
+      "min_supported_cells": 12,
+      "min_upper_points_per_cell": 20,
+      "near_estimate_m": 0.08,
+      "upper_height_max_m": 4.0,
+      "upper_height_min_m": 1.8
+    },
+    "scale_corrected": false,
+    "status": "PROVISIONAL_UPPER_ENVELOPE",
+    "support_band_kind": "spread of upper tile heights, not a calibrated confidence interval",
+    "support_band_m": [
+      2.50093371175188,
+      2.5844022988109447
+    ],
+    "upper_voxels": 56985
+  },
+  "completed_at": "2026-10-04T12:07:56.325588+00:00",
+  "configured_mode": "auto",
+  "created_at": "2026-10-04T11:52:48.625938+00:00",
+  "date": "2026-10-04",
+  "diagnosis": "UNRESOLVED; wall orientation, structural support and footprint extents are hypotheses to investigate, not established causes",
+  "elapsed_seconds": 907.69965,
+  "issue_status": "OPEN_FIX_DEFERRED_BY_USER",
+  "job_id": "ae77c443f85f449abad2c0598d4c7648",
+  "job_label": "Native dense room verification",
+  "job_state": "SUCCEEDED",
+  "preprocessing_verification": {
+    "artifacts_verified": 234,
+    "depth_used": false,
+    "grounding_used": false,
+    "scale_applied": false,
+    "source_geometry_preserved": true,
+    "status": "PASSED",
+    "views_verified": 106
+  },
+  "previous_comparison": {
+    "ceiling_estimated_m": 2.565624,
+    "dimensions_estimated_m": [
+      3.32655,
+      3.85147
+    ],
+    "job_id": "f02743deab6c46a3b93bf70dcb23ec16",
+    "physical_accuracy": "UNVERIFIED",
+    "provenance": "saved P2AUTO-002 context; not re-run this turn",
+    "runtime": "Docker Linux CUDA Python",
+    "selected_views": 99,
+    "source_point_count": 846791
+  },
+  "requested_mode": "dense",
+  "result": {
+    "ceiling_estimated_m": 2.550917529004455,
+    "dense_excluded_ranks": [
+      1755
+    ],
+    "dimensions_estimated_m": [
+      4.538844726683946,
+      4.055092151345217
+    ],
+    "geometry_source": "RGB_DENSE_STEREO",
+    "id": "capture-ae77c443f85f449abad2c0598d4c7648",
+    "opening_seconds_excluded": 0,
+    "point_count": 120000,
+    "quality": "DENSE_WITH_FINDINGS",
+    "selected_views": 99,
+    "source_point_count": 848220,
+    "status": "PUBLISHED"
+  },
+  "room_hypothesis": {
+    "area_estimated_m2": 18.405433627350696,
+    "assumptions": [
+      "Missing walls and corners are completed with a rectangle prior.",
+      "Candidate planes may follow curtains or furniture; all four full walls are inferred.",
+      "Entry position uses the capture path; width and swing symbol are assumed.",
+      "Dimensions and area use unchanged source-estimated scale.",
+      "Ceiling height, if supplied, is a separate user reference, not a scale calibration.",
+      "Lowest broad supported plane below cameras supplies an unconfirmed floor hypothesis."
+    ],
+    "axes_in_floor_uv": [
+      [
+        0.988086957621335,
+        -0.15389660223219365
+      ],
+      [
+        0.15389660223219365,
+        0.988086957621335
+      ]
+    ],
+    "bounds_in_room_axes_m": [
+      [
+        -2.4491006303562735,
+        -1.002233032663208
+      ],
+      [
+        2.089744096327673,
+        3.0528591186820093
+      ]
+    ]
+  },
+  "runtime": "native Windows, no Docker",
+  "schema": "holo-native-dense-regression-baseline-1",
+  "source_zip_sha256": "815cffe1c1b7a7f4e1670364d2d399f9110c3c3975e9c23994a3ac06d2f34d8c",
+  "validation": {
+    "accuracy_gate": "NOT_ESTABLISHED",
+    "failed": 0,
+    "native_regression_tests": 185,
+    "ruff": "PASSED",
+    "typescript_vite_build": "PASSED"
+  },
+  "verification": {
+    "artifacts_verified": 16,
+    "deterministic_replay_equal": null,
+    "frames_verified": 1756,
+    "scale_applied": false,
+    "sensor_rows_verified": {
+      "accelerometer": 2920,
+      "device_motion": 2920,
+      "gyroscope": 2920,
+      "imu": 2920,
+      "magnetometer": 1481
+    },
+    "source_values_preserved": true,
+    "status": "PASSED"
+  }
+}

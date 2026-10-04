@@ -1,0 +1,33 @@
+{
+  "baseline_geometry_changed": false,
+  "corner_confirmation": {
+    "authority": "USER_CONFIRMED_CHAT",
+    "coordinate_uncertainty_pixels": null,
+    "interpretation": "user confirms the proposed corner marks",
+    "statement": "its accurate"
+  },
+  "corner_proposals_sha256": "8b16bcd4110e0659b15bc2819327130b8dff6a97d0556d3437c4bc3a8add1217",
+  "cover_thickness": {
+    "authority": "USER_REPORTED_CHAT",
+    "exact_thickness_m": null,
+    "lower_bound_inclusive": true,
+    "lower_bound_m": 0.0,
+    "statement": "height of the object could be negligible, <1cm",
+    "upper_bound_inclusive": false,
+    "upper_bound_m": 0.01,
+    "zero_thickness_assumed": false
+  },
+  "date": "2026-10-04",
+  "dimensions_status": "21 x 29.7 cm remains provisional; no newly measured outer-cover dimensions supplied",
+  "published_report": "single-room-grounding-v3 remains an immutable pre-confirmation report; 10.14 px reprojection mismatch unresolved",
+  "reviewed_frame_ranks": [
+    0,
+    75,
+    120,
+    150,
+    165,
+    180
+  ],
+  "schema": "holo-grounding-user-confirmation-v1",
+  "source_video_sha256": "1c1aa4b259f934d147cb2adbdbedbda6f70ce641637c7278633cca7561a6e073"
+}

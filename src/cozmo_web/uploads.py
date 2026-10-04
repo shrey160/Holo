@@ -8,6 +8,7 @@ from pathlib import Path, PurePosixPath
 
 from cozmo_ingestion.adapters.selection import select_adapter
 from cozmo_ingestion.errors import IngestionError
+from cozmo_ingestion.multimodal.media import KNOWN_IMAGE_SUFFIXES, OTHER_IMAGE_SUFFIXES
 
 from .config import Settings
 from .errors import WebError
@@ -83,6 +84,71 @@ def unpack_archive(archive: Path, destination: Path, settings: Settings):
                         output.write(chunk)
     except (zipfile.BadZipFile, RuntimeError, FileExistsError) as error:
         raise WebError("INVALID_ARCHIVE", "ZIP is corrupt or has conflicting entries") from error
+
+
+def _photo_files(root: Path) -> tuple[list[Path], list[Path]]:
+    known, unsupported = [], []
+    for path in root.rglob("*"):
+        if not path.is_file():
+            continue
+        suffix = path.suffix.casefold()
+        if suffix in KNOWN_IMAGE_SUFFIXES:
+            known.append(path)
+        elif suffix in OTHER_IMAGE_SUFFIXES:
+            unsupported.append(path)
+    return known, unsupported
+
+
+def _has_photo(directory: Path) -> bool:
+    return any(
+        path.is_file() and path.suffix.casefold() in KNOWN_IMAGE_SUFFIXES
+        for path in directory.rglob("*")
+    )
+
+
+def prepare_photos(folder: Path, settings: Settings) -> Path:
+    """Admit a single room folder, per-room folders or a ZIP preserving that layout."""
+    incoming = folder / "incoming"
+    files = list(incoming.iterdir())
+    raw = folder / "raw"
+    if len(files) == 1 and files[0].suffix.lower() == ".zip":
+        extracted = folder / "extracted"
+        extracted.mkdir()
+        unpack_archive(files[0], extracted, settings)
+        top_files = [path for path in extracted.iterdir() if path.is_file()]
+        directories = [path for path in extracted.iterdir() if path.is_dir()]
+        source = extracted
+        if not top_files and len(directories) == 1 and _has_photo(directories[0]):
+            source = directories[0]
+        if source != extracted:
+            outside = [
+                path
+                for path in extracted.rglob("*")
+                if path.is_file() and not path.is_relative_to(source)
+            ]
+            if outside:
+                raise WebError("AMBIGUOUS_CAPTURE", "ZIP contains files outside the photo set")
+            source.rename(raw)
+            shutil.rmtree(extracted, ignore_errors=True)
+        else:
+            extracted.rename(raw)
+    else:
+        incoming.rename(raw)
+    known, unsupported = _photo_files(raw)
+    if unsupported:
+        raise WebError(
+            "UNSUPPORTED_IMAGE_FORMAT",
+            "Photo tier accepts JPEG/PNG only; export HEIC/HEIF to JPEG first",
+        )
+    if not known:
+        raise WebError("INVALID_INPUT", "No JPEG/PNG photos found in the selection")
+    if (
+        sum(path.stat().st_size for path in raw.rglob("*") if path.is_file())
+        > settings.expanded_limit
+    ):
+        raise WebError("CAPTURE_TOO_LARGE", "Photo set exceeds the expanded limit", 413)
+    shutil.rmtree(incoming, ignore_errors=True)
+    return raw
 
 
 def prepare_capture(folder: Path, settings: Settings) -> Path:

@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 860" role="img" aria-labelledby="title desc">
+<title id="title">Complete approximate room floor plan</title>
+<desc id="desc">Four inferred walls and an approximate entrance, fitted to dense surface candidates. Physical dimensions are unverified.</desc>
+<rect width="900" height="860" fill="#fcfcf8"/>
+<g font-family="Arial, sans-serif">
+<text x="450.00" y="45.00" font-size="24" fill="#163e37" text-anchor="middle">SINGLE ROOM · ROUGH FLOOR PLAN</text>
+<text x="450.00" y="76.00" font-size="17" fill="#365650" text-anchor="middle">Complete outline · inferred walls and corners</text>
+<rect x="180.00" y="150.00" width="540.00" height="482.45" fill="#eaf1e8"/>
+<rect x="180.00" y="150.00" width="540.00" height="482.45" fill="none" stroke="#1e6355" stroke-width="7" stroke-dasharray="16 7"/>
+<path d="M180.00 115.00 H720.00 M180.00 106.00 V124.00 M720.00 106.00 V124.00" fill="none" stroke="#47625a" stroke-width="2"/>
+<text x="450.00" y="103.00" font-size="17" fill="#365650" text-anchor="middle">≈ 4.5 m</text>
+<path d="M758.00 150.00 V632.45 M749.00 150.00 H767.00 M749.00 632.45 H767.00" fill="none" stroke="#47625a" stroke-width="2"/>
+<text transform="translate(785.00 391.22) rotate(90)" text-anchor="middle" font-size="18" fill="#365650">≈ 4.1 m</text>
+<text x="450.00" y="700.00" font-size="18" fill="#365650" text-anchor="middle">Floor area ≈ 18 m²</text>
+<text x="450.00" y="770.00" font-size="16" fill="#365650" text-anchor="middle">Ceiling estimate ≈ 2.55 m · provisional upper envelope</text>
+<text x="450.00" y="391.22" font-size="25" fill="#21483f" text-anchor="middle">ROOM</text>
+<polyline points="303.87,632.45 399.05,632.45" fill="none" stroke="#fcfcf8" stroke-width="12"/>
+<path d="M303.87 632.45 L303.87 537.27 M399.05 632.45 Q399.05 584.86 303.87 537.27" fill="none" stroke="#a67530" stroke-width="2.5"/>
+<text x="351.46" y="612.45" font-size="17" fill="#8c6025" text-anchor="middle">Entry?</text>
+<text x="450.00" y="730.00" font-size="16" fill="#365650" text-anchor="middle">Dashed green: inferred boundary · object footprints are approximate</text>
+<text x="450.00" y="752.00" font-size="15" fill="#365650" text-anchor="middle">Automatic surface hypotheses · entrance width and swing are assumed</text>
+<text x="450.00" y="827.00" font-size="15" fill="#365650" text-anchor="middle">Dimensions and object extents use estimated scale; allow errors.</text>
+</g></svg>

@@ -12,7 +12,9 @@ from .errors import WebError
 from .reference_images import read_reference_image
 
 
-def enqueue_preprocessing(repository, settings, parent_id: str) -> dict:
+def enqueue_preprocessing(
+    repository, settings, parent_id: str, *, automatic_reconstruction=False
+) -> dict:
     parent = repository.get(parent_id)
     if parent["state"] != "SUCCEEDED":
         raise WebError("RESULT_NOT_READY", "First finish capture validation", 409)
@@ -40,6 +42,7 @@ def enqueue_preprocessing(repository, settings, parent_id: str) -> dict:
         operation="PREPROCESS",
         parent_id=parent_id,
         reference_image=parent.get("reference_image"),
+        automatic_reconstruction=automatic_reconstruction,
     )
 
 

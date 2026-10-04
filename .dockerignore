@@ -1,4 +1,5 @@
 .git
+.tools
 .env
 .env.*
 !.env.example

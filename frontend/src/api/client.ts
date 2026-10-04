@@ -1,4 +1,13 @@
 export type Finding = { code: string; details: unknown };
+export type ReconstructionMode = "auto" | "dense" | "preview";
+export type Health = {
+  status: string;
+  automatic_reconstruction: boolean;
+  dense_reconstruction: boolean;
+  dense_backend?: string | null;
+  dense_unavailable_reason?: string | null;
+  reconstruction_mode: ReconstructionMode;
+};
 export type Preprocessing = {
   source_frame_count: number;
   candidate_count: number;
@@ -20,7 +29,10 @@ export type Job = {
   id: string;
   label: string;
   state: string;
+  modality?: string;
   created_at: string;
+  stage_history?: { stage: string; started_at: string }[];
+  failed_stage?: string;
   error: { code: string; message: string } | null;
   reference_image?: null | {
     original_name: string;
@@ -29,7 +41,12 @@ export type Job = {
     sha256: string;
   };
   summary: null | {
+    modality?: string;
     frame_count: number;
+    room_count?: number;
+    image_count?: number;
+    distinct_image_count?: number;
+    profile?: string;
     capabilities: Record<string, string>;
     tracking_states: Record<string, number>;
     findings: Finding[];
@@ -40,6 +57,17 @@ export type Job = {
       source_values_preserved: boolean;
       artifacts_verified: number;
     };
+    reconstruction?: {
+      id: string;
+      point_count: number;
+      selected_views: number;
+      status: string;
+      geometry_source?: string;
+      quality?: string;
+      dimensions_estimated_m?: number[];
+      ceiling_estimated_m?: number | null;
+    } | null;
+    automatic_reconstruction?: { status: string; reason?: string } | null;
     preprocessing?: Preprocessing | null;
   };
 };
@@ -49,6 +77,13 @@ export type Reference = {
   start_seconds: number;
   end_seconds: number;
   placement: string;
+};
+export type PhotosReference = {
+  object_id: string;
+  width_m: number;
+  height_m: number;
+  reference_asset: string | null;
+  candidate_assets: string[];
 };
 export const terminal = (job: Job) =>
   ["SUCCEEDED", "FAILED"].includes(job.state);
@@ -60,7 +95,12 @@ export const stateLabel = (state: string) =>
     INGESTING: "Validating capture",
     VERIFYING: "Verifying source values",
     PREPROCESSING: "Preparing reconstruction views",
-    SUCCEEDED: "Verified with findings",
+    RECONSTRUCTING: "Reconstructing RGB geometry",
+    DENSE_RECONSTRUCTING: "Reconstructing dense RGB stereo",
+    EXTRACTING_SURFACES: "Finding supported surfaces",
+    ESTIMATING_ROOM: "Estimating floor, walls and ceiling",
+    PUBLISHING: "Publishing plan and 3D view",
+    SUCCEEDED: "Processing complete",
     FAILED: "Needs attention",
   })[state] || state;
 
@@ -95,12 +135,23 @@ export function upload(
   reference: Reference | null,
   onProgress: (percent: number) => void,
   referenceImage: File | null = null,
+  automaticReconstruction = true,
+  modality = "video",
+  photosReference: PhotosReference | null = null,
+  reconstructionMode: ReconstructionMode = "auto",
 ): { promise: Promise<{ id: string }>; cancel: () => void } {
   const xhr = new XMLHttpRequest();
   const form = new FormData();
-  files.forEach((file) => form.append("files", file));
+  files.forEach((file) =>
+    form.append("files", file, file.webkitRelativePath || file.name),
+  );
   form.append("label", label);
-  if (reference) form.append("reference", JSON.stringify(reference));
+  form.append("modality", modality);
+  form.append("automatic_reconstruction", String(automaticReconstruction));
+  form.append("reconstruction_mode", reconstructionMode);
+  if (photosReference)
+    form.append("reference", JSON.stringify(photosReference));
+  else if (reference) form.append("reference", JSON.stringify(reference));
   if (referenceImage) form.append("reference_image", referenceImage);
   const promise = new Promise<{ id: string }>((resolve, reject) => {
     xhr.open("POST", "/api/jobs");
@@ -157,4 +208,20 @@ export async function downloadResult(
   document.body.append(anchor);
   anchor.click();
   anchor.remove();
+}
+
+export async function reconstruct(
+  jobId: string,
+  dense = false,
+): Promise<{ id: string }> {
+  const form = new FormData();
+  form.append("reconstruction_mode", dense ? "dense" : "auto");
+  const response = await fetch(`/api/jobs/${jobId}/reconstruct`, {
+    method: "POST",
+    body: form,
+  });
+  const result = await response.json();
+  if (!response.ok)
+    throw new Error(result.error?.message || "Reconstruction could not start.");
+  return result;
 }

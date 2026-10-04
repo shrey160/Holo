@@ -1,5 +1,7 @@
 # Frontend API boundary
 
+**Current automatic workflow (2026-10-04):** Uploads pass `automatic_reconstruction`; `reconstruct()` posts prepared runs/retries to `/jobs/{id}/reconstruct` with explicit dense or auto mode. Health reports usable CUDA. Summaries include geometry source/quality, publication IDs and skip reasons; failures retain the stopped stage. Progress distinguishes dense stereo, surfaces and room estimation. [Automatic contract](../../../AUTOMATIC_RECONSTRUCTION.md).
+
 `client.ts` owns the shared `Job`, `Finding`, `Reference` and `Preprocessing` types plus transport helpers used by the input and review screens.
 
 | Helper                   | Behavior                                                                                                                    |

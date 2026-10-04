@@ -1,0 +1,14 @@
+services:
+  app:
+    environment:
+      RECONSTRUCTION_ROOT: /reconstructions
+      GAUSSIAN_ROOT: /gaussians
+    volumes:
+      - type: bind
+        source: ${RECONSTRUCTION_ASSETS:-./outputs/holo-reconstruction}
+        target: /reconstructions
+        read_only: true
+      - type: bind
+        source: ${GAUSSIAN_ASSETS:-./outputs/holo-gaussians}
+        target: /gaussians
+        read_only: true

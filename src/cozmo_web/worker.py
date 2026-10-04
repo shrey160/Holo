@@ -26,12 +26,55 @@ def execute(folder: Path, settings: Settings):
 
     phase("VALIDATING_INPUT")
     job = json.loads((folder / "job.json").read_text(encoding="utf-8"))
+    if job.get("operation") == "RECONSTRUCT":
+        from .automatic import execute_retry
+
+        result = execute_retry(folder, settings, phase)
+        write_json(folder / "verification.json", result["verification"])
+        write_json(folder / "result.json", result)
+        phase("SUCCEEDED")
+        return
     if job.get("operation") == "PREPROCESS":
         from .preprocessing import execute_preprocessing
 
         result = execute_preprocessing(folder, settings, phase)
         write_json(folder / "verification.json", result["verification"])
         write_json(folder / "result.json", result)
+        if job.get("automatic_reconstruction"):
+            from .automatic import reconstruct
+
+            result["reconstruction"] = reconstruct(folder, settings, phase)
+            write_json(folder / "result.json", result)
+        phase("SUCCEEDED")
+        return
+    if job.get("modality") == "photos":
+        from cozmo_ingestion.multimodal.contracts import MODE_PHOTOS, MultimodalRequest
+        from cozmo_ingestion.multimodal.pipeline import PhotosIngestionPipeline
+        from cozmo_ingestion.multimodal.verify import verify_v2
+
+        from .uploads import prepare_photos
+
+        raw = prepare_photos(folder, settings)
+        reference_path = None
+        if job.get("reference"):
+            reference_path = folder / "annotations/photos-reference.json"
+            write_json(reference_path, job["reference"])
+        phase("INGESTING")
+        result = PhotosIngestionPipeline().run(
+            MultimodalRequest(raw, folder / "bundle", MODE_PHOTOS, reference=reference_path)
+        )
+        phase("VERIFYING")
+        audit = verify_v2(result.output, raw)
+        write_json(folder / "verification.json", audit)
+        write_json(
+            folder / "result.json",
+            {
+                "manifest": result.manifest,
+                "validation": result.report,
+                "verification": audit,
+                "modality": "photos",
+            },
+        )
         phase("SUCCEEDED")
         return
     raw = prepare_capture(folder, settings)
@@ -60,6 +103,12 @@ def execute(folder: Path, settings: Settings):
             "reference_image": image,
         },
     )
+    if job.get("automatic_reconstruction"):
+        from .automatic import finish_automatically
+
+        result = json.loads((folder / "result.json").read_text(encoding="utf-8"))
+        result = finish_automatically(folder, settings, phase, result)
+        write_json(folder / "result.json", result)
     phase("SUCCEEDED")
 
 
@@ -75,7 +124,7 @@ def main():
         message = (
             str(error)
             if isinstance(error, WebError)
-            else "Capture validation failed. Check the complete original export."
+            else "Processing failed. Verified input is retained; check the current stage and retry."
         )
         write_json(args.folder / "error.json", {"code": code, "message": message})
         raise

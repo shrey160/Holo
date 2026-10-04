@@ -1,0 +1,17 @@
+[project]
+name = "holo-gsplat-worker"
+version = "0.1.0"
+requires-python = ">=3.10,<3.11"
+dependencies = [
+  "torch==2.4.1+cu124", "numpy==1.26.4", "opencv-python-headless==4.10.0.84",
+  "gsplat", "pillow==11.3.0", "ninja==1.13.0", "rich==14.1.0", "jaxtyping==0.3.2", "packaging==25.0", "setuptools==75.8.0",
+]
+
+[tool.uv.sources]
+torch = { index = "pytorch" }
+gsplat = { url = "https://github.com/nerfstudio-project/gsplat/releases/download/v1.5.3/gsplat-1.5.3%2Bpt24cu124-cp310-cp310-linux_x86_64.whl" }
+
+[[tool.uv.index]]
+name = "pytorch"
+url = "https://download.pytorch.org/whl/cu124"
+explicit = true

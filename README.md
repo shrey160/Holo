@@ -1,15 +1,47 @@
-# Holo — capture ingestion prototype
+# Holo â€” capture ingestion prototype
 
-Holo is a local application and Python package for validating complete **Sensor Recorder Pro 1.5/build 5 ARKit** exports and the **provided Stray-style dataset**. It prepares traceable inputs for later floor-plan processing. Your recordings live in `test_data/iphn-17`; the separately provided captures live in `test_data/drive_download`. Both formats have their own parsing, association and verification rules.
+Holo is a local application and Python package for validating complete **Sensor Recorder Pro 1.5/build 5 ARKit** exports and the **provided Stray-style dataset**. It prepares traceable inputs and automatically generates dense RGB stereo geometry with a rough floor plan and provisional ceiling estimate in the GPU runtime; the portable CPU runtime produces a labelled sparse preview for verified Sensor Recorder ARKit captures. Your recordings live in `test_data/iphn-17`; the separately provided captures live in `test_data/drive_download`. Both formats have their own parsing, association and verification rules.
 
-The application has two tabs:
+The application has three tabs:
 
 - **Capture guide:** phone settings, reference-object preparation, clockwise room walkthrough and export handoff, from [capture.md](capture.md).
-- **Input & validation:** complete ZIP/file uploads, optional reference metadata/photo, progress, persistent history, verified downloads and a separate preprocessing run with selected-view review.
+- **Input & validation:** complete ZIP/file uploads, optional reference metadata/photo, progress, persistent history, verified downloads and automatic preprocessing/reconstruction. Existing prepared captures can start a separate reconstruction run.
+- **Reconstruction:** published capture results with a rough generated plan, interactive RGB point cloud, display controls and downloads. [Native/Docker setup and interpretation](RECONSTRUCTION_VIEWER.md). Open [the local reconstruction workspace](http://localhost:8000/#reconstruction).
 
-Ingestion retains native RGB frame references, sensor values/timestamps, per-frame intrinsics and supplied camera-to-world poses. Sensor Recorder preprocessing now selects native-grid views, checks image connections and preserves exact K/poses/native IMU, with LiDAR and grounding measurements excluded. Object localization, scale correction and reconstruction remain future stages. Successful ingestion/preprocessing does not establish dimensional accuracy. [Preprocessing commands, system design and evidence](PREPROCESSING.md).
+Ingestion retains native RGB frame references, sensor values/timestamps, per-frame intrinsics and supplied camera-to-world poses. Sensor Recorder preprocessing selects native-grid views, checks image connections and preserves exact K/poses/native IMU. Automatic Holo and optional CLI reconstruction produce fixed-pose sparse geometry and independently checked RGB stereo depth/point clouds. LiDAR and grounding measurements remain excluded; automatic dense plans use provisional supported surfaces and a rectangle prior; CPU previews are coarse coverage envelopes; object localization and scale correction require further work. Room surfaces remain incomplete and dimensional accuracy unverified. [Preprocessing](PREPROCESSING.md), [sparse reconstruction](RECONSTRUCTION.md), [dense setup/design/results](DENSE_RECONSTRUCTION.md).
+
+See [automatic workflow, system design, retry behavior and limitations](AUTOMATIC_RECONSTRUCTION.md).
+
+**Known issue / error baseline (2026-10-04):** native dense reconstruction now completes, including a provisional 2.55 m ceiling, but its rough plan expanded to 4.54 × 4.06 m compared with the earlier approximately 3.33 × 3.85 m result. The root cause remains unresolved; the user requested documentation and a baseline commit before the fix. [Regression evidence and reproduction](NATIVE_DENSE_REGRESSION.md), [committed handoff](CONTEXT.md).
+
+**Native dense reconstruction:** Windows/NVIDIA users can run the full RGB stereo → surfaces → rough plan/ceiling → interactive 3D workflow without Docker using the official COLMAP CUDA executable alongside the existing Python environment. [Installer, configuration and verification](NATIVE_DENSE.md). Holo shows backend readiness, a quality selector, processing stages and provisional room/ceiling summaries. CPU-only installations still produce sparse previews with no ceiling estimate.
 
 The product is **Holo**. Existing `cozmo-ingestion`, `cozmo_ingestion`, `cozmo_web` and `cozmo-*` command identifiers remain unchanged for compatibility.
+
+The separate CPU `cozmo-grounding` diagnostic checks opening-reference corner poses and unconstrained size against fixed source cameras, with an offline editor and optional accepted-stereo/surface comparisons. Its reviewed v4 report incorporates the confirmed marks and thickness below 1 cm; controlled pixel-center, holdout and point-fitting experiments still fail the residual gate. No correction or exact floor height is claimed. [Grounding workflow](GROUNDING.md), [reviewed investigation/results](GROUNDING_DIAGNOSTICS.md), [subsequent structural plan](GROUNDING_PLAN.md). Existing geometry remains unchanged.
+
+The separate CPU `cozmo-surfaces` stage now proposes floor/wall planes from verified dense RGB and provides image-linked evidence, occupied patches and furniture/ambiguity flags. Surface identities remain unconfirmed and no floorplan is generated. [Surface design, commands and findings](SURFACES.md).
+
+The separate CPU `cozmo-boundaries` stage binds reviewed image regions to accepted surface samples and projects supported wall spans into a local floor frame. The verified single-room trial retains 11 floor cells and one approximately 0.599 source-estimated metre wall projection. Assistant architectural decisions remain hypotheses; missing coverage stays open, and no floor-wall junction, room corner, closed polygon or measured room dimensions are certified. [Commands, review contract and results](PARTIAL_BOUNDARIES.md), [module ownership](src/cozmo_reconstruction/boundaries/README.md). Native and Docker execution use the existing reconstruction runtime; Holo HTTP integration remains subsequent work.
+
+## Input modalities
+
+[Three-modality ingestion design](INPUT_MODALITIES_PLAN.md) covers video, per-room photos and raw LiDAR exports. A modality-neutral `canonical-capture-2` schema is shared by the **Photos** and **LiDAR** CLI modes.
+
+```shell
+# Photos: one room folder or a parent of per-room folders (JPEG/PNG only).
+uv run --locked cozmo-ingest --mode photos --source ../test_data/Room-1 \
+  --output outputs/photos-room1 --room-label "Room 1" --reference outputs/a4-reference.json
+uv run --locked cozmo-verify --capture outputs/photos-room1 --source ../test_data/Room-1
+uv run --locked cozmo-verify --capture outputs/photos-room1   # portable bundle only
+
+# LiDAR: inspected Stray-style raw-depth export; depth/confidence retained.
+uv run --locked cozmo-ingest --mode lidar --source ../test_data/drive_download/single_room/c00a170fe1 \
+  --output outputs/lidar-single-room --ffmpeg /path/to/ffmpeg
+uv run --locked cozmo-verify --capture outputs/lidar-single-room --source ../test_data/drive_download/single_room/c00a170fe1
+```
+
+Photo bundles copy originals into `sources/`, record EXIF/orientation and derive room membership from preserved paths; no camera K/poses are invented and no scale is applied. LiDAR bundles retain raw `uint16` depth and optional `uint8` confidence with explicit `FORMAT_REFERENCE_ASSUMED` convention provenance, populate supplied per-frame K/poses, and keep geometry readiness `CONVENTIONS_UNVERIFIED` (no fusion or unit conversion). Holo exposes the modes as **Photos / Videos + intrinsics / Lidar**; Holo's Lidar upload and photo reconstruction are not implemented yet. Plain no-tracking video (dropped card 4) is not offered.
 
 ## Quick start: Docker
 
@@ -19,9 +51,11 @@ From `proto-2`, with Docker Desktop using Linux containers:
 docker compose up --build --detach --wait
 ```
 
-Open **http://localhost:8000**. The image includes Python, FFmpeg/FFprobe and the compiled frontend. Jobs and captures persist in the named `captures` volume. `docker compose down` stops the app and keeps its data; adding `--volumes` removes that data. Initial build needs network access; processing and the bundled UI run locally afterward.
+Open **http://localhost:8000**. The image includes Python, FFmpeg/FFprobe, CPU PyCOLMAP and the compiled frontend. Jobs and captures persist in the named `captures` volume. `docker compose down` stops the app and keeps its data; adding `--volumes` removes that data. Initial build needs network access; processing and the bundled UI run locally afterward.
 
 See [WEB_SETUP.md](WEB_SETUP.md) for ports, limits, storage, CLI container use and troubleshooting.
+
+To show separately published plan/3D results, use the optional `compose.reconstruction.yaml` override. [Publisher and viewer setup](RECONSTRUCTION_VIEWER.md). The standard compose command generates labelled sparse previews. Add `-f compose.gpu.yaml` after the reconstruction override for automatic dense RGB/surfaces/floor/walls/ceiling processing; see [the automatic runtime guide](AUTOMATIC_RECONSTRUCTION.md). Historical published results remain available.
 
 ## Quick start: native development
 
@@ -30,15 +64,15 @@ Prerequisites:
 | Tool | Requirement |
 |---|---|
 | uv | 0.12.1 or newer; [installation](https://docs.astral.sh/uv/getting-started/installation/) |
-| Python | 3.12 default; uv can obtain it if missing. Package allows 3.12–3.14; executed checks used 3.12.14 |
+| Python | 3.12 default; uv can obtain it if missing. Package allows 3.12â€“3.14; executed checks used 3.12.14 |
 | FFmpeg / FFprobe | Both discoverable through PATH, or explicit FFmpeg path with FFprobe alongside/on PATH; [downloads](https://ffmpeg.org/download.html) |
 | Node / npm | Node 24 LTS for frontend development/build; not required for CLI-only use or running Docker |
 
 Terminal 1, from `proto-2`:
 
 ```shell
-uv sync --locked --extra web
-uv run --locked --extra web cozmo-web --reload
+uv sync --locked --extra web --extra reconstruct
+uv run --locked --extra web --extra reconstruct cozmo-web --reload
 ```
 
 Terminal 2, from `proto-2/frontend`:
@@ -52,7 +86,7 @@ Open **http://localhost:5173**. Vite proxies `/api` to the Python server on port
 
 If media tools are absent from PATH, append `--ffmpeg "C:/tools/ffmpeg/bin/ffmpeg.exe"` to the server command, using your actual installed path. `FFMPEG_PATH` is also supported. Stop the native server before dependency/metadata changes and uv sync on Windows, where its executable can be locked.
 
-For compiled native mode, run `npm run build` from `frontend`, then `uv run --locked --extra web cozmo-web` from `proto-2` and open port 8000. [Full setup/configuration](WEB_SETUP.md), [frontend guide](frontend/README.md).
+For compiled native mode, run `npm run build` from `frontend`, then `uv run --locked --extra web --extra reconstruct cozmo-web` from `proto-2` and open port 8000. [Full setup/configuration](WEB_SETUP.md), [frontend guide](frontend/README.md).
 
 ## CLI-only setup
 
@@ -66,11 +100,15 @@ uv run --locked cozmo-verify --help
 
 uv creates this project's own `.venv`. The ingestion core has no third-party runtime dependencies; the default development group includes test/lint tooling. `--extra preprocess` adds NumPy/OpenCV for CLI preprocessing. `--extra web` includes preprocessing and API dependencies. Keep the needed extra on uv commands so a sync does not remove it.
 
+`--extra reconstruct` adds pinned PyCOLMAP 4.2.1 for `cozmo-reconstruct`. It supports the automatic Holo worker and separate native/CPU Docker CLI stage. [Setup and output review](RECONSTRUCTION.md).
+
+`cozmo-dense` estimates RGB stereo depth using a separate Linux CUDA worker (`docker build --target dense`, then `docker run --gpus all`). The optional `dense` and `reconstruct` extras intentionally conflict because CPU/CUDA distributions provide the same module. Windows CPU can verify the resulting dense artifacts with `--extra reconstruct` and `--verify-only`; its wheel cannot run PatchMatch inference. [Commands and limitations](DENSE_RECONSTRUCTION.md).
+
 `uv.lock` fixes project dependency resolution, and `--locked` refuses stale metadata. The build backend is specified separately in `pyproject.toml`. Initial uncached setup needs network access; ingestion itself is offline. Nothing imports prototype-1 or a developer-specific Python path. Recreate environments on other machines; do not distribute `.venv`, `.uv-cache` or `node_modules`.
 
 ## Input workflow
 
-1. Follow [capture.md](capture.md): iPhone 15 and above is recommended. Start outside the doorway, record one known-size object for 3–5 seconds at the opening only, then capture doorways/walls and room connections continuously. Leave the object at the first entrance.
+1. Follow [capture.md](capture.md): iPhone 15 and above is recommended. Start outside the doorway, record one known-size object for 3â€“5 seconds at the opening only, then capture doorways/walls and room connections continuously. Leave the object at the first entrance.
 2. Preserve the complete original export. Sensor Recorder sessions include `meta.json`, `wide.mp4`, `arkit_pose.csv` and enabled sensor CSV sidecars; metadata/schema validation determines required streams. Do not trim/re-encode the MP4 or upload it alone.
 3. In **Input & validation**, select one complete ZIP or the exported files from one session. Add a label, optional reference dimensions/time interval and a JPEG/PNG photo of the opening object (up to 10 MiB). The photo can be attached without declaring dimensions.
 4. Follow upload progress, then server validation/verification. Inspect findings; original observations remain retained.
@@ -98,8 +136,10 @@ Do not attach the A4 declaration from your recordings to these captures: the pro
 |---|---|---|
 | `src/` | Installed Python packages and dependency boundary | [Source map](src/README.md) |
 | `src/cozmo_ingestion/` | Domain pipeline, records, bundle storage, reader and verifier | [Core](src/cozmo_ingestion/README.md) |
-| `src/cozmo_ingestion/adapters/` | Version-specific source parsing/schema validation | [Adapters](src/cozmo_ingestion/adapters/README.md) |
+| `src/cozmo_ingestion/adapters/` | Version-specific video source parsing/schema validation | [Adapters](src/cozmo_ingestion/adapters/README.md) |
+| `src/cozmo_ingestion/multimodal/` | `canonical-capture-2` contracts, photo adapter/media and catalog dispatch | [Input modalities](src/cozmo_ingestion/multimodal/README.md) |
 | `src/cozmo_preprocessing/` | View selection, image matching, native IMU association and derived verification | [Preprocessing](src/cozmo_preprocessing/README.md) |
+| `src/cozmo_reconstruction/` | Fixed-camera sparse tracks, model/feature audits and CLI publication | [Reconstruction](src/cozmo_reconstruction/README.md) |
 | `src/cozmo_web/` | API, safe uploads, isolated jobs, persistence and exports | [Web service](src/cozmo_web/README.md) |
 | `frontend/` | React/TypeScript/Vite application | [Frontend](frontend/README.md) |
 | `tests/` | Behavioral cases and synthetic fixtures | [Tests](tests/README.md) |
@@ -121,6 +161,8 @@ The core pipeline owns parsing/normalization/transactional publication. The opti
 | [WEB_SETUP.md](WEB_SETUP.md) | Docker/native modes, environment variables, limits and operations |
 | [WEB_RESULTS.md](WEB_RESULTS.md) | Current Windows/Linux/browser/packaging observations and limitations |
 | [PREPROCESSING.md](PREPROCESSING.md) | RGB/pose/IMU preprocessing contract, commands, architecture and verified results |
+| [PREPROCESSING_REVIEW.md](PREPROCESSING_REVIEW.md), [RECONSTRUCTION_PLAN.md](RECONSTRUCTION_PLAN.md) | Weak-link/revisit review and staged reconstruction research; first sparse trial executed |
+| [RECONSTRUCTION.md](RECONSTRUCTION.md) | Fixed-camera sparse CLI, native/Docker setup, source/track audits and actual trials |
 | [SUPPLIED_DATA.md](SUPPLIED_DATA.md) | Provided Stray-style input contract, clock association and ingestion evidence |
 | [INGESTION_RESULTS.md](INGESTION_RESULTS.md) | Original iOS ingestion/source-value verification |
 | [REFACTOR_RESULTS.md](REFACTOR_RESULTS.md) | Historical modularization/uv packaging evidence |
@@ -142,7 +184,7 @@ uv run --locked cozmo-verify --capture outputs/my-single-run --source ../test_da
 
 If FFmpeg is not on `PATH`, append `--ffmpeg "C:/tools/ffmpeg/bin/ffmpeg.exe"` on Windows, using the actual installed path. On macOS/Linux use the installed executable path. No developer-specific search location is built into the code.
 
-`--annotations` is optional. The example declares a user-reported 0.210×0.297 m reference and a first-five-second candidate interval tied to the exact video SHA-256. A new video needs its own declaration/hash; it is valid to ingest without one. A declaration does not assert object visibility or apply scale.
+`--annotations` is optional. The example declares a user-reported 0.210Ã—0.297 m reference and a first-five-second candidate interval tied to the exact video SHA-256. A new video needs its own declaration/hash; it is valid to ingest without one. A declaration does not assert object visibility or apply scale.
 
 Use a new output folder for every run. Source/output overlap and existing outputs are rejected. A failed run retains a sibling `<output>.ingest-<id>` folder with diagnostics; only a validated run is published at the final path. Unsupported export versions, stream schemas, units, axes and clock/count mismatches fail explicitly.
 
@@ -180,18 +222,18 @@ Raw assets are referenced, not copied. Keep the original folder when transportin
 | `validation/report.json`, `validation/summary.md` | Structural checks, readiness and explicit quality/unknown findings |
 | `runtime.json` | Execution timing, Python/tool versions and commands; excluded from deterministic content hashes |
 
-`READY_WITH_FINDINGS` means the ingestion contract passed. Physical synchronization, camera–IMU extrinsics and metric accuracy remain unverified. Raw-IMU VIO and RGB-D readiness are false. Frames reference the original MP4; ingestion does not export thousands of JPEGs, rotate pixels, select views or refine trajectories.
+`READY_WITH_FINDINGS` means the ingestion contract passed. Physical synchronization, cameraâ€“IMU extrinsics and metric accuracy remain unverified. Raw-IMU VIO and RGB-D readiness are false. Frames reference the original MP4; ingestion does not export thousands of JPEGs, rotate pixels, select views or refine trajectories.
 
 ## Development and submission checks
 
 ```shell
-uv run --locked --extra web python -m unittest discover -s tests -v
+uv run --locked --extra web --extra reconstruct python -m unittest discover -s tests -v
 uv run --locked --extra web ruff check .
 uv run --locked --extra web ruff format --check .
 uv build
 ```
 
-The full suite includes ingestion, preprocessing and web behavioral tests. The current **53 cases pass on Windows and Linux**, including source/geometry retention, input exclusions, image matching, child-run/export behavior and tamper rejection. Omitting optional extras skips their test modules. Synthetic exports and injected services cover contract boundaries; real recordings separately exercise FFmpeg ingestion and preprocessing. See [tests/README.md](tests/README.md) for coverage and focused/Linux commands. From `frontend`, run `npm run build` and `npm run format:check`.
+The full suite includes ingestion, preprocessing, sparse/dense reconstruction, surface evidence and web behavioral tests: **143 cases** cover source/geometry retention, input exclusions, image matching, dense consistency, plane/patch evidence, furniture ambiguity, child-run/export behavior and tamper rejection. Omitting optional extras skips their test modules. Synthetic exports and injected services cover contract boundaries; real recordings separately exercise actual processing. See [tests/README.md](tests/README.md) for focused/Linux commands. From `frontend`, run `npm run build` and `npm run format:check`.
 
 For deterministic replay, ingest again to a sibling output folder and then run:
 
@@ -201,8 +243,26 @@ uv run --locked cozmo-verify --capture outputs/my-single-run --source ../test_da
 
 Replay compares manifests and all declared content hashes. Runtime timing is excluded. Changing raw-root layout alters recorded hints, so the equality check assumes equivalent source/output layout.
 
-`uv build` produces a wheel and source archive in ignored `dist/`. The wheel contains the ingestion, preprocessing and web Python packages with CLI entry points; preprocessing/web dependencies remain optional, and frontend assets are built separately. The source archive also includes frontend source/npm lockfile, tests, Docker configuration, uv lockfile, capture declarations and folder documentation. Neither includes videos, `.venv`, dependency/cache directories or generated bundles. Raw recording data must be supplied separately. Docker contains the compiled UI. Detailed evidence is in [WEB_RESULTS.md](WEB_RESULTS.md) and [PREPROCESSING.md](PREPROCESSING.md).
+`uv build` produces a wheel and source archive in ignored `dist/`. The wheel contains ingestion, preprocessing, reconstruction (including dense modules) and web packages with CLI entry points; their numerical/backend/web dependencies remain optional, and frontend assets are built separately. The source archive includes frontend/npm lockfile, tests, Docker configuration, uv lockfile, capture declarations and module documentation. Neither includes videos, `.venv`, dependency/cache directories or generated bundles. Supply raw data separately. Default dense inference uses the separate CUDA target; the standalone CPU wheel exposes result verification. Docker app contains the compiled UI. Evidence: [web](WEB_RESULTS.md), [preprocessing](PREPROCESSING.md), [dense reconstruction](DENSE_RECONSTRUCTION.md).
 
 The root `ingest.py`, `verify_capture.py` and `capture_reader.py` are thin compatibility entry points. Use `uv run --locked python ingest.py ...` for the old script command, and use `cozmo_ingestion` for new imports. All implementation lives under `src/`.
 
-Android, ordinary video/photos, LiDAR decoding and reconstruction remain future stages. Preprocessing currently supports the inspected Sensor Recorder iOS contract; provided Stray-style captures remain ingestion-only.
+Android, ordinary video/photos, LiDAR decoding and floorplan extraction remain future stages. Fixed-pose sparse and RGB stereo iOS reconstruction are available through optional CLIs; incomplete surfaces require review. Preprocessing currently supports the inspected Sensor Recorder iOS contract; provided Stray-style captures remain ingestion-only.
+
+## Optional Gaussian appearance
+
+[Gaussian experiment](GAUSSIANS.md) adds a separate trained appearance scene beside the existing rough plan and point cloud. CPU source preparation/publication use the main uv environment; GPU training uses an isolated pinned uv/Docker worker. Holo can view published scenes natively or through read-only Docker catalogs without GPU Python dependencies. Physical dimensions and structural coverage remain unverified.
+
+The recorded single-room Gaussian trial is available in Holo: **Open Gaussian view** in Reconstruction. It uses 100,000 Gaussians, 90 training/10 photometric holdout views, and improves mean PSNR from 10.36 to 21.94 dB. The held-out views also contributed to stereo initialization; this is not independent geometry validation. Unseen viewpoints remain fragile; physical dimensions are unverified. The full Windows/Linux suite now passes 109 cases.
+
+## Floorplan refinement and report references
+
+[CPU floorplan refinement](FLOORPLAN_OPTIMIZATION.md) adds a structure-focused layer, original-occupancy comparison and bounded robust line suggestions without new model downloads. [Final report notes](FINAL_REPORT_NOTES.md) record deferred Gaussian refinement and the approximate user-reported 2.6 m ceiling reference, stored separately in [evaluation annotations](evaluation_annotations/README.md). Physical dimensions remain unverified.
+
+
+## Complete rough room plan
+
+The Reconstruction tab now displays **Single room - complete rough plan**: a complete inferred rectangular outline, approximate entrance, about **3.2 × 4.1 m** at source-estimated scale and the user-supplied **about 2.6 m ceiling**. SVG/JSON downloads and evidence comparison are available; RGB 3D is retained. This opt-in draft allows errors and does not establish physical accuracy. [Algorithm and native/Docker workflow](FLOORPLAN_OPTIMIZATION.md).
+
+
+The newest furnished rough plan corrects the entrance to the bottom left, adds approximate bed/desk/chair/wardrobe/folding-chair positions and a **provisional 2.53 m ceiling envelope estimate**. The supplied ~2.6 m measurement is a separate comparison reference. Holo offers matching 3D floor outlines and an estimated-height shortcut. [Method, assumptions and commands](FLOORPLAN_OPTIMIZATION.md).

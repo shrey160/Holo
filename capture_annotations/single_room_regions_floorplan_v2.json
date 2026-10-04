@@ -1,0 +1,1594 @@
+{
+  "authority": "ASSISTANT_VISUAL_REVIEW",
+  "coordinate_convention": "dense image edges; pixel center x+0.5,y+0.5; no rotation",
+  "floor_plane_id": "P02",
+  "human_confirmed": false,
+  "identity": {
+    "dense_manifest_sha256": "21d7be587975b5148715429d9c64e3348674f19fca50f067ab396c66ba3c4c81",
+    "grounding_manifest_sha256": "7b502aabc74cde2051b3aefc7514f4e217c48c1c88ef6dc7d9454fa1d99634fc",
+    "ingestion_manifest_sha256": "2d576ecee5a7f8ddcea2ed41baae40c02945badbb4f20a1327d6ff518ea46110",
+    "prepared_manifest_sha256": "4711685a221ca498d3f8ee49405aa902cbb0deb1bccb59a1327aabe5305ba8cb",
+    "source_video_sha256": "1c1aa4b259f934d147cb2adbdbedbda6f70ce641637c7278633cca7561a6e073",
+    "sparse_manifest_sha256": "0f441622e40ea69c28ac32a20b67143931a2393f1bd79cd1483e6dd678b8ef52",
+    "surface_manifest_sha256": "36c6033a6513ccfb31d6751db06dad07af360ee95d8faa3d52171b281291bbc4"
+  },
+  "regions": [
+    {
+      "evidence_overlay_sha256": "c24f26de97e2dfbef76375361a2a584ec0bfe965f00ad2f48e05e23f2a6b1a61",
+      "frame_id": "sr-42944f5617fadb80:000000",
+      "id": "R001",
+      "image": "000000.jpg",
+      "image_size": [
+        960,
+        540
+      ],
+      "observations_sha256": "ee6edc8215a27c90a9d8490327962eedd6f528f00c267e903f5c72bed43ab67b",
+      "plane_id": "P02",
+      "polygon_dense": [
+        [
+          4,
+          4
+        ],
+        [
+          760,
+          4
+        ],
+        [
+          760,
+          536
+        ],
+        [
+          4,
+          536
+        ]
+      ],
+      "rank": 0,
+      "reason": "Visible local tiled floor only; reference object is separately excluded. This is not the whole room footprint.",
+      "relative_seconds": "0.000000",
+      "role": "FLOOR",
+      "source_rgb_sha256": "80473156f7d184c76febc4f54441b95e52084fcc60266c1f6fbd8a0dfa00c737"
+    },
+    {
+      "evidence_overlay_sha256": "c24f26de97e2dfbef76375361a2a584ec0bfe965f00ad2f48e05e23f2a6b1a61",
+      "frame_id": "sr-42944f5617fadb80:000000",
+      "id": "R002",
+      "image": "000000.jpg",
+      "image_size": [
+        960,
+        540
+      ],
+      "observations_sha256": "ee6edc8215a27c90a9d8490327962eedd6f528f00c267e903f5c72bed43ab67b",
+      "plane_id": "P02",
+      "polygon_dense": [
+        [
+          205,
+          55
+        ],
+        [
+          760,
+          55
+        ],
+        [
+          760,
+          460
+        ],
+        [
+          205,
+          460
+        ]
+      ],
+      "rank": 0,
+      "reason": "Opening notebook/binding excluded from floor evidence. Its dimensions and grounding geometry are not used.",
+      "relative_seconds": "0.000000",
+      "role": "FURNITURE",
+      "source_rgb_sha256": "80473156f7d184c76febc4f54441b95e52084fcc60266c1f6fbd8a0dfa00c737"
+    },
+    {
+      "evidence_overlay_sha256": "1ee08975b3647cc35ad2a0c8236548db94fa882fb7caa327363f10a8521d55e7",
+      "frame_id": "sr-42944f5617fadb80:000150",
+      "id": "R003",
+      "image": "000150.jpg",
+      "image_size": [
+        960,
+        540
+      ],
+      "observations_sha256": "a9252a6a13dc7baf6ec67f094c88c2b61e86f31d3651f5d20c8a2b63780cab80",
+      "plane_id": "P02",
+      "polygon_dense": [
+        [
+          4,
+          4
+        ],
+        [
+          750,
+          4
+        ],
+        [
+          750,
+          536
+        ],
+        [
+          4,
+          536
+        ]
+      ],
+      "rank": 150,
+      "reason": "Visible local tiled floor only; reference object is separately excluded. This is not the whole room footprint.",
+      "relative_seconds": "2.500909",
+      "role": "FLOOR",
+      "source_rgb_sha256": "fa57c9b224b8dc14c7443058dc19a615e2d38cab6aa84193fd18be95b9818f47"
+    },
+    {
+      "evidence_overlay_sha256": "1ee08975b3647cc35ad2a0c8236548db94fa882fb7caa327363f10a8521d55e7",
+      "frame_id": "sr-42944f5617fadb80:000150",
+      "id": "R004",
+      "image": "000150.jpg",
+      "image_size": [
+        960,
+        540
+      ],
+      "observations_sha256": "a9252a6a13dc7baf6ec67f094c88c2b61e86f31d3651f5d20c8a2b63780cab80",
+      "plane_id": "P02",
+      "polygon_dense": [
+        [
+          230,
+          70
+        ],
+        [
+          735,
+          70
+        ],
+        [
+          735,
+          425
+        ],
+        [
+          230,
+          425
+        ]
+      ],
+      "rank": 150,
+      "reason": "Opening notebook/binding excluded from floor evidence. Its dimensions and grounding geometry are not used.",
+      "relative_seconds": "2.500909",
+      "role": "FURNITURE",
+      "source_rgb_sha256": "fa57c9b224b8dc14c7443058dc19a615e2d38cab6aa84193fd18be95b9818f47"
+    },
+    {
+      "evidence_overlay_sha256": "0a1e8b3ec853e750beca0774742958d2f23eec2f7008232e01c38ca3a003e4e3",
+      "frame_id": "sr-42944f5617fadb80:000210",
+      "id": "R005",
+      "image": "000210.jpg",
+      "image_size": [
+        960,
+        540
+      ],
+      "observations_sha256": "7ab7a7c6bcc7d0fdfe9b669103838c0eb9b61fcb785206aad2cf2e0ba3e70f70",
+      "plane_id": "P02",
+      "polygon_dense": [
+        [
+          4,
+          4
+        ],
+        [
+          625,
+          4
+        ],
+        [
+          625,
+          536
+        ],
+        [
+          4,
+          536
+        ]
+      ],
+      "rank": 210,
+      "reason": "Visible local tiled floor only; reference object is separately excluded. This is not the whole room footprint.",
+      "relative_seconds": "3.501273",
+      "role": "FLOOR",
+      "source_rgb_sha256": "2eb9fb3ee0d5e5f9819e91e06d2798121e84e22f6ca46d2f42fc9feeba5cc8c8"
+    },
+    {
+      "evidence_overlay_sha256": "0a1e8b3ec853e750beca0774742958d2f23eec2f7008232e01c38ca3a003e4e3",
+      "frame_id": "sr-42944f5617fadb80:000210",
+      "id": "R006",
+      "image": "000210.jpg",
+      "image_size": [
+        960,
+        540
+      ],
+      "observations_sha256": "7ab7a7c6bcc7d0fdfe9b669103838c0eb9b61fcb785206aad2cf2e0ba3e70f70",
+      "plane_id": "P02",
+      "polygon_dense": [
+        [
+          345,
+          127
+        ],
+        [
+          630,
+          127
+        ],
+        [
+          630,
+          348
+        ],
+        [
+          345,
+          348
+        ]
+      ],
+      "rank": 210,
+      "reason": "Opening notebook/binding excluded from floor evidence. Its dimensions and grounding geometry are not used.",
+      "relative_seconds": "3.501273",
+      "role": "FURNITURE",
+      "source_rgb_sha256": "2eb9fb3ee0d5e5f9819e91e06d2798121e84e22f6ca46d2f42fc9feeba5cc8c8"
+    },
+    {
+      "evidence_overlay_sha256": "973a51d6218733cd7910a1816684a108eb4f260081c4dacfb74e563e90771421",
+      "frame_id": "sr-42944f5617fadb80:000675",
+      "id": "R007",
+      "image": "000675.jpg",
+      "image_size": [
+        960,
+        540
+      ],
+      "observations_sha256": "85040d9e79892cfd51bc8f88dccea17a332a994c9c760d0741c82c0f28f06ea1",
+      "plane_id": "P07",
+      "polygon_dense": [
+        [
+          4,
+          280
+        ],
+        [
+          207,
+          286
+        ],
+        [
+          245,
+          481
+        ],
+        [
+          6,
+          510
+        ]
+      ],
+      "rank": 675,
+      "reason": "Poster-covered/adjacent fixed wall region beneath the window, excluding curtain, window, bed and floor. Assistant architectural hypothesis.",
+      "relative_seconds": "11.254092",
+      "role": "WALL",
+      "source_rgb_sha256": "0984c689c18a596919b812db29a30ba88b1d4135b54b1a3ec1112817cea275b4"
+    },
+    {
+      "evidence_overlay_sha256": "973a51d6218733cd7910a1816684a108eb4f260081c4dacfb74e563e90771421",
+      "frame_id": "sr-42944f5617fadb80:000675",
+      "id": "R008",
+      "image": "000675.jpg",
+      "image_size": [
+        960,
+        540
+      ],
+      "observations_sha256": "85040d9e79892cfd51bc8f88dccea17a332a994c9c760d0741c82c0f28f06ea1",
+      "plane_id": "P07",
+      "polygon_dense": [
+        [
+          0,
+          0
+        ],
+        [
+          245,
+          0
+        ],
+        [
+          245,
+          270
+        ],
+        [
+          0,
+          270
+        ]
+      ],
+      "rank": 675,
+      "reason": "Window and folded curtain are not safe wall evidence; no floor-line or room-corner inference from these pixels.",
+      "relative_seconds": "11.254092",
+      "role": "UNKNOWN",
+      "source_rgb_sha256": "0984c689c18a596919b812db29a30ba88b1d4135b54b1a3ec1112817cea275b4"
+    },
+    {
+      "evidence_overlay_sha256": "af825874d7d1e7141f7d61360823372b9ee6ddd30608ef19bf4b3741eca1b6f8",
+      "frame_id": "sr-42944f5617fadb80:000735",
+      "id": "R009",
+      "image": "000735.jpg",
+      "image_size": [
+        960,
+        540
+      ],
+      "observations_sha256": "a98ad9091cb36fea7da4a00615ed8defd96a95954f6f519d67f2f0f9acc6de30",
+      "plane_id": "P07",
+      "polygon_dense": [
+        [
+          5,
+          305
+        ],
+        [
+          270,
+          303
+        ],
+        [
+          315,
+          501
+        ],
+        [
+          8,
+          530
+        ]
+      ],
+      "rank": 735,
+      "reason": "Poster-covered/adjacent fixed wall region beneath the window, excluding curtain, window, bed and floor. Assistant architectural hypothesis.",
+      "relative_seconds": "12.254455",
+      "role": "WALL",
+      "source_rgb_sha256": "2a9ea8e170209ce7bb136d54d6ac0b0d0542bd5d7276426aca632e1984493c52"
+    },
+    {
+      "evidence_overlay_sha256": "af825874d7d1e7141f7d61360823372b9ee6ddd30608ef19bf4b3741eca1b6f8",
+      "frame_id": "sr-42944f5617fadb80:000735",
+      "id": "R010",
+      "image": "000735.jpg",
+      "image_size": [
+        960,
+        540
+      ],
+      "observations_sha256": "a98ad9091cb36fea7da4a00615ed8defd96a95954f6f519d67f2f0f9acc6de30",
+      "plane_id": "P07",
+      "polygon_dense": [
+        [
+          0,
+          0
+        ],
+        [
+          350,
+          0
+        ],
+        [
+          350,
+          285
+        ],
+        [
+          0,
+          285
+        ]
+      ],
+      "rank": 735,
+      "reason": "Window and folded curtain are not safe wall evidence; no floor-line or room-corner inference from these pixels.",
+      "relative_seconds": "12.254455",
+      "role": "UNKNOWN",
+      "source_rgb_sha256": "2a9ea8e170209ce7bb136d54d6ac0b0d0542bd5d7276426aca632e1984493c52"
+    },
+    {
+      "evidence_overlay_sha256": "b51e84cd0ba2fa523bdd73193f514e8dae8d299b5ea00b2901d19a909f82694c",
+      "frame_id": "sr-42944f5617fadb80:001080",
+      "id": "R011",
+      "image": "001080.jpg",
+      "image_size": [
+        960,
+        540
+      ],
+      "observations_sha256": "f4f224fa2aa64e033cb8b4ce1498c169c2c8d277a6622760647b99e4117766e6",
+      "plane_id": "P07",
+      "polygon_dense": [
+        [
+          270,
+          315
+        ],
+        [
+          685,
+          315
+        ],
+        [
+          710,
+          525
+        ],
+        [
+          244,
+          532
+        ]
+      ],
+      "rank": 1080,
+      "reason": "Poster-covered/adjacent fixed wall region beneath the window, excluding curtain, window, bed and floor. Assistant architectural hypothesis.",
+      "relative_seconds": "18.006547",
+      "role": "WALL",
+      "source_rgb_sha256": "808b190ce522df20c64b15e87a9342b8621dd15f733753c6163ba31aee6dd8a7"
+    },
+    {
+      "evidence_overlay_sha256": "b51e84cd0ba2fa523bdd73193f514e8dae8d299b5ea00b2901d19a909f82694c",
+      "frame_id": "sr-42944f5617fadb80:001080",
+      "id": "R012",
+      "image": "001080.jpg",
+      "image_size": [
+        960,
+        540
+      ],
+      "observations_sha256": "f4f224fa2aa64e033cb8b4ce1498c169c2c8d277a6622760647b99e4117766e6",
+      "plane_id": "P07",
+      "polygon_dense": [
+        [
+          190,
+          190
+        ],
+        [
+          750,
+          190
+        ],
+        [
+          750,
+          310
+        ],
+        [
+          190,
+          310
+        ]
+      ],
+      "rank": 1080,
+      "reason": "Window and folded curtain are not safe wall evidence; no floor-line or room-corner inference from these pixels.",
+      "relative_seconds": "18.006547",
+      "role": "UNKNOWN",
+      "source_rgb_sha256": "808b190ce522df20c64b15e87a9342b8621dd15f733753c6163ba31aee6dd8a7"
+    },
+    {
+      "evidence_overlay_sha256": "e31c39290f05219163474b7d27f1102e0e9b03e7afefd5b734b7aba50ac4bc53",
+      "frame_id": "sr-42944f5617fadb80:000690",
+      "id": "R013",
+      "image": "000690.jpg",
+      "image_size": [
+        960,
+        540
+      ],
+      "observations_sha256": "eb89c33e66787eb51b334bce87f4e0737c372e03df17a5528d9b0481207090c6",
+      "plane_id": "P01",
+      "polygon_dense": [
+        [
+          0,
+          0
+        ],
+        [
+          960,
+          0
+        ],
+        [
+          960,
+          540
+        ],
+        [
+          0,
+          540
+        ]
+      ],
+      "rank": 690,
+      "reason": "Candidate observations overlap bed, desk, chair, curtain/window or uncertain edges; exclude from architectural projection rather than promoting the whole plane.",
+      "relative_seconds": "11.504183",
+      "role": "MIXED",
+      "source_rgb_sha256": "3194e77a527a4fa9ef6338f10223708c89381b9f80408ea6512bff1403bd59fb"
+    },
+    {
+      "evidence_overlay_sha256": "ba2a981c1b2759628f4405cef0c97fd62d057b7be0c6776eaa0f561af068dfe6",
+      "frame_id": "sr-42944f5617fadb80:000750",
+      "id": "R014",
+      "image": "000750.jpg",
+      "image_size": [
+        960,
+        540
+      ],
+      "observations_sha256": "65b777b62cdae36b11c6f546b8a819207074de4f3bc0397857a5068774f0296e",
+      "plane_id": "P01",
+      "polygon_dense": [
+        [
+          0,
+          0
+        ],
+        [
+          960,
+          0
+        ],
+        [
+          960,
+          540
+        ],
+        [
+          0,
+          540
+        ]
+      ],
+      "rank": 750,
+      "reason": "Candidate observations overlap bed, desk, chair, curtain/window or uncertain edges; exclude from architectural projection rather than promoting the whole plane.",
+      "relative_seconds": "12.504546",
+      "role": "MIXED",
+      "source_rgb_sha256": "40d49462c3fbb2fed64be251eeb0e15a3f4e596ab1e83dd2af73525dd868bd6f"
+    },
+    {
+      "evidence_overlay_sha256": "b8833769152601caae731582f799843b4c3806dd54aa0d5cbac39b53a8201664",
+      "frame_id": "sr-42944f5617fadb80:001185",
+      "id": "R015",
+      "image": "001185.jpg",
+      "image_size": [
+        960,
+        540
+      ],
+      "observations_sha256": "ec61848db6bb89f4bb414cf4779a4678ff02088a09670ed15064ba6d044ae862",
+      "plane_id": "P01",
+      "polygon_dense": [
+        [
+          0,
+          0
+        ],
+        [
+          960,
+          0
+        ],
+        [
+          960,
+          540
+        ],
+        [
+          0,
+          540
+        ]
+      ],
+      "rank": 1185,
+      "reason": "Candidate observations overlap bed, desk, chair, curtain/window or uncertain edges; exclude from architectural projection rather than promoting the whole plane.",
+      "relative_seconds": "19.757184",
+      "role": "MIXED",
+      "source_rgb_sha256": "fdf630c7d6c6a66615cc909827af81b44bd6725480313220d8987b878bac05bd"
+    },
+    {
+      "evidence_overlay_sha256": "c6a8aaa77c6cd611374f58232f3122a7afb738d454386c4268a82650b5d053a8",
+      "frame_id": "sr-42944f5617fadb80:001275",
+      "id": "R016",
+      "image": "001275.jpg",
+      "image_size": [
+        960,
+        540
+      ],
+      "observations_sha256": "b09060d9d1a87a15e06f16dd7a6cd6ec027b1bf9a864985c0e755ff9b78abb2a",
+      "plane_id": "P03",
+      "polygon_dense": [
+        [
+          0,
+          0
+        ],
+        [
+          960,
+          0
+        ],
+        [
+          960,
+          540
+        ],
+        [
+          0,
+          540
+        ]
+      ],
+      "rank": 1275,
+      "reason": "Candidate observations overlap bed, desk, chair, curtain/window or uncertain edges; exclude from architectural projection rather than promoting the whole plane.",
+      "relative_seconds": "21.257730",
+      "role": "MIXED",
+      "source_rgb_sha256": "27e5fa6e23979b5fa2f736416dcafbab17e3683789b0d9165b7bba3f259937bf"
+    },
+    {
+      "evidence_overlay_sha256": "8707861af9ca3586d8e523505fd4425244a0f46e87731f9b99d5a5f1586052f9",
+      "frame_id": "sr-42944f5617fadb80:001335",
+      "id": "R017",
+      "image": "001335.jpg",
+      "image_size": [
+        960,
+        540
+      ],
+      "observations_sha256": "6d77955e43d4d88a7f65c753dc0ec5afd77022ca0f9316c79caa84218bad60b3",
+      "plane_id": "P03",
+      "polygon_dense": [
+        [
+          0,
+          0
+        ],
+        [
+          960,
+          0
+        ],
+        [
+          960,
+          540
+        ],
+        [
+          0,
+          540
+        ]
+      ],
+      "rank": 1335,
+      "reason": "Candidate observations overlap bed, desk, chair, curtain/window or uncertain edges; exclude from architectural projection rather than promoting the whole plane.",
+      "relative_seconds": "22.258094",
+      "role": "MIXED",
+      "source_rgb_sha256": "6e9ffac632f266517066da2465b6ef754585d0ea3a806115475528a95f3971c6"
+    },
+    {
+      "evidence_overlay_sha256": "4a1777dcb7872097d52706fa97823fc90d02e32a60ac44b2a58fe64056228ea5",
+      "frame_id": "sr-42944f5617fadb80:001620",
+      "id": "R018",
+      "image": "001620.jpg",
+      "image_size": [
+        960,
+        540
+      ],
+      "observations_sha256": "63ab876a7e87c52cf78881f4b715cf1a4c3c7a325b49213eab930c54b61c2967",
+      "plane_id": "P03",
+      "polygon_dense": [
+        [
+          0,
+          0
+        ],
+        [
+          960,
+          0
+        ],
+        [
+          960,
+          540
+        ],
+        [
+          0,
+          540
+        ]
+      ],
+      "rank": 1620,
+      "reason": "Candidate observations overlap bed, desk, chair, curtain/window or uncertain edges; exclude from architectural projection rather than promoting the whole plane.",
+      "relative_seconds": "27.009822",
+      "role": "MIXED",
+      "source_rgb_sha256": "2678f24d184228b59950c6835254bcf5aa1a67b7b1499cb1703f7b5db9989ace"
+    },
+    {
+      "evidence_overlay_sha256": "b8833769152601caae731582f799843b4c3806dd54aa0d5cbac39b53a8201664",
+      "frame_id": "sr-42944f5617fadb80:001185",
+      "id": "R019",
+      "image": "001185.jpg",
+      "image_size": [
+        960,
+        540
+      ],
+      "observations_sha256": "ec61848db6bb89f4bb414cf4779a4678ff02088a09670ed15064ba6d044ae862",
+      "plane_id": "P04",
+      "polygon_dense": [
+        [
+          0,
+          0
+        ],
+        [
+          960,
+          0
+        ],
+        [
+          960,
+          540
+        ],
+        [
+          0,
+          540
+        ]
+      ],
+      "rank": 1185,
+      "reason": "Candidate observations overlap bed, desk, chair, curtain/window or uncertain edges; exclude from architectural projection rather than promoting the whole plane.",
+      "relative_seconds": "19.757184",
+      "role": "MIXED",
+      "source_rgb_sha256": "fdf630c7d6c6a66615cc909827af81b44bd6725480313220d8987b878bac05bd"
+    },
+    {
+      "evidence_overlay_sha256": "21a1056ce72ac5a4deb5b33ea026df26483f11c2a32941ce8316b7af070bd4f1",
+      "frame_id": "sr-42944f5617fadb80:001245",
+      "id": "R020",
+      "image": "001245.jpg",
+      "image_size": [
+        960,
+        540
+      ],
+      "observations_sha256": "0319ddf98677dd6b734aa72a3b3a48a81f33b35644972de34b403ce3ee661780",
+      "plane_id": "P04",
+      "polygon_dense": [
+        [
+          0,
+          0
+        ],
+        [
+          960,
+          0
+        ],
+        [
+          960,
+          540
+        ],
+        [
+          0,
+          540
+        ]
+      ],
+      "rank": 1245,
+      "reason": "Candidate observations overlap bed, desk, chair, curtain/window or uncertain edges; exclude from architectural projection rather than promoting the whole plane.",
+      "relative_seconds": "20.757548",
+      "role": "MIXED",
+      "source_rgb_sha256": "860164454756266220d9dbf518ca26410cb8e1ec98d52042d480f2f9e52e410a"
+    },
+    {
+      "evidence_overlay_sha256": "d7ec3ecb6cdcad8a09cf46d2227091282bba1397feaea4998ad646ed057de637",
+      "frame_id": "sr-42944f5617fadb80:001530",
+      "id": "R021",
+      "image": "001530.jpg",
+      "image_size": [
+        960,
+        540
+      ],
+      "observations_sha256": "3c68fa2f1c866497b398c4681e506fa094d18e0ffcc24fbfc14433596a46834b",
+      "plane_id": "P04",
+      "polygon_dense": [
+        [
+          0,
+          0
+        ],
+        [
+          960,
+          0
+        ],
+        [
+          960,
+          540
+        ],
+        [
+          0,
+          540
+        ]
+      ],
+      "rank": 1530,
+      "reason": "Candidate observations overlap bed, desk, chair, curtain/window or uncertain edges; exclude from architectural projection rather than promoting the whole plane.",
+      "relative_seconds": "25.509276",
+      "role": "MIXED",
+      "source_rgb_sha256": "83e138af3cd5c21ae2b020d6d0abcfe134448bbdbf805976edcbbfa433c3a629"
+    },
+    {
+      "evidence_overlay_sha256": "773bca1af4a2c24949b140758439b9317ddc3c5a156a836fe5fef92fecb65481",
+      "frame_id": "sr-42944f5617fadb80:001395",
+      "id": "R022",
+      "image": "001395.jpg",
+      "image_size": [
+        960,
+        540
+      ],
+      "observations_sha256": "9114dc7272e7a2329e30c13c549155bb4c88f2f0a64f4ccb2496fc54b34ff1ff",
+      "plane_id": "P05",
+      "polygon_dense": [
+        [
+          0,
+          0
+        ],
+        [
+          960,
+          0
+        ],
+        [
+          960,
+          540
+        ],
+        [
+          0,
+          540
+        ]
+      ],
+      "rank": 1395,
+      "reason": "Blue patterned surface and hanging bags: fixed wall versus movable object unresolved; withheld from architectural geometry.",
+      "relative_seconds": "23.258458",
+      "role": "UNKNOWN",
+      "source_rgb_sha256": "d21bbdd0e5aa4fb15b66bca9076b80e817b569d618096509a2e7059cde49accf"
+    },
+    {
+      "evidence_overlay_sha256": "d7ec3ecb6cdcad8a09cf46d2227091282bba1397feaea4998ad646ed057de637",
+      "frame_id": "sr-42944f5617fadb80:001530",
+      "id": "R023",
+      "image": "001530.jpg",
+      "image_size": [
+        960,
+        540
+      ],
+      "observations_sha256": "3c68fa2f1c866497b398c4681e506fa094d18e0ffcc24fbfc14433596a46834b",
+      "plane_id": "P05",
+      "polygon_dense": [
+        [
+          0,
+          0
+        ],
+        [
+          960,
+          0
+        ],
+        [
+          960,
+          540
+        ],
+        [
+          0,
+          540
+        ]
+      ],
+      "rank": 1530,
+      "reason": "Blue patterned surface and hanging bags: fixed wall versus movable object unresolved; withheld from architectural geometry.",
+      "relative_seconds": "25.509276",
+      "role": "UNKNOWN",
+      "source_rgb_sha256": "83e138af3cd5c21ae2b020d6d0abcfe134448bbdbf805976edcbbfa433c3a629"
+    },
+    {
+      "evidence_overlay_sha256": "aea95372bff67df5fe7c37afd2b6392167ee44dc9829a01aa874b73e82ba49da",
+      "frame_id": "sr-42944f5617fadb80:001605",
+      "id": "R024",
+      "image": "001605.jpg",
+      "image_size": [
+        960,
+        540
+      ],
+      "observations_sha256": "3a11c7468dbc80ac506faec37f37015604b0db61cebf31e9877b6b92bcbff3d9",
+      "plane_id": "P05",
+      "polygon_dense": [
+        [
+          0,
+          0
+        ],
+        [
+          960,
+          0
+        ],
+        [
+          960,
+          540
+        ],
+        [
+          0,
+          540
+        ]
+      ],
+      "rank": 1605,
+      "reason": "Blue patterned surface and hanging bags: fixed wall versus movable object unresolved; withheld from architectural geometry.",
+      "relative_seconds": "26.759731",
+      "role": "UNKNOWN",
+      "source_rgb_sha256": "9e7efa743efac6dd31068fdee22ce2017c052d42dfd60014cc90c253babe0337"
+    },
+    {
+      "evidence_overlay_sha256": "2240cfb781b39832eca437251fc8de657d7c33869881e5823caf6f00d684e7d1",
+      "frame_id": "sr-42944f5617fadb80:001170",
+      "id": "R025",
+      "image": "001170.jpg",
+      "image_size": [
+        960,
+        540
+      ],
+      "observations_sha256": "933ddf2a555e00d0fbd406691df5730bad141df7bba3478bd7d58aaac7a3d19e",
+      "plane_id": "P06",
+      "polygon_dense": [
+        [
+          0,
+          0
+        ],
+        [
+          960,
+          0
+        ],
+        [
+          960,
+          540
+        ],
+        [
+          0,
+          540
+        ]
+      ],
+      "rank": 1170,
+      "reason": "Candidate observations overlap bed, desk, chair, curtain/window or uncertain edges; exclude from architectural projection rather than promoting the whole plane.",
+      "relative_seconds": "19.507093",
+      "role": "MIXED",
+      "source_rgb_sha256": "92507e50709597e2419eaa74b60e74648f1e290a9fcfe5fb7112b6e03dea539e"
+    },
+    {
+      "evidence_overlay_sha256": "b378ec4860b8afb6dae19c0e78b97439037a86b19e1e02e88006a6839e79ceff",
+      "frame_id": "sr-42944f5617fadb80:001230",
+      "id": "R026",
+      "image": "001230.jpg",
+      "image_size": [
+        960,
+        540
+      ],
+      "observations_sha256": "6900c4674afc81f9d2cfdcdc128999469dbe9c64418b1a48f7b435cf3ec6c952",
+      "plane_id": "P06",
+      "polygon_dense": [
+        [
+          0,
+          0
+        ],
+        [
+          960,
+          0
+        ],
+        [
+          960,
+          540
+        ],
+        [
+          0,
+          540
+        ]
+      ],
+      "rank": 1230,
+      "reason": "Candidate observations overlap bed, desk, chair, curtain/window or uncertain edges; exclude from architectural projection rather than promoting the whole plane.",
+      "relative_seconds": "20.507457",
+      "role": "MIXED",
+      "source_rgb_sha256": "8a10431efdb9f630f66c71d7fea6bcc9842cc1fe82f202c950f426a508cf5cdf"
+    },
+    {
+      "evidence_overlay_sha256": "d2eead307ff648ccf14b67e37a352dcd0df328e3a707cf7341198d01eaf04a51",
+      "frame_id": "sr-42944f5617fadb80:001290",
+      "id": "R027",
+      "image": "001290.jpg",
+      "image_size": [
+        960,
+        540
+      ],
+      "observations_sha256": "a9cd217e51f709398217e85ca7c52e6c53d1e947dabca16a2955014af988bcb8",
+      "plane_id": "P06",
+      "polygon_dense": [
+        [
+          0,
+          0
+        ],
+        [
+          960,
+          0
+        ],
+        [
+          960,
+          540
+        ],
+        [
+          0,
+          540
+        ]
+      ],
+      "rank": 1290,
+      "reason": "Candidate observations overlap bed, desk, chair, curtain/window or uncertain edges; exclude from architectural projection rather than promoting the whole plane.",
+      "relative_seconds": "21.507821",
+      "role": "MIXED",
+      "source_rgb_sha256": "7b3a971ce1da202c8d7eaadcb58d25e8ef35474244040c2ad48eddb1eee36f2f"
+    },
+    {
+      "evidence_overlay_sha256": "1fffe0a8b27b67fd0c211700af95815862984d245008de4022df07f6f7ea9cc9",
+      "frame_id": "sr-42944f5617fadb80:000615",
+      "id": "R028",
+      "image": "000615.jpg",
+      "image_size": [
+        960,
+        540
+      ],
+      "observations_sha256": "59b03d6fb9f95dab76e334c6fe816b66e9bbc4c17c9196f4434806ff8b3d0512",
+      "plane_id": "P08",
+      "polygon_dense": [
+        [
+          0,
+          0
+        ],
+        [
+          960,
+          0
+        ],
+        [
+          960,
+          540
+        ],
+        [
+          0,
+          540
+        ]
+      ],
+      "rank": 615,
+      "reason": "Candidate observations overlap bed, desk, chair, curtain/window or uncertain edges; exclude from architectural projection rather than promoting the whole plane.",
+      "relative_seconds": "10.253728",
+      "role": "MIXED",
+      "source_rgb_sha256": "e57f03e0d04c2ca9664b769315f697e2257fc4c4ca8757225990014fa5e394a0"
+    },
+    {
+      "evidence_overlay_sha256": "e31c39290f05219163474b7d27f1102e0e9b03e7afefd5b734b7aba50ac4bc53",
+      "frame_id": "sr-42944f5617fadb80:000690",
+      "id": "R029",
+      "image": "000690.jpg",
+      "image_size": [
+        960,
+        540
+      ],
+      "observations_sha256": "eb89c33e66787eb51b334bce87f4e0737c372e03df17a5528d9b0481207090c6",
+      "plane_id": "P08",
+      "polygon_dense": [
+        [
+          0,
+          0
+        ],
+        [
+          960,
+          0
+        ],
+        [
+          960,
+          540
+        ],
+        [
+          0,
+          540
+        ]
+      ],
+      "rank": 690,
+      "reason": "Candidate observations overlap bed, desk, chair, curtain/window or uncertain edges; exclude from architectural projection rather than promoting the whole plane.",
+      "relative_seconds": "11.504183",
+      "role": "MIXED",
+      "source_rgb_sha256": "3194e77a527a4fa9ef6338f10223708c89381b9f80408ea6512bff1403bd59fb"
+    },
+    {
+      "evidence_overlay_sha256": "ba2a981c1b2759628f4405cef0c97fd62d057b7be0c6776eaa0f561af068dfe6",
+      "frame_id": "sr-42944f5617fadb80:000750",
+      "id": "R030",
+      "image": "000750.jpg",
+      "image_size": [
+        960,
+        540
+      ],
+      "observations_sha256": "65b777b62cdae36b11c6f546b8a819207074de4f3bc0397857a5068774f0296e",
+      "plane_id": "P08",
+      "polygon_dense": [
+        [
+          0,
+          0
+        ],
+        [
+          960,
+          0
+        ],
+        [
+          960,
+          540
+        ],
+        [
+          0,
+          540
+        ]
+      ],
+      "rank": 750,
+      "reason": "Candidate observations overlap bed, desk, chair, curtain/window or uncertain edges; exclude from architectural projection rather than promoting the whole plane.",
+      "relative_seconds": "12.504546",
+      "role": "MIXED",
+      "source_rgb_sha256": "40d49462c3fbb2fed64be251eeb0e15a3f4e596ab1e83dd2af73525dd868bd6f"
+    },
+    {
+      "evidence_overlay_sha256": "b378ec4860b8afb6dae19c0e78b97439037a86b19e1e02e88006a6839e79ceff",
+      "frame_id": "sr-42944f5617fadb80:001230",
+      "id": "R031",
+      "image": "001230.jpg",
+      "image_size": [
+        960,
+        540
+      ],
+      "observations_sha256": "6900c4674afc81f9d2cfdcdc128999469dbe9c64418b1a48f7b435cf3ec6c952",
+      "plane_id": "P09",
+      "polygon_dense": [
+        [
+          0,
+          0
+        ],
+        [
+          960,
+          0
+        ],
+        [
+          960,
+          540
+        ],
+        [
+          0,
+          540
+        ]
+      ],
+      "rank": 1230,
+      "reason": "Candidate observations overlap bed, desk, chair, curtain/window or uncertain edges; exclude from architectural projection rather than promoting the whole plane.",
+      "relative_seconds": "20.507457",
+      "role": "MIXED",
+      "source_rgb_sha256": "8a10431efdb9f630f66c71d7fea6bcc9842cc1fe82f202c950f426a508cf5cdf"
+    },
+    {
+      "evidence_overlay_sha256": "d2eead307ff648ccf14b67e37a352dcd0df328e3a707cf7341198d01eaf04a51",
+      "frame_id": "sr-42944f5617fadb80:001290",
+      "id": "R032",
+      "image": "001290.jpg",
+      "image_size": [
+        960,
+        540
+      ],
+      "observations_sha256": "a9cd217e51f709398217e85ca7c52e6c53d1e947dabca16a2955014af988bcb8",
+      "plane_id": "P09",
+      "polygon_dense": [
+        [
+          0,
+          0
+        ],
+        [
+          960,
+          0
+        ],
+        [
+          960,
+          540
+        ],
+        [
+          0,
+          540
+        ]
+      ],
+      "rank": 1290,
+      "reason": "Candidate observations overlap bed, desk, chair, curtain/window or uncertain edges; exclude from architectural projection rather than promoting the whole plane.",
+      "relative_seconds": "21.507821",
+      "role": "MIXED",
+      "source_rgb_sha256": "7b3a971ce1da202c8d7eaadcb58d25e8ef35474244040c2ad48eddb1eee36f2f"
+    },
+    {
+      "evidence_overlay_sha256": "30f0d3ebedb4501ec17ca798155f50b1afe5a31fbdfd97b4e0467fef4e1dee13",
+      "frame_id": "sr-42944f5617fadb80:001350",
+      "id": "R033",
+      "image": "001350.jpg",
+      "image_size": [
+        960,
+        540
+      ],
+      "observations_sha256": "d0afcbf8b880b5f806d5757e08e0a1f4bad1f4dfcf9689d8fbb36295ffac432f",
+      "plane_id": "P09",
+      "polygon_dense": [
+        [
+          0,
+          0
+        ],
+        [
+          960,
+          0
+        ],
+        [
+          960,
+          540
+        ],
+        [
+          0,
+          540
+        ]
+      ],
+      "rank": 1350,
+      "reason": "Candidate observations overlap bed, desk, chair, curtain/window or uncertain edges; exclude from architectural projection rather than promoting the whole plane.",
+      "relative_seconds": "22.508185",
+      "role": "MIXED",
+      "source_rgb_sha256": "78c4a388f509d53c5316df3d2066f45388dac388c39168f7a6763433356a2e76"
+    },
+    {
+      "evidence_overlay_sha256": "8d50a21dcf2084610cc3da06af8bf6beedac74a47c5cdda85c111c1390a985e8",
+      "frame_id": "sr-42944f5617fadb80:000975",
+      "id": "R034",
+      "image": "000975.jpg",
+      "image_size": [
+        960,
+        540
+      ],
+      "observations_sha256": "1150dc1fb993c04c74df7ddff5707b20e4635b3212530ec949500098656a4956",
+      "plane_id": "P10",
+      "polygon_dense": [
+        [
+          0,
+          0
+        ],
+        [
+          960,
+          0
+        ],
+        [
+          960,
+          540
+        ],
+        [
+          0,
+          540
+        ]
+      ],
+      "rank": 975,
+      "reason": "Candidate observations overlap bed, desk, chair, curtain/window or uncertain edges; exclude from architectural projection rather than promoting the whole plane.",
+      "relative_seconds": "16.255911",
+      "role": "MIXED",
+      "source_rgb_sha256": "92d5e413a2b4a831c4cff8dddbc31a25877aba7be603fd0553185068936770de"
+    },
+    {
+      "evidence_overlay_sha256": "b8833769152601caae731582f799843b4c3806dd54aa0d5cbac39b53a8201664",
+      "frame_id": "sr-42944f5617fadb80:001185",
+      "id": "R035",
+      "image": "001185.jpg",
+      "image_size": [
+        960,
+        540
+      ],
+      "observations_sha256": "ec61848db6bb89f4bb414cf4779a4678ff02088a09670ed15064ba6d044ae862",
+      "plane_id": "P10",
+      "polygon_dense": [
+        [
+          0,
+          0
+        ],
+        [
+          960,
+          0
+        ],
+        [
+          960,
+          540
+        ],
+        [
+          0,
+          540
+        ]
+      ],
+      "rank": 1185,
+      "reason": "Candidate observations overlap bed, desk, chair, curtain/window or uncertain edges; exclude from architectural projection rather than promoting the whole plane.",
+      "relative_seconds": "19.757184",
+      "role": "MIXED",
+      "source_rgb_sha256": "fdf630c7d6c6a66615cc909827af81b44bd6725480313220d8987b878bac05bd"
+    },
+    {
+      "evidence_overlay_sha256": "d2eead307ff648ccf14b67e37a352dcd0df328e3a707cf7341198d01eaf04a51",
+      "frame_id": "sr-42944f5617fadb80:001290",
+      "id": "R036",
+      "image": "001290.jpg",
+      "image_size": [
+        960,
+        540
+      ],
+      "observations_sha256": "a9cd217e51f709398217e85ca7c52e6c53d1e947dabca16a2955014af988bcb8",
+      "plane_id": "P10",
+      "polygon_dense": [
+        [
+          0,
+          0
+        ],
+        [
+          960,
+          0
+        ],
+        [
+          960,
+          540
+        ],
+        [
+          0,
+          540
+        ]
+      ],
+      "rank": 1290,
+      "reason": "Candidate observations overlap bed, desk, chair, curtain/window or uncertain edges; exclude from architectural projection rather than promoting the whole plane.",
+      "relative_seconds": "21.507821",
+      "role": "MIXED",
+      "source_rgb_sha256": "7b3a971ce1da202c8d7eaadcb58d25e8ef35474244040c2ad48eddb1eee36f2f"
+    },
+    {
+      "evidence_overlay_sha256": "b8833769152601caae731582f799843b4c3806dd54aa0d5cbac39b53a8201664",
+      "frame_id": "sr-42944f5617fadb80:001185",
+      "id": "R037",
+      "image": "001185.jpg",
+      "image_size": [
+        960,
+        540
+      ],
+      "observations_sha256": "ec61848db6bb89f4bb414cf4779a4678ff02088a09670ed15064ba6d044ae862",
+      "plane_id": "P11",
+      "polygon_dense": [
+        [
+          0,
+          0
+        ],
+        [
+          960,
+          0
+        ],
+        [
+          960,
+          540
+        ],
+        [
+          0,
+          540
+        ]
+      ],
+      "rank": 1185,
+      "reason": "Candidate observations overlap bed, desk, chair, curtain/window or uncertain edges; exclude from architectural projection rather than promoting the whole plane.",
+      "relative_seconds": "19.757184",
+      "role": "MIXED",
+      "source_rgb_sha256": "fdf630c7d6c6a66615cc909827af81b44bd6725480313220d8987b878bac05bd"
+    },
+    {
+      "evidence_overlay_sha256": "21a1056ce72ac5a4deb5b33ea026df26483f11c2a32941ce8316b7af070bd4f1",
+      "frame_id": "sr-42944f5617fadb80:001245",
+      "id": "R038",
+      "image": "001245.jpg",
+      "image_size": [
+        960,
+        540
+      ],
+      "observations_sha256": "0319ddf98677dd6b734aa72a3b3a48a81f33b35644972de34b403ce3ee661780",
+      "plane_id": "P11",
+      "polygon_dense": [
+        [
+          0,
+          0
+        ],
+        [
+          960,
+          0
+        ],
+        [
+          960,
+          540
+        ],
+        [
+          0,
+          540
+        ]
+      ],
+      "rank": 1245,
+      "reason": "Candidate observations overlap bed, desk, chair, curtain/window or uncertain edges; exclude from architectural projection rather than promoting the whole plane.",
+      "relative_seconds": "20.757548",
+      "role": "MIXED",
+      "source_rgb_sha256": "860164454756266220d9dbf518ca26410cb8e1ec98d52042d480f2f9e52e410a"
+    },
+    {
+      "evidence_overlay_sha256": "11811e75de91223f31502ed60e30cb0c2051b94fe45ce1baa7fc1e667996a97e",
+      "frame_id": "sr-42944f5617fadb80:001305",
+      "id": "R039",
+      "image": "001305.jpg",
+      "image_size": [
+        960,
+        540
+      ],
+      "observations_sha256": "f1676fb53cf250787653ba162e49ca328fac4cc26bcf18a56c8b4576816a9755",
+      "plane_id": "P11",
+      "polygon_dense": [
+        [
+          0,
+          0
+        ],
+        [
+          960,
+          0
+        ],
+        [
+          960,
+          540
+        ],
+        [
+          0,
+          540
+        ]
+      ],
+      "rank": 1305,
+      "reason": "Candidate observations overlap bed, desk, chair, curtain/window or uncertain edges; exclude from architectural projection rather than promoting the whole plane.",
+      "relative_seconds": "21.757912",
+      "role": "MIXED",
+      "source_rgb_sha256": "7064b570685ccc22c129a6247e8946f46412298cbb9cce3a156591c7d363c750"
+    },
+    {
+      "evidence_overlay_sha256": "e31c39290f05219163474b7d27f1102e0e9b03e7afefd5b734b7aba50ac4bc53",
+      "frame_id": "sr-42944f5617fadb80:000690",
+      "id": "R043",
+      "image": "000690.jpg",
+      "image_size": [
+        960,
+        540
+      ],
+      "observations_sha256": "eb89c33e66787eb51b334bce87f4e0737c372e03df17a5528d9b0481207090c6",
+      "plane_id": "P01",
+      "polygon_dense": [
+        [
+          325,
+          75
+        ],
+        [
+          505,
+          75
+        ],
+        [
+          505,
+          350
+        ],
+        [
+          325,
+          350
+        ]
+      ],
+      "rank": 690,
+      "reason": "Visible mattress/bed-cover interior: reject as floor. Other P01 image regions remain mixed/excluded.",
+      "relative_seconds": "11.504183",
+      "role": "FURNITURE",
+      "source_rgb_sha256": "3194e77a527a4fa9ef6338f10223708c89381b9f80408ea6512bff1403bd59fb"
+    },
+    {
+      "evidence_overlay_sha256": "ba2a981c1b2759628f4405cef0c97fd62d057b7be0c6776eaa0f561af068dfe6",
+      "frame_id": "sr-42944f5617fadb80:000750",
+      "id": "R044",
+      "image": "000750.jpg",
+      "image_size": [
+        960,
+        540
+      ],
+      "observations_sha256": "65b777b62cdae36b11c6f546b8a819207074de4f3bc0397857a5068774f0296e",
+      "plane_id": "P01",
+      "polygon_dense": [
+        [
+          440,
+          80
+        ],
+        [
+          650,
+          80
+        ],
+        [
+          650,
+          350
+        ],
+        [
+          440,
+          350
+        ]
+      ],
+      "rank": 750,
+      "reason": "Visible mattress/bed-cover interior: reject as floor. Other P01 image regions remain mixed/excluded.",
+      "relative_seconds": "12.504546",
+      "role": "FURNITURE",
+      "source_rgb_sha256": "40d49462c3fbb2fed64be251eeb0e15a3f4e596ab1e83dd2af73525dd868bd6f"
+    },
+    {
+      "evidence_overlay_sha256": "b8833769152601caae731582f799843b4c3806dd54aa0d5cbac39b53a8201664",
+      "frame_id": "sr-42944f5617fadb80:001185",
+      "id": "R045",
+      "image": "001185.jpg",
+      "image_size": [
+        960,
+        540
+      ],
+      "observations_sha256": "ec61848db6bb89f4bb414cf4779a4678ff02088a09670ed15064ba6d044ae862",
+      "plane_id": "P01",
+      "polygon_dense": [
+        [
+          680,
+          300
+        ],
+        [
+          930,
+          300
+        ],
+        [
+          930,
+          480
+        ],
+        [
+          680,
+          480
+        ]
+      ],
+      "rank": 1185,
+      "reason": "Visible mattress/bed-cover interior: reject as floor. Other P01 image regions remain mixed/excluded.",
+      "relative_seconds": "19.757184",
+      "role": "FURNITURE",
+      "source_rgb_sha256": "fdf630c7d6c6a66615cc909827af81b44bd6725480313220d8987b878bac05bd"
+    },
+    {
+      "id": "R046",
+      "evidence_overlay_sha256": "e31c39290f05219163474b7d27f1102e0e9b03e7afefd5b734b7aba50ac4bc53",
+      "frame_id": "sr-42944f5617fadb80:000690",
+      "image": "000690.jpg",
+      "image_size": [
+        960,
+        540
+      ],
+      "observations_sha256": "eb89c33e66787eb51b334bce87f4e0737c372e03df17a5528d9b0481207090c6",
+      "rank": 690,
+      "relative_seconds": "11.504183",
+      "source_rgb_sha256": "3194e77a527a4fa9ef6338f10223708c89381b9f80408ea6512bff1403bd59fb",
+      "plane_id": "P12",
+      "role": "WALL",
+      "polygon_dense": [
+        [
+          4,
+          270
+        ],
+        [
+          265,
+          270
+        ],
+        [
+          265,
+          520
+        ],
+        [
+          4,
+          520
+        ]
+      ],
+      "reason": "Assistant visual review of the visible poster-covered wall patch only. Curtain/window, bed/pillow and desk are outside this polygon; other pixels stay unreviewed. This does not certify a whole wall or its junction."
+    },
+    {
+      "id": "R047",
+      "evidence_overlay_sha256": "ba2a981c1b2759628f4405cef0c97fd62d057b7be0c6776eaa0f561af068dfe6",
+      "frame_id": "sr-42944f5617fadb80:000750",
+      "image": "000750.jpg",
+      "image_size": [
+        960,
+        540
+      ],
+      "observations_sha256": "65b777b62cdae36b11c6f546b8a819207074de4f3bc0397857a5068774f0296e",
+      "rank": 750,
+      "relative_seconds": "12.504546",
+      "source_rgb_sha256": "40d49462c3fbb2fed64be251eeb0e15a3f4e596ab1e83dd2af73525dd868bd6f",
+      "plane_id": "P12",
+      "role": "WALL",
+      "polygon_dense": [
+        [
+          4,
+          135
+        ],
+        [
+          275,
+          135
+        ],
+        [
+          275,
+          440
+        ],
+        [
+          4,
+          520
+        ]
+      ],
+      "reason": "Assistant visual review of the visible poster-covered wall patch only. Curtain/window, bed/pillow and desk are outside this polygon; other pixels stay unreviewed. This does not certify a whole wall or its junction."
+    },
+    {
+      "id": "R048",
+      "evidence_overlay_sha256": "9532e9d27d0e3e638c5e27d4509d219f6d4f16e2148ed852922e8fa4d1fb2fb6",
+      "frame_id": "sr-42944f5617fadb80:001065",
+      "image": "001065.jpg",
+      "image_size": [
+        960,
+        540
+      ],
+      "observations_sha256": "bcd890f25b5b7c1519a31a4c1e32ca85bbb422ce8eb80ae4a4fb82a07096d101",
+      "rank": 1065,
+      "relative_seconds": "17.756456",
+      "source_rgb_sha256": "310d1f01111679336e2449efd7b6fca59eaca65878e5e2eb138d00c50fdd38b0",
+      "plane_id": "P12",
+      "role": "WALL",
+      "polygon_dense": [
+        [
+          200,
+          160
+        ],
+        [
+          680,
+          160
+        ],
+        [
+          680,
+          535
+        ],
+        [
+          200,
+          535
+        ]
+      ],
+      "reason": "Assistant visual review of the visible poster-covered wall patch only. Curtain/window, bed/pillow and desk are outside this polygon; other pixels stay unreviewed. This does not certify a whole wall or its junction."
+    }
+  ],
+  "reviewer": "Holo assistant source-image review, 2026-10-04",
+  "schema": "holo-surface-region-review-v1"
+}

@@ -1,5 +1,8 @@
 # RGB, pose and IMU preprocessing
 
+**Current automatic workflow (2026-10-04):** Holo automatic uploads proceed from verified preprocessing to bounded CPU sparse reconstruction and viewer publication. Manual preprocessing and existing prepared runs remain supported; quality findings are retained and do not certify geometry. [Automatic orchestration](AUTOMATIC_RECONSTRUCTION.md).
+
+
 This stage prepares the user's inspected Sensor Recorder iOS captures for a reconstruction trial. It uses RGB, per-frame calibration, supplied ARKit poses and independent accelerometer/gyroscope streams. **LiDAR, confidence, grounding dimensions/photos and evaluation references are excluded.** Stray-style ingestion remains supported, but this first preprocessing version deliberately rejects that adapter because its sensor conventions and acceleration units remain unresolved.
 
 Preprocessing writes a separate immutable derived bundle. It neither modifies the raw capture nor rewrites its ingestion bundle. ARKit metre translations remain the initial scale; physical measurement accuracy, camera/IMU extrinsics and physical timing alignment remain unverified. No new VIO, pose smoothing, drift correction, object detection, depth estimation, room segmentation or floorplan reconstruction runs.
@@ -77,4 +80,4 @@ Browser checks confirmed separate completed history entries, selected-view pagin
 - [OpenCV matching](https://docs.opencv.org/4.13.0/dc/dc3/tutorial_py_matcher.html): SIFT/L2 matching and nearest-neighbor ratio filtering.
 - [FFmpeg options](https://ffmpeg.org/ffmpeg.html): native decoding, frame-rate mode and disabled autorotation.
 
-Next: inspect weak links and the doorway transition, then perform a bounded reconstruction trial. Grounding-object algorithms and LiDAR remain deferred by the user's current decision.
+Weak-link and doorway review is now complete: [findings](PREPROCESSING_REVIEW.md) include bounded temporal/revisit matching and resolution diagnostics without modifying these outputs. The [reconstruction plan](RECONSTRUCTION_PLAN.md) led to the implemented fixed-pose sparse CLI: [native/Docker results and commands](RECONSTRUCTION.md). Dense surfaces and floorplan extraction remain subsequent stages. Grounding-object algorithms and LiDAR remain deferred by the user's current decision.

@@ -80,7 +80,7 @@ class JobRepository:
             jobs.sort(key=lambda j: j["created_at"], reverse=True)
             return jobs[:limit] if limit else jobs
 
-    def create(self, label: str, reference: dict | None) -> dict:
+    def create(self, label: str, reference: dict | None, modality: str = "video") -> dict:
         with self.lock:
             pending = sum(j["state"] not in TERMINAL for j in self.list(None))
             if pending >= self.queue_limit + 1:
@@ -95,6 +95,7 @@ class JobRepository:
                 "state": "RECEIVING",
                 "created_at": now(),
                 "updated_at": now(),
+                "modality": modality,
                 "reference": reference,
                 "summary": None,
                 "error": None,
@@ -110,9 +111,48 @@ class JobRepository:
             return job
 
     def fail(self, job_id: str, code: str, message: str):
-        return self.update(job_id, state="FAILED", error={"code": code, "message": message})
+        changes = {"failed_stage": self.get(job_id)["state"]}
+        result = self.folder(job_id) / "result.json"
+        if result.is_file():
+            try:
+                changes["summary"] = summarize(json.loads(result.read_text(encoding="utf-8")))
+            except (OSError, ValueError, KeyError, TypeError):
+                # A broken result must not prevent persisting failure or stop the queue.
+                pass
+        return self.update(
+            job_id, state="FAILED", error={"code": code, "message": message}, **changes
+        )
 
     def reconcile(self):
         for job in self.list(None):
             if job["state"] not in TERMINAL | {"QUEUED"}:
                 self.fail(job["id"], "INTERRUPTED", "Processing was interrupted. Submit a new run.")
+
+
+def summarize(result):
+    manifest, report = result["manifest"], result["validation"]
+    if manifest.get("schema") == "canonical-capture-2":
+        return {
+            "modality": manifest.get("mode"),
+            "room_count": manifest["room_count"],
+            "image_count": manifest["image_count"],
+            "distinct_image_count": manifest["distinct_image_count"],
+            "profile": manifest.get("profile"),
+            "capabilities": manifest["capabilities"],
+            "findings": report["findings"],
+            "independent_accuracy": report.get("independent_accuracy"),
+            "verification": result["verification"],
+        }
+    return {
+        "frame_count": manifest["frame_count"],
+        "capabilities": manifest["capabilities"],
+        "tracking_states": report["tracking_states"],
+        "findings": report["findings"],
+        "independent_accuracy": report["independent_accuracy"],
+        "grounding": manifest["capabilities"]["grounding_object"],
+        "verification": result["verification"],
+        "preprocessing": result.get("preprocessing"),
+        "preprocessing_verification": result.get("preprocessing_verification"),
+        "reconstruction": result.get("reconstruction"),
+        "automatic_reconstruction": result.get("automatic_reconstruction"),
+    }

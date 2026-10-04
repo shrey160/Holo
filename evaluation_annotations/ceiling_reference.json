@@ -1,0 +1,14 @@
+{
+  "schema": "holo-evaluation-reference-v1",
+  "recorded_date": "2026-10-04",
+  "authority": "USER_REPORTED_MEASUREMENT",
+  "quantity": "ceiling_height",
+  "value_m": 2.6,
+  "precision": "APPROXIMATE",
+  "original_statement": "the measure ceiling height is about 2.6m",
+  "measurement_method": null,
+  "uncertainty_m": null,
+  "capture_id": null,
+  "location": null,
+  "usage": "External comparison reference; not an algorithm input or automatic scale correction"
+}

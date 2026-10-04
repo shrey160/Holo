@@ -37,7 +37,7 @@ export function PreprocessingResult({
       </p>
       <div className="notice">
         {result.readiness === "REVIEW_REQUIRED"
-          ? "Review required before reconstruction."
+          ? "Check coverage findings when interpreting reconstruction."
           : "Ready for a reconstruction trial."}{" "}
         {result.low_baseline_links} links have little camera translation. Visual
         overlap does not establish depth or dimensional accuracy. Review doorway
@@ -128,8 +128,8 @@ export function PreprocessingResult({
       <p className="caption">
         The capture download now includes selected native-grid JPEGs, per-frame
         calibration and poses, original IMU samples, candidate scores,
-        image-pair diagnostics and input usage. No room labels or floorplan have
-        been generated.
+        image-pair diagnostics and input usage. This report describes the
+        prepared inputs; reconstruction results are shown separately.
       </p>
     </section>
   );

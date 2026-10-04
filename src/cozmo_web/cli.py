@@ -34,3 +34,7 @@ def main():
         reload=args.reload,
         reload_dirs=[str(Path(__file__).parent.parent)] if args.reload else None,
     )
+
+
+if __name__ == "__main__":
+    main()

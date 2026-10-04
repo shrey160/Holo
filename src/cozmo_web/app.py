@@ -17,18 +17,22 @@ from starlette.middleware.trustedhost import TrustedHostMiddleware
 
 from cozmo_ingestion.errors import IngestionError
 from cozmo_ingestion.media import find_ffmpeg
+from cozmo_ingestion.multimodal.verify import verify_v2
 from cozmo_ingestion.storage import BundleIntegrity, sha256
 from cozmo_ingestion.verification import verify
 
+from .automatic import backend_available, dense_available, enqueue_reconstruction, verify_automatic
 from .config import Settings
 from .errors import WebError
 from .exports import ExportService
+from .gaussians import gaussian_router
 from .jobs import JobService
 from .preprocessing import enqueue_preprocessing
+from .reconstruction import reconstruction_router
 from .reference_images import read_reference_image, save_reference_image
 from .repository import DataLock, JobRepository
 from .runner import ProcessRunner
-from .schemas import Reference
+from .schemas import PhotosReference, Reference
 from .uploads import safe_name
 
 
@@ -93,6 +97,18 @@ def create_app(settings: Settings | None = None, runner=None) -> FastAPI:
 
     app = FastAPI(title="Holo capture ingestion", lifespan=lifespan, docs_url=None, redoc_url=None)
     app.state.repository, app.state.jobs = repository, jobs
+    app.include_router(
+        gaussian_router(
+            settings.gaussian_root or settings.data_root / "gaussians",
+            settings.reconstruction_root or settings.data_root / "reconstructions",
+        )
+    )
+    app.include_router(
+        reconstruction_router(
+            settings.reconstruction_root or settings.data_root / "reconstructions",
+            settings.data_root / "reconstructions",
+        )
+    )
     app.add_middleware(BodyLimitMiddleware, limit=settings.request_limit, root=settings.data_root)
     app.add_middleware(
         TrustedHostMiddleware, allowed_hosts=["localhost", "127.0.0.1", "testserver"]
@@ -130,12 +146,21 @@ def create_app(settings: Settings | None = None, runner=None) -> FastAPI:
             probe = settings.data_root / (".health-" + uuid.uuid4().hex)
             probe.write_bytes(b"ok")
             probe.unlink()
+            from cozmo_reconstruction.dense.runtime import runtime_status
+
+            runtime = runtime_status()
             return {
                 "status": "ready",
                 "ffmpeg": ffmpeg.name,
                 "ffprobe": ffprobe.name,
                 "max_upload_bytes": settings.request_limit,
                 "max_queue": settings.queue_limit,
+                "automatic_reconstruction": backend_available(),
+                "dense_reconstruction": runtime["available"],
+                "dense_backend": runtime["backend"],
+                "dense_unavailable_reason": runtime["reason"],
+                "reconstruction_mode": settings.reconstruction_mode,
+                "photos_available": True,
             }
         except (OSError, IngestionError):
             return JSONResponse(
@@ -151,16 +176,50 @@ def create_app(settings: Settings | None = None, runner=None) -> FastAPI:
         request: Request,
         files: Annotated[list[UploadFile], File()],
         label: Annotated[str, Form()] = "",
+        modality: Annotated[str, Form()] = "video",
         reference: Annotated[str, Form()] = "",
         reference_image: Annotated[UploadFile | None, File()] = None,
+        automatic_reconstruction: Annotated[bool, Form()] = True,
+        reconstruction_mode: Annotated[str, Form()] = "auto",
     ):
         origin = request.headers.get("origin")
         if origin and urlparse(origin).hostname not in {"localhost", "127.0.0.1"}:
             raise WebError("ORIGIN_DENIED", "Upload from an unsupported origin", 403)
+        if modality not in {"video", "photos"}:
+            raise WebError("INVALID_MODALITY", "Select video or photos", 400)
+        if reconstruction_mode not in {"auto", "dense", "preview"}:
+            raise WebError("INVALID_RECONSTRUCTION_MODE", "Select auto, dense or preview", 400)
+        if (
+            modality == "video"
+            and automatic_reconstruction
+            and reconstruction_mode == "dense"
+            and not dense_available()
+        ):
+            raise WebError(
+                "DENSE_CUDA_UNAVAILABLE",
+                "Dense reconstruction is unavailable. Check system readiness before uploading.",
+                503,
+            )
         if len(label) > 120 or not files or len(files) > settings.member_limit:
             raise WebError("INVALID_INPUT", "Use a short label and one complete export")
         declared_reference = None
-        if reference:
+        if modality == "photos":
+            if reference:
+                try:
+                    declared_reference = PhotosReference.model_validate_json(
+                        reference
+                    ).declaration()
+                except ValidationError as error:
+                    raise WebError(
+                        "INVALID_REFERENCE", "Reference dimensions must be positive"
+                    ) from error
+            if reference_image is not None:
+                raise WebError(
+                    "INVALID_INPUT",
+                    "Choose the reference from the uploaded room photos",
+                    400,
+                )
+        elif reference:
             try:
                 declared_reference = Reference.model_validate_json(reference).model_dump()
             except ValidationError as error:
@@ -171,23 +230,37 @@ def create_app(settings: Settings | None = None, runner=None) -> FastAPI:
         names, seen = [], set()
         for upload in files:
             relative = safe_name(upload.filename or "")
-            if len(relative.parts) != 1 or relative.name.casefold() in seen:
+            if modality == "video" and len(relative.parts) != 1:
                 raise WebError(
                     "INVALID_SELECTION", "Select files from one export without duplicate names"
                 )
-            names.append(relative.name)
-            seen.add(relative.name.casefold())
+            if modality == "photos" and not relative.name.casefold().endswith(
+                (".jpg", ".jpeg", ".png", ".zip")
+            ):
+                raise WebError(
+                    "UNSUPPORTED_IMAGE_FORMAT",
+                    "Photo tier accepts JPEG/PNG only; export HEIC/HEIF to JPEG first",
+                )
+            key = relative.as_posix().casefold()
+            if key in seen:
+                raise WebError(
+                    "INVALID_SELECTION", "Select files from one export without duplicate names"
+                )
+            names.append(relative.as_posix())
+            seen.add(key)
         if any(n.lower().endswith(".zip") for n in names) and len(names) != 1:
             raise WebError("INVALID_SELECTION", "Select one ZIP or the exported files, not both")
         estimated = int(request.headers.get("content-length", settings.request_limit))
         if shutil.disk_usage(settings.data_root).free < estimated * 2 + 10 * 1024**2:
             raise WebError("STORAGE_FULL", "Not enough storage for this capture", 507)
-        job = repository.create(label.strip(), declared_reference)
+        job = repository.create(label.strip(), declared_reference, modality)
         folder = repository.folder(job["id"])
         total = 0
         try:
             for upload, name in zip(files, names, strict=True):
-                with (folder / "incoming" / name).open("xb") as destination:
+                target = folder / "incoming" / Path(name)
+                target.parent.mkdir(parents=True, exist_ok=True)
+                with target.open("xb") as destination:
                     while chunk := await upload.read(1024 * 1024):
                         total += len(chunk)
                         if total > settings.request_limit:
@@ -203,6 +276,10 @@ def create_app(settings: Settings | None = None, runner=None) -> FastAPI:
                 input_files=names,
                 upload_bytes=total,
                 reference_image=image,
+                automatic_reconstruction=automatic_reconstruction if modality == "video" else False,
+                reconstruction_mode=settings.reconstruction_mode
+                if reconstruction_mode == "auto"
+                else reconstruction_mode,
             )
         except Exception:
             repository.fail(
@@ -226,17 +303,42 @@ def create_app(settings: Settings | None = None, runner=None) -> FastAPI:
         return repository.get(job_id)
 
     @app.post("/api/jobs/{job_id}/preprocess", status_code=202)
-    def preprocess(job_id: str, request: Request):
+    def preprocess(
+        job_id: str, request: Request, automatic_reconstruction: Annotated[bool, Form()] = True
+    ):
         origin = request.headers.get("origin")
         if origin and urlparse(origin).hostname not in {"localhost", "127.0.0.1"}:
             raise WebError("ORIGIN_DENIED", "Request from an unsupported origin", 403)
-        job = enqueue_preprocessing(repository, settings, job_id)
+        if repository.get(job_id).get("modality", "video") != "video":
+            raise WebError(
+                "NOT_IMPLEMENTED_FOR_MODALITY",
+                "Photo jobs stop after verified ingestion; preprocessing is not available",
+                409,
+            )
+        job = enqueue_preprocessing(
+            repository, settings, job_id, automatic_reconstruction=automatic_reconstruction
+        )
         return {"id": job["id"], "state": job["state"]}
 
     def completed(job_id: str) -> Path:
-        if repository.get(job_id)["state"] != "SUCCEEDED":
+        job = repository.get(job_id)
+        if job["state"] != "SUCCEEDED" and not (job["state"] == "FAILED" and job.get("summary")):
             raise WebError("RESULT_NOT_READY", "A verified result is not available yet", 409)
         return repository.folder(job_id)
+
+    @app.post("/api/jobs/{job_id}/reconstruct", status_code=202)
+    def reconstruct(job_id: str, request: Request, reconstruction_mode: str = Form("auto")):
+        origin = request.headers.get("origin")
+        if origin and urlparse(origin).hostname not in {"localhost", "127.0.0.1"}:
+            raise WebError("ORIGIN_DENIED", "Request from an unsupported origin", 403)
+        if repository.get(job_id).get("modality", "video") != "video":
+            raise WebError(
+                "NOT_IMPLEMENTED_FOR_MODALITY",
+                "Photo reconstruction is not available; the job stops after ingestion",
+                409,
+            )
+        job = enqueue_reconstruction(repository, settings, job_id, reconstruction_mode)
+        return {"id": job["id"], "state": job["state"]}
 
     def prepared(job_id: str) -> Path:
         from cozmo_preprocessing.verification import verify_preprocessing
@@ -280,10 +382,15 @@ def create_app(settings: Settings | None = None, runner=None) -> FastAPI:
     @app.get("/api/jobs/{job_id}/report")
     def report(job_id: str):
         folder = completed(job_id)
-        verify(folder / "bundle", folder / "raw")
-        read_reference_image(folder)
-        if (folder / "preprocessing").is_dir():
-            prepared(job_id)
+        manifest = json.loads((folder / "bundle/manifest.json").read_text(encoding="utf-8"))
+        if manifest.get("schema") == "canonical-capture-2":
+            verify_v2(folder / "bundle", folder / "raw" if (folder / "raw").is_dir() else None)
+        else:
+            verify(folder / "bundle", folder / "raw")
+            read_reference_image(folder)
+            if (folder / "preprocessing").is_dir():
+                prepared(job_id)
+            verify_automatic(folder)
         return FileResponse(
             folder / "result.json", media_type="application/json", filename="validation-report.json"
         )

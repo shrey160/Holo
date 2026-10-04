@@ -1,0 +1,274 @@
+{
+  "schema": "holo-object-regions-v1",
+  "authority": "ASSISTANT_VISUAL_REVIEW",
+  "coordinates": "native top-left pixel centres; x right, y down",
+  "scope": "Approximate object labels from source RGB; not automatic ML detections or user-confirmed measurements",
+  "objects": [
+    {
+      "id": "bed",
+      "label": "Bed",
+      "height_interval_m": [
+        0.2,
+        1.1
+      ],
+      "minimum_footprint_m": [
+        1.0,
+        1.0
+      ],
+      "regions": [
+        {
+          "rank": 675,
+          "image_sha256": "0984c689c18a596919b812db29a30ba88b1d4135b54b1a3ec1112817cea275b4",
+          "image_size": [
+            960,
+            540
+          ],
+          "polygon_px": [
+            [
+              315.0,
+              439.0
+            ],
+            [
+              258.0,
+              239.0
+            ],
+            [
+              290.0,
+              0.0
+            ],
+            [
+              575.0,
+              0.0
+            ],
+            [
+              640.0,
+              254.0
+            ],
+            [
+              480.0,
+              419.0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "desk",
+      "label": "Desk",
+      "height_interval_m": [
+        0.45,
+        1.1
+      ],
+      "minimum_footprint_m": [
+        0.5,
+        0.5
+      ],
+      "regions": [
+        {
+          "rank": 570,
+          "image_sha256": "6028ee5c1ab417e9ab7bbcb24fb56fe18b1534978f505f7d763e5466b58f7181",
+          "image_size": [
+            960,
+            540
+          ],
+          "polygon_px": [
+            [
+              169.0,
+              220.0
+            ],
+            [
+              173.0,
+              115.0
+            ],
+            [
+              371.0,
+              124.0
+            ],
+            [
+              375.0,
+              209.0
+            ],
+            [
+              212.0,
+              211.0
+            ],
+            [
+              216.0,
+              245.0
+            ],
+            [
+              171.0,
+              254.0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "office-chair",
+      "label": "Office chair",
+      "height_interval_m": [
+        0.2,
+        1.5
+      ],
+      "minimum_footprint_m": [
+        0.45,
+        0.45
+      ],
+      "regions": [
+        {
+          "rank": 570,
+          "image_sha256": "6028ee5c1ab417e9ab7bbcb24fb56fe18b1534978f505f7d763e5466b58f7181",
+          "image_size": [
+            960,
+            540
+          ],
+          "polygon_px": [
+            [
+              168.0,
+              414.0
+            ],
+            [
+              168.0,
+              315.0
+            ],
+            [
+              241.0,
+              274.0
+            ],
+            [
+              328.0,
+              279.0
+            ],
+            [
+              380.0,
+              309.0
+            ],
+            [
+              387.0,
+              424.0
+            ],
+            [
+              269.0,
+              448.0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "wardrobe",
+      "label": "Wardrobe",
+      "height_interval_m": [
+        0.05,
+        2.5
+      ],
+      "minimum_footprint_m": [
+        0.55,
+        0.55
+      ],
+      "regions": [
+        {
+          "rank": 810,
+          "image_sha256": "1fc7862f22dda8a476885a72ae1a95db3437fd0d45f4cdcf7fee7b7235be7a2c",
+          "image_size": [
+            960,
+            540
+          ],
+          "polygon_px": [
+            [
+              124.0,
+              539.0
+            ],
+            [
+              192.0,
+              284.0
+            ],
+            [
+              860.0,
+              272.0
+            ],
+            [
+              951.0,
+              539.0
+            ]
+          ]
+        },
+        {
+          "rank": 945,
+          "image_sha256": "4e00dd219759f2f9683a587935c75152bdbe4c8355974272dddf1542e874550a",
+          "image_size": [
+            960,
+            540
+          ],
+          "polygon_px": [
+            [
+              482.0,
+              332.0
+            ],
+            [
+              489.0,
+              9.0
+            ],
+            [
+              930.0,
+              9.0
+            ],
+            [
+              948.0,
+              339.0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "folding-chair",
+      "label": "Folding chair",
+      "height_interval_m": [
+        0.1,
+        1.2
+      ],
+      "minimum_footprint_m": [
+        0.45,
+        0.45
+      ],
+      "regions": [
+        {
+          "rank": 570,
+          "image_sha256": "6028ee5c1ab417e9ab7bbcb24fb56fe18b1534978f505f7d763e5466b58f7181",
+          "image_size": [
+            960,
+            540
+          ],
+          "polygon_px": [
+            [
+              348.0,
+              247.0
+            ],
+            [
+              310.0,
+              47.0
+            ],
+            [
+              501.0,
+              36.0
+            ],
+            [
+              559.0,
+              64.0
+            ],
+            [
+              564.0,
+              189.0
+            ],
+            [
+              476.0,
+              265.0
+            ]
+          ]
+        }
+      ]
+    }
+  ]
+}

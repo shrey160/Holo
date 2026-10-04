@@ -5,6 +5,27 @@ import math
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 
+class PhotosReference(BaseModel):
+    """Declared known-size object for the photo tier; dimensions are never applied."""
+
+    model_config = ConfigDict(extra="forbid")
+    object_id: str = Field(default="a4-reference-1", min_length=1, max_length=64)
+    width_m: float = Field(gt=0, le=100, allow_inf_nan=False)
+    height_m: float = Field(gt=0, le=100, allow_inf_nan=False)
+    reference_asset: str | None = Field(default=None, max_length=300)
+    candidate_assets: list[str] = Field(default_factory=list, max_length=16)
+
+    def declaration(self) -> dict:
+        return {
+            "object_id": self.object_id,
+            "width_m": self.width_m,
+            "height_m": self.height_m,
+            "reference_asset": self.reference_asset,
+            "candidate_assets": list(self.candidate_assets),
+            "provenance": "USER_DECLARED",
+        }
+
+
 class Reference(BaseModel):
     model_config = ConfigDict(extra="forbid")
     width_cm: float = Field(gt=0, le=1000, allow_inf_nan=False)
