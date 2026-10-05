@@ -13,6 +13,7 @@ from cozmo_preprocessing.verification import lines
 from cozmo_reconstruction.verification import verify_reconstruction
 
 from .export import display_points, plan_raster
+from .roomwise_svg import roomwise_svg
 from .rough_room import inferred_entry, rough_room_svg
 
 
@@ -162,17 +163,24 @@ def publish_assets(
             "camera_path_uv_m": (path[:, [0, 2]] * [1, -1]).tolist(),
         }
         plan.update(plan_extra or {})
+        roomwise = (plan_extra or {}).get("roomwise")
         svg = (
-            rough_room_svg(room, [])
-            .replace(
-                "fitted to source plane candidates",
-                "estimated from sparse point coverage"
-                if trim
-                else "fitted to dense surface candidates",
-            )
-            .replace(
-                "Blue: reviewed patches",
-                "Automatic sparse coverage envelope" if trim else "Automatic surface hypotheses",
+            roomwise_svg(roomwise, plan["camera_path_uv_m"])
+            if roomwise
+            else (
+                rough_room_svg(room, [])
+                .replace(
+                    "fitted to source plane candidates",
+                    "estimated from sparse point coverage"
+                    if trim
+                    else "fitted to dense surface candidates",
+                )
+                .replace(
+                    "Blue: reviewed patches",
+                    "Automatic sparse coverage envelope"
+                    if trim
+                    else "Automatic surface hypotheses",
+                )
             )
         )
         for name in ("rough-room.svg", "reviewed-plan.svg"):
@@ -180,9 +188,9 @@ def publish_assets(
         write_json(
             stage / "boundary-report.json",
             {
-                "status": room["status"],
+                "status": room["status"] if room else roomwise["status"],
                 "reviewed_walls": [],
-                "assumptions": room["assumptions"],
+                "assumptions": room["assumptions"] if room else roomwise["limitations"],
                 "geometry_diagnostics": report,
             },
         )
@@ -208,6 +216,15 @@ def publish_assets(
                 "source_floor_frame": frame,
                 "source_audit": audit,
                 "inferred_room_completion": room,
+                "roomwise_summary": None
+                if not roomwise
+                else {
+                    "room_count": len(roomwise["rooms"]),
+                    "completed_room_count": sum(
+                        r["rough_room"] is not None for r in roomwise["rooms"]
+                    ),
+                    "status": roomwise["status"],
+                },
                 "approximate_objects": [],
                 "sampling": "evenly spaced subset; full source retained"
                 + ("; 0.5% per-axis preview trim" if trim else ""),

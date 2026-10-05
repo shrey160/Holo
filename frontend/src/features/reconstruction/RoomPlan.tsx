@@ -1,11 +1,18 @@
 import { useState } from "react";
 import type { Plan } from "./types";
 import { CompleteRoomPlan } from "./CompleteRoomPlan";
+import { RoomwisePlan } from "./RoomwisePlan";
 
 export function RoomPlan({ plan, base }: { plan: Plan; base: string }) {
   const [candidates, setCandidates] = useState(false),
     [layer, setLayer] = useState(
-      plan.rough_room ? "rough" : plan.structure ? "structure" : "observations",
+      plan.roomwise
+        ? "rooms"
+        : plan.rough_room
+          ? "rough"
+          : plan.structure
+            ? "structure"
+            : "observations",
     ),
     [fit, setFit] = useState(Boolean(plan.structure)),
     [path, setPath] = useState(true),
@@ -20,6 +27,9 @@ export function RoomPlan({ plan, base }: { plan: Plan; base: string }) {
         onChange={(e) => setLayer(e.target.value)}
       >
         {plan.rough_room && <option value="rough">Complete rough plan</option>}
+        {plan.roomwise && (
+          <option value="rooms">Room-wise capture evidence</option>
+        )}
         {plan.structure && (
           <option value="structure">Structure-focused evidence</option>
         )}
@@ -27,6 +37,15 @@ export function RoomPlan({ plan, base }: { plan: Plan; base: string }) {
       </select>
     </label>
   );
+  if (layer === "rooms" && plan.roomwise)
+    return (
+      <RoomwisePlan
+        plan={plan}
+        report={plan.roomwise}
+        base={base}
+        selector={selector}
+      />
+    );
   if (layer === "rough" && plan.rough_room)
     return (
       <CompleteRoomPlan

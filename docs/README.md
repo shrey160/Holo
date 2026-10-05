@@ -14,3 +14,6 @@ Reference documentation lives here, grouped by topic. Entry points remain at the
 | [regressions/](regressions/native-dense-2026-10-04/README.md) | Frozen native dense error baseline and corrected comparison |
 
 Preserve failing baselines when later fixes add comparison results. [Current prototype handoff](../CONTEXT.md).
+
+Latest experiment: [room-wise capture-route analysis](reconstruction/ROOMWISE_PLAN.md), with
+[two-room partial-result evidence](regressions/roomwise-2026-10-06/README.md).

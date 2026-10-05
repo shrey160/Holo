@@ -1,0 +1,17 @@
+{
+  "artifact_sha256": {
+    "cameras.json": "219a9c6cdee5c005b96f4ff181bfffb9ca6d258df479068003646960875d8949",
+    "native-room.npz": "731d92c5230dc668eee65d622f3bb19ad4782aea949dabaef01bd855e218c2b7",
+    "planes.json": "407d126e1b311ddf9ad5eacc0cf9a198704af7d6ba30f3bd1ff372b5996e81bf"
+  },
+  "disclosure": "Offline derived geometry cache; replay validates hashes and recomputes room estimates, not stereo. Live path: holo-run.",
+  "geometry_source": "native CUDA RGB stereo; source poses fixed",
+  "raw_zip_sha256": "815cffe1c1b7a7f4e1670364d2d399f9110c3c3975e9c23994a3ac06d2f34d8c",
+  "schema": "holo-submission-cache-v1",
+  "source_audit": "VERIFIED by publish_dense before/after CPU republication",
+  "source_job": "ae77c443f85f449abad2c0598d4c7648",
+  "source_manifest_sha256": {
+    "dense": "124103c8569c17e3a5c34a6c8d42d262015bac94d05749b8f3ae002539615166",
+    "surfaces": "55fb2bececda92a79ef8b93dbf442b4588833bc3debdcb6d63fdbc38b6d57bcb"
+  }
+}

@@ -14,10 +14,11 @@ from .automatic import publish_assets
 from .ceiling import estimate_ceiling
 from .export import candidate_spans, display_points
 from .rough_room import complete_rough_room
+from .route import analyze_route
 from .structure import structure_plan
 
 
-def dense_room(xyz, labels, planes, cameras):
+def dense_evidence(xyz, labels, planes, cameras):
     candidates = [
         (i, p)
         for i, p in enumerate(planes)
@@ -35,9 +36,19 @@ def dense_room(xyz, labels, planes, cameras):
     frame["authority"] = "AUTOMATIC_SUPPORTED_FLOOR_CANDIDATE; architectural identity unverified"
     frame["source_plane_id"] = floor["id"]
     positions = display_points(xyz, frame)
-    path = display_points(np.asarray([c["center_m"] for c in cameras]), frame)
+    # COLMAP image IDs need not follow capture time. Never connect the path in
+    # backend dictionary order; source frame ranks retain chronological order.
+    ordered = [
+        c for _, c in sorted(enumerate(cameras), key=lambda item: item[1].get("rank", item[0]))
+    ]
+    path = display_points(np.asarray([c["center_m"] for c in ordered]), frame)
     spans = candidate_spans(xyz, labels, planes, frame)
     structure = structure_plan(positions, labels, planes, frame)
+    return positions, path, frame, spans, structure
+
+
+def dense_room(xyz, labels, planes, cameras):
+    positions, path, frame, spans, structure = dense_evidence(xyz, labels, planes, cameras)
     # Raw plane intervals can extend along low furniture or disconnected floor-level
     # observations. Only height-persistent, source-aligned spans may size the room.
     supported_spans = structure["suggested_spans"]
@@ -97,12 +108,29 @@ def publish_dense(surface_request, output, label):
     with np.load(integrity.path("cloud_labels.npz")) as stored:
         labels = stored["plane_index"]
     cameras = json.loads((dense.output / "cameras.json").read_text(encoding="utf-8"))
-    positions, path, frame, room, plan_extra = dense_room(xyz, labels, report["planes"], cameras)
+    mapping_file = dense.sparse / "input_mapping.json"
+    mapping = json.loads(mapping_file.read_text(encoding="utf-8"))
+    route = analyze_route(mapping)
+    roomwise = None
+    if len(route["rooms"]) >= 2:
+        from .local_rooms import roomwise_plan
+
+        positions, path, frame, spans, structure = dense_evidence(
+            xyz, labels, report["planes"], cameras
+        )
+        roomwise = roomwise_plan(dense.output, xyz, cameras, frame, mapping)
+        hashes["route_mapping"] = sha256(mapping_file)
+        room = None
+        plan_extra = {"candidate_spans": spans, "structure": structure, "roomwise": roomwise}
+    else:
+        positions, path, frame, room, plan_extra = dense_room(
+            xyz, labels, report["planes"], cameras
+        )
 
     def recheck():
         verify_surfaces(surface_request.output, surface_request)
         require(
-            hashes
+            {name: value for name, value in hashes.items() if name != "route_mapping"}
             == {
                 "dense": sha256(dense.output / "manifest.json"),
                 "surfaces": sha256(surface_request.output / "manifest.json"),
@@ -110,6 +138,10 @@ def publish_dense(surface_request, output, label):
             "SOURCE_CHANGED",
             "Dense surface manifests",
         )
+        if roomwise is not None:
+            require(
+                sha256(mapping_file) == hashes["route_mapping"], "SOURCE_CHANGED", "Route mapping"
+            )
 
     request = ReconstructionRequest(dense.prepared, dense.bundle, dense.output, dense.source)
     result = publish_assets(
@@ -130,10 +162,19 @@ def publish_dense(surface_request, output, label):
         plan_extra,
         trim=False,
     )
-    result.update(
-        dimensions_estimated_m=room["dimensions_estimated_m"],
-        ceiling_estimated_m=room["ceiling_estimate"]["height_estimated_m"],
-        source_point_count=len(xyz),
-        quality="DENSE_WITH_FINDINGS",
-    )
+    result.update(source_point_count=len(xyz), quality="DENSE_WITH_FINDINGS")
+    if roomwise is not None:
+        completed = sum(r["rough_room"] is not None for r in roomwise["rooms"])
+        result.update(
+            room_count=len(roomwise["rooms"]),
+            completed_room_count=completed,
+            quality="PARTIAL_ROOMWISE_EVIDENCE"
+            if completed < len(roomwise["rooms"])
+            else "PROVISIONAL_ROOMWISE_COMPLETION",
+        )
+    else:
+        result.update(
+            dimensions_estimated_m=room["dimensions_estimated_m"],
+            ceiling_estimated_m=room["ceiling_estimate"]["height_estimated_m"],
+        )
     return result

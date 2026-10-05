@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="1000" viewBox="0 0 1400 1000">
+<rect width="100%" height="100%" fill="#fafafa"/>
+<text x="30" y="28" font-family="sans-serif" font-size="18">Two-room partial observations - no closed floor plan</text>
+<polyline points="660.10,792.94 748.56,668.34" fill="none" stroke="#a7bbb3" stroke-width="2"/>
+<polyline points="752.90,662.21 764.93,645.27" fill="none" stroke="#a7bbb3" stroke-width="2"/>
+<polyline points="769.77,638.45 876.17,488.56" fill="none" stroke="#a7bbb3" stroke-width="2"/>
+<polyline points="679.11,788.24 832.74,575.96" fill="none" stroke="#a7bbb3" stroke-width="2"/>
+<polyline points="841.38,564.02 887.90,499.74" fill="none" stroke="#a7bbb3" stroke-width="2"/>
+<polyline points="673.56,784.50 774.30,643.46" fill="none" stroke="#a7bbb3" stroke-width="2"/>
+<polyline points="783.77,630.21 885.07,488.39" fill="none" stroke="#a7bbb3" stroke-width="2"/>
+<polyline points="698.63,804.63 716.47,773.00" fill="none" stroke="#a7bbb3" stroke-width="2"/>
+<polyline points="738.22,734.43 873.78,494.10" fill="none" stroke="#a7bbb3" stroke-width="2"/>
+<polyline points="660.80,772.65 710.47,810.67" fill="none" stroke="#a7bbb3" stroke-width="2"/>
+<polyline points="718.60,816.89 768.73,855.26" fill="none" stroke="#a7bbb3" stroke-width="2"/>
+<polyline points="700.59,805.16 724.01,764.47" fill="none" stroke="#a7bbb3" stroke-width="2"/>
+<polyline points="744.63,728.63 768.69,686.82" fill="none" stroke="#a7bbb3" stroke-width="2"/>
+<polyline points="774.02,677.56 881.64,490.54" fill="none" stroke="#a7bbb3" stroke-width="2"/>
+<polyline points="671.84,779.46 739.96,685.77" fill="none" stroke="#146f60" stroke-width="4"/>
+<polyline points="684.46,758.36 714.32,719.17" fill="none" stroke="#146f60" stroke-width="4"/>
+<polyline points="693.69,744.08 709.52,720.67" fill="none" stroke="#146f60" stroke-width="4"/>
+<polyline points="669.72,772.38 687.79,789.24" fill="none" stroke="#146f60" stroke-width="4"/>
+<polyline points="937.86,722.10 936.66,722.22 936.74,722.08 936.66,722.08 937.99,721.48 944.23,733.54 948.59,732.64 954.66,728.82 949.92,734.50 943.12,724.28 935.08,716.55 933.98,713.02 928.53,707.55 918.39,700.95 912.64,676.67 907.04,658.91 898.42,640.09 895.44,622.01 891.09,628.98 896.58,616.18 902.37,627.57 891.11,613.23 889.84,623.68 898.88,615.65 898.57,612.03 894.82,618.10 894.53,616.91 888.47,626.25 898.49,637.37 900.23,641.04 890.52,634.46 888.04,631.68 889.63,631.35 894.57,632.67 901.97,625.18 903.35,614.65 893.86,605.63 889.95,599.71 886.04,596.01 900.86,584.45 889.52,605.60 897.39,616.61 903.13,645.83 907.51,668.26 928.16,734.61 924.42,755.46 924.83,767.64 923.92,771.43 928.50,761.95 928.02,762.01 924.34,779.32 923.44,773.17 921.27,771.23 916.94,763.07 892.76,748.44 874.39,735.82 853.59,732.30 823.16,730.58 788.77,739.36 809.31,736.81 799.81,722.82 799.72,725.51 785.04,736.62 791.20,740.65 789.52,737.89 784.66,732.63 786.91,735.18 792.58,742.25 790.12,737.99 791.81,733.90 804.40,729.44 811.92,729.61 813.14,727.86 807.15,737.45 805.07,743.16 805.66,741.90 811.39,735.20 822.57,731.08 815.47,750.16 806.36,737.43 808.91,732.31 808.93,730.52" fill="none" stroke="#326ca7" stroke-width="2" stroke-dasharray="8 5"/>
+</svg>

@@ -1,0 +1,43 @@
+{
+  "bytes": 33808090,
+  "capture_id": "single-room-ios",
+  "depth_used": false,
+  "file": "single_room.zip",
+  "format": "Sensor Recorder Pro 1.5 build 5 ARKit",
+  "grounding_applied": false,
+  "sha256": "815cffe1c1b7a7f4e1670364d2d399f9110c3c3975e9c23994a3ac06d2f34d8c",
+  "source_assets": {
+    "accelerometer.csv": {
+      "bytes": 205659,
+      "sha256": "e8ed45d74a50e624785ecfbfbac1ad327bb729e42068b87f914a5a5437618de0"
+    },
+    "arkit_pose.csv": {
+      "bytes": 340663,
+      "sha256": "44b03067aed061260ddeb956b4dea06d9ace27ffe683d165edc87df5694f1bba"
+    },
+    "device_motion.csv": {
+      "bytes": 836508,
+      "sha256": "dcc44fc9fb42381bad0212a8ac3b07bed11ca5d41f4c8b33d3c2f5755e7e7a2e"
+    },
+    "gyroscope.csv": {
+      "bytes": 202727,
+      "sha256": "dbe7d34ca6fc474f57ea01eb1c64bfeb921707a90ef3272c904739d6420d4523"
+    },
+    "imu.csv": {
+      "bytes": 396720,
+      "sha256": "fec827dedecefb0a92dd5bce2721b333fce9c8897cf27583d7f7d86af710709b"
+    },
+    "magnetometer.csv": {
+      "bytes": 106263,
+      "sha256": "c9b5e96f568831622690fc116f08ef6d461a58de0fba2a7ca9ce2deb0156fbd5"
+    },
+    "meta.json": {
+      "bytes": 12960,
+      "sha256": "2559934b6a8883366e4dcf601357c4b928b3204fb5950af3940a4736502d1813"
+    },
+    "wide.mp4": {
+      "bytes": 33003806,
+      "sha256": "1c1aa4b259f934d147cb2adbdbedbda6f70ce641637c7278633cca7561a6e073"
+    }
+  }
+}

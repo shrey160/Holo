@@ -1,0 +1,84 @@
+{
+  "source": "test_data/iphn-17/zips/double_room.zip",
+  "source_sha256": "7034c5e8af4d05e22e9a20498b57898ef5936ccc391fd4982fda7a125bda4fc0",
+  "source_unchanged": true,
+  "job_id": "6927cd39123049a492ae9e3c2165be63",
+  "job_state": "FAILED",
+  "failed_stage": "ESTIMATING_ROOM",
+  "error_code": "DENSE_ROOM_SUPPORT_INSUFFICIENT",
+  "elapsed_seconds": 675.381567,
+  "ingestion": {
+    "artifacts_verified": 16,
+    "deterministic_replay_equal": null,
+    "frames_verified": 3949,
+    "scale_applied": false,
+    "sensor_rows_verified": {
+      "accelerometer": 6567,
+      "device_motion": 6566,
+      "gyroscope": 6567,
+      "imu": 6567,
+      "magnetometer": 3331
+    },
+    "source_values_preserved": true,
+    "status": "PASSED"
+  },
+  "partial_viewer": {
+    "display_points": 120000,
+    "floor_plane_id": "P06",
+    "raw_spans": 14,
+    "retained_structure_voxels": 24358,
+    "selected_views": 82,
+    "source_audit": {
+      "artifacts": 206,
+      "floorplan": "NOT_RUN",
+      "physical_accuracy": "UNVERIFIED",
+      "semantic_confirmation": false,
+      "status": "VERIFIED"
+    },
+    "source_manifest_sha256": {
+      "dense": "d08b08b0d8cba85e1efeca8aaa392660e95c7b2d6062c7a0ca44b199641649a9",
+      "surfaces": "0ce697eeaa9ba362264076266f20a83155875fb062b2bf7b18cb7fc25dfc2a2a"
+    },
+    "source_points": 468728,
+    "status": "PARTIAL_DENSE_EVIDENCE; DENSE_ROOM_SUPPORT_INSUFFICIENT",
+    "supported_spans": 4,
+    "viewer_id": "two-room-dense-partial-20261005"
+  },
+  "http_assets": {
+    "boundary-report.json": {
+      "http_status": 200,
+      "sha256_match": true
+    },
+    "cloud.ply": {
+      "http_status": 200,
+      "sha256_match": true
+    },
+    "colors.bin": {
+      "http_status": 200,
+      "sha256_match": true
+    },
+    "plan.json": {
+      "http_status": 200,
+      "sha256_match": true
+    },
+    "plan.png": {
+      "http_status": 200,
+      "sha256_match": true
+    },
+    "positions.bin": {
+      "http_status": 200,
+      "sha256_match": true
+    },
+    "reviewed-plan.svg": {
+      "http_status": 200,
+      "sha256_match": true
+    },
+    "scene.json": {
+      "http_status": 200,
+      "sha256_match": true
+    }
+  },
+  "closed_floor_plan": "NOT_GENERATED",
+  "two_room_segmentation": "NOT_IMPLEMENTED",
+  "physical_accuracy": "UNVERIFIED"
+}

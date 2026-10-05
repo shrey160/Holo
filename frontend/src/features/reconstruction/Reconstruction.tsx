@@ -161,12 +161,18 @@ export function Reconstruction() {
             </span>
             <span>
               <b>
-                {loaded.plan.rough_room?.dimensions_estimated_m
-                  .map((n) => n.toFixed(2))
-                  .join(" × ") || "Unavailable"}
+                {loaded.plan.roomwise
+                  ? `${loaded.plan.roomwise.rooms.length} room candidates`
+                  : loaded.plan.rough_room?.dimensions_estimated_m
+                      .map((n) => n.toFixed(2))
+                      .join(" × ") || "Unavailable"}
                 {loaded.plan.rough_room ? " m" : ""}
               </b>
-              <small>Approximate room size</small>
+              <small>
+                {loaded.plan.roomwise
+                  ? "Capture route"
+                  : "Approximate room size"}
+              </small>
             </span>
             <span>
               <b>
@@ -181,9 +187,11 @@ export function Reconstruction() {
           <p className="viewer-note reconstruction-caveat">
             {loaded.scene.geometry_source === "CPU_SPARSE_TRIANGULATION"
               ? "Automatic sparse preview: a rectangle estimates observed coverage. Furniture and missing walls can bias it; multiple rooms are not segmented. Poses and source scale are unchanged."
-              : loaded.plan.rough_room
-                ? "The complete floor plan is an approximate room hypothesis. Physical dimensions remain unverified; source geometry and scale are unchanged."
-                : "Room coverage is incomplete. Reference calibration remains unresolved; poses and estimated scale are unchanged. Assistant architectural decisions remain hypotheses."}
+              : loaded.plan.roomwise
+                ? "Room-wise evidence separates scanning stays and fits supported walls locally. Doorways and connectors remain unresolved; some room outlines may be unavailable."
+                : loaded.plan.rough_room
+                  ? "The complete floor plan is an approximate room hypothesis. Physical dimensions remain unverified; source geometry and scale are unchanged."
+                  : "Room coverage is incomplete. Reference calibration remains unresolved; poses and estimated scale are unchanged. Assistant architectural decisions remain hypotheses."}
           </p>
           <RoomPlan key={selected} plan={loaded.plan} base={base} />
           <PointCloudViewer scene={loaded.scene} base={base} />

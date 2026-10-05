@@ -1,7 +1,7 @@
 [project]
 name = "cozmo-ingestion"
 version = "0.2.0"
-description = "Validated iOS capture ingestion for the Cozmo floor-plan prototype"
+description = "Holo: validated capture ingestion and assisted RGB room reconstruction"
 readme = "README.md"
 requires-python = ">=3.12,<3.15"
 dependencies = []
@@ -22,6 +22,7 @@ dense = [
 ]
 
 [project.scripts]
+holo-run = "cozmo_web.capture_cli:main"
 cozmo-ingest = "cozmo_ingestion.cli:ingest_main"
 cozmo-verify = "cozmo_ingestion.cli:verify_main"
 cozmo-web = "cozmo_web.cli:main"
@@ -44,17 +45,12 @@ packages = ["src/cozmo_ingestion", "src/cozmo_web", "src/cozmo_preprocessing", "
 [tool.hatch.build.targets.sdist]
 include = [
     "/src", "/tests", "/pyproject.toml", "/uv.lock", "/.python-version",
-    "/README.md", "/ARCHITECTURE.md", "/capture.md", "/capture_annotations",
+    "/README.md", "/capture.md", "/capture_annotations",
     "/ingest.py", "/verify_capture.py", "/capture_reader.py",
-    "/INGESTION_RESULTS.md", "/REFACTOR_RESULTS.md", "/INGESTION_PLAN.md", "/Overview.md",
     "/frontend", "/Dockerfile", "/compose.yaml", "/compose.gpu.yaml", "/.dockerignore", "/.env.example",
-    "/DOCKER_WEB_PLAN.md", "/WEB_RESULTS.md", "/WEB_SETUP.md", "/SUPPLIED_DATA.md", "/PREPROCESSING.md", "/RECONSTRUCTION_VIEWER.md", "/compose.reconstruction.yaml",
-    "/PREPROCESSING_REVIEW.md", "/RECONSTRUCTION_PLAN.md", "/RECONSTRUCTION.md",
-    "/DENSE_RECONSTRUCTION.md", "/SURFACES.md", "/GROUNDING_PLAN.md", "/GROUNDING.md", "/GROUNDING_DIAGNOSTICS.md", "/PARTIAL_BOUNDARIES.md",
-    "/GAUSSIANS.md", "/experiments/gsplat",
-    "/AUTOMATIC_RECONSTRUCTION.md", "/FLOORPLAN_OPTIMIZATION.md", "/FINAL_REPORT_NOTES.md", "/evaluation_annotations",
-    "/scripts", "/NATIVE_DENSE.md", "/INPUT_MODALITIES_PLAN.md",
-    "/CONTEXT.md", "/NATIVE_DENSE_REGRESSION.md", "/docs",
+    "/compose.reconstruction.yaml", "/experiments/gsplat", "/evaluation_annotations",
+    "/scripts", "/NATIVE_DENSE.md", "/INPUT_MODALITIES_PLAN.md", "/AUTOMATIC_RECONSTRUCTION.md",
+    "/CONTEXT.md", "/NATIVE_DENSE_REGRESSION.md", "/NATIVE_FLOOR_PLAN_FIX.md", "/docs", "/submission",
 ]
 exclude = ["**/node_modules", "**/dist", "**/.vite", "**/.venv", "**/.uv-cache", "**/__pycache__", "**/*.pyc", "**/.env"]
 

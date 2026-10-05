@@ -199,9 +199,11 @@ export function Result({
           <div className="notice">
             Input verified. Physical measurement accuracy remains unverified.
             {result.reconstruction
-              ? result.reconstruction.geometry_source === "RGB_DENSE_STEREO"
-                ? " Dense RGB reconstruction is ready."
-                : " Sparse preview only; dense reconstruction has not run."
+              ? result.reconstruction.quality === "PARTIAL_ROOMWISE_EVIDENCE"
+                ? " Dense geometry and room-wise evidence are ready; the room outlines are incomplete."
+                : result.reconstruction.geometry_source === "RGB_DENSE_STEREO"
+                  ? " Dense RGB reconstruction is ready."
+                  : " Sparse preview only; dense reconstruction has not run."
               : " Reconstruction has not completed."}
             {!result.preprocessing && " Preprocessing has not run."}
           </div>
@@ -211,9 +213,11 @@ export function Result({
           {result.reconstruction ? (
             <div className="preprocessing-start">
               <h3>
-                {result.reconstruction.geometry_source === "RGB_DENSE_STEREO"
-                  ? "Dense reconstruction ready"
-                  : "Sparse preview"}
+                {result.reconstruction.quality === "PARTIAL_ROOMWISE_EVIDENCE"
+                  ? "Room-wise evidence ready; plan incomplete"
+                  : result.reconstruction.geometry_source === "RGB_DENSE_STEREO"
+                    ? "Dense reconstruction ready"
+                    : "Sparse preview"}
               </h3>
               <p>
                 {result.reconstruction.point_count.toLocaleString()} display
@@ -233,9 +237,11 @@ export function Result({
                 </div>
                 <div>
                   <strong>
-                    {result.reconstruction.dimensions_estimated_m
-                      ?.map((n) => n.toFixed(2))
-                      .join(" × ") || "Preview only"}
+                    {result.reconstruction.room_count != null
+                      ? `${result.reconstruction.completed_room_count}/${result.reconstruction.room_count} outlines`
+                      : result.reconstruction.dimensions_estimated_m
+                          ?.map((n) => n.toFixed(2))
+                          .join(" × ") || "Preview only"}
                     {result.reconstruction.dimensions_estimated_m ? " m" : ""}
                   </strong>
                   <span>Approximate room size</span>

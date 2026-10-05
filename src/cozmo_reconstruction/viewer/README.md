@@ -1,5 +1,12 @@
 # Portable reconstruction presentation
 
+**6 October:** `route.py` identifies provisional scanning stays and revisits; `local_rooms.py`
+derives per-region surfaces from original accepted stereo contributions; `roomwise_svg.py` publishes
+common-coordinate evidence. Automatic multi-stay captures can publish explicitly partial room-wise
+evidence without invented outlines or ceilings. Direct room connections need no corridor exit.
+The actual two-room test still lacks enough wall support for completion; single-room fitting is
+unchanged. [Design, limits and replay](../../../docs/reconstruction/ROOMWISE_PLAN.md).
+
 **Current automatic workflow (2026-10-04):** `dense_automatic.py` audits dense/surface outputs, selects an unconfirmed broad floor plane below cameras, computes height-persistent source-aligned spans through `structure.py`, completes those supported spans with the rectangle prior and independently estimates a ceiling upper envelope. Raw projected intervals remain diagnostic only; insufficient support fails with `DENSE_ROOM_SUPPORT_INSUFFICIENT`. `automatic.py` shares atomic nine-asset encoding and retains the labelled CPU sparse preview. Source poses/scale remain unchanged; no human furniture labels or measured ceiling are transferred. [Policy and limits](../../../AUTOMATIC_RECONSTRUCTION.md), [regression correction](../../../NATIVE_FLOOR_PLAN_FIX.md).
 
 

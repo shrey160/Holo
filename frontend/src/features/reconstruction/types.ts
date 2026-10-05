@@ -37,6 +37,7 @@ export type Scene = {
   reviewed_spans: Span[];
 };
 export type Plan = {
+  roomwise?: RoomwiseReport;
   rough_room?: {
     ceiling_estimate?: CeilingEstimate;
     objects?: ApproximateObject[];
@@ -63,6 +64,34 @@ export type Plan = {
   reviewed_spans: Span[];
   candidate_spans: { plane_id: string; uv: number[][]; status: string }[];
   camera_path_uv_m: number[][];
+};
+export type RoomwiseReport = {
+  status: string;
+  rooms: {
+    id: string;
+    status: string;
+    failure?: string;
+    source_voxel_count: number;
+    scanning_ranks: number[];
+    approach_ranks: number[];
+    structure?: NonNullable<Plan["structure"]>;
+    rough_room:
+      | (NonNullable<Plan["rough_room"]> & { polygon_floor_uv_m: number[][] })
+      | null;
+  }[];
+  route: {
+    stays: {
+      room_id: string;
+      scan_seconds: number[];
+      path_floor_uv_m: number[][];
+    }[];
+    transitions: {
+      from_room: string;
+      to_room: string;
+      seconds: number[];
+      path_floor_uv_m: number[][];
+    }[];
+  };
 };
 export type Result = {
   id: string;

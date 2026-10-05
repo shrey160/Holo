@@ -64,6 +64,8 @@ export type Job = {
       status: string;
       geometry_source?: string;
       quality?: string;
+      room_count?: number;
+      completed_room_count?: number;
       dimensions_estimated_m?: number[];
       ceiling_estimated_m?: number | null;
     } | null;

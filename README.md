@@ -6,6 +6,10 @@ fixed-pose sparse and dense RGB reconstruction, proposes floor and wall surfaces
 rough single-room plan with an interactive 3D view. Everything runs on your own machine; no
 candidate-owned service is required.
 
+Experimental [room-wise route analysis](docs/reconstruction/ROOMWISE_PLAN.md) separates scanning
+stays and extracts walls locally. The tested two-room capture still produces partial evidence;
+closed room outlines and confirmed stitching remain incomplete.
+
 Demo walkthrough: <https://youtu.be/N7grapMf2BA>
 
 There are two ways to use it:

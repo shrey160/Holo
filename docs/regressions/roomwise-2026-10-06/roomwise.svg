@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 940 800">
+<rect width="940" height="800" fill="#fcfcf8"/>
+<g font-family="Arial, sans-serif">
+<text x="30" y="35" font-size="23">Room-wise capture evidence</text>
+<text x="30" y="65" font-size="15">Room identities provisional; connectors and doorway crossings unresolved.</text>
+<polyline points="734.14,486.11 734.33,485.78 734.12,485.78 736.98,485.81 737.31,484.36 752.17,513.09 762.56,510.95 777.02,501.85 765.73,515.38 749.52,491.03 730.37,472.61 727.75,464.18 714.77,451.14 690.60,435.44 676.89,377.57 663.55,335.24 643.02,290.41 625.55,263.92 635.91,247.32 638.62,233.43 652.42,260.56 625.60,226.40 622.56,251.31 644.10,232.17 643.37,223.55 633.74,235.16 634.44,238.00 619.31,257.44 643.17,283.93 647.33,292.68 624.19,277.00 618.27,270.37 622.06,269.58 633.83,272.73 651.47,254.88 654.75,229.79 632.15,208.29 622.83,194.18 613.52,185.37 648.82,157.82 621.79,208.23 640.55,234.45 654.24,304.08 664.66,357.54 713.88,515.64 704.97,565.32 705.94,594.34 703.77,603.37 714.68,580.78 713.55,580.93 702.63,607.52 704.77,622.18 697.47,602.90 687.13,583.46 629.53,548.58 585.74,518.53 536.19,510.14 463.68,506.02 430.68,520.88 381.72,526.96 408.03,487.53 407.83,493.95 372.85,520.43 387.52,530.03 383.51,523.46 371.92,510.92 377.30,516.99 390.80,533.84 384.93,523.70 388.98,513.95 418.96,503.31 436.90,503.72 439.79,499.54 425.53,522.41 420.57,536.01 421.98,533.02 435.62,517.05 462.27,507.22 445.34,552.69 423.64,522.35 429.72,510.16 429.77,505.89" fill="none" stroke="#89929c" stroke-width="2" stroke-dasharray="6 5"/>
+<polyline points="342.64,231.92 399.83,172.22" fill="none" stroke="#146f60" stroke-width="4"><title>R01: unconfirmed wall or furniture</title></polyline>
+<polyline points="329.50,204.79 385.31,249.83" fill="none" stroke="#146f60" stroke-width="4"><title>R01: unconfirmed wall or furniture</title></polyline>
+<text x="30" y="725" font-size="16" fill="#146f60">R01: outline unavailable</text>
+<polyline points="97.82,616.42 280.96,393.30" fill="none" stroke="#7659a5" stroke-width="4"><title>R02: unconfirmed wall or furniture</title></polyline>
+<polyline points="325.11,339.52 380.03,272.60" fill="none" stroke="#7659a5" stroke-width="4"><title>R02: unconfirmed wall or furniture</title></polyline>
+<polyline points="120.63,563.09 220.54,467.21" fill="none" stroke="#7659a5" stroke-width="4"><title>R02: unconfirmed wall or furniture</title></polyline>
+<polyline points="233.11,455.15 289.72,400.82" fill="none" stroke="#7659a5" stroke-width="4"><title>R02: unconfirmed wall or furniture</title></polyline>
+<text x="30" y="747" font-size="16" fill="#7659a5">R02: outline unavailable</text>
+</g></svg>
